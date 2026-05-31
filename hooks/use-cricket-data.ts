@@ -3,7 +3,7 @@
 
 import useSWR from "swr"
 import useSWRInfinite from "swr/infinite"
-import type { Match, Player, Team, Series, NewsArticle, SearchResult } from "@/lib/types"
+import type { Match, Player, Team, Series, NewsArticle, SearchResult, PointsTableEntry } from "@/lib/types"
 
 // ============= Fetcher =============
 
@@ -182,6 +182,41 @@ export function useSeriesById(seriesId: string | null) {
 
   return {
     data: data?.data || null,
+    isLoading,
+    error,
+    mutate,
+    isConfigured: data?.isConfigured ?? true,
+  }
+}
+
+export function useFeaturedSeries(limit = 6) {
+  const searchParams = new URLSearchParams()
+  searchParams.set("limit", String(limit))
+
+  const { data, error, mutate, isLoading } = useSWR(
+    `/api/series?${searchParams.toString()}`,
+    (url) => fetcher<Series[]>(url)
+  )
+
+  return {
+    data: data?.data || [],
+    isLoading,
+    error,
+    mutate,
+    isConfigured: data?.isConfigured ?? true,
+  }
+}
+
+// ============= Points Table Hooks =============
+
+export function usePointsTable(seriesId: string | null) {
+  const { data, error, mutate, isLoading } = useSWR(
+    seriesId ? `/api/points-table?seriesId=${encodeURIComponent(seriesId)}` : null,
+    (url) => fetcher<PointsTableEntry[]>(url)
+  )
+
+  return {
+    data: data?.data || [],
     isLoading,
     error,
     mutate,
