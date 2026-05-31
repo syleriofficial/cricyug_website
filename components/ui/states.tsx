@@ -56,6 +56,20 @@ export function LoadingCard({ className }: { className?: string }) {
   )
 }
 
+export function SkeletonCard({ className }: { className?: string }) {
+  return (
+    <div className={cn("rounded-xl bg-card border border-border p-4", className)}>
+      <div className="flex items-center gap-4">
+        <Skeleton className="h-14 w-14 rounded-xl" />
+        <div className="flex-1 space-y-2">
+          <Skeleton className="h-4 w-3/4" />
+          <Skeleton className="h-3 w-1/2" />
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export function LoadingMatchCard() {
   return (
     <div className="rounded-xl bg-card border border-border p-4">
