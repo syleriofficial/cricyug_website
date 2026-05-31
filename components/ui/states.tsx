@@ -56,6 +56,9 @@ export function LoadingCard({ className }: { className?: string }) {
   )
 }
 
+// Alias for LoadingCard — generic skeleton placeholder card
+export const SkeletonCard = LoadingCard
+
 export function LoadingMatchCard() {
   return (
     <div className="rounded-xl bg-card border border-border p-4">
