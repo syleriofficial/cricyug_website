@@ -2,17 +2,17 @@
 // Fetches points table data for a specific series
 
 import { NextResponse } from "next/server"
-import { CricketDataService } from "@/lib/api/cricket-data"
+import { getCricketDataService } from "@/lib/api/cricket-data"
 
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params
-  const apiKey = process.env.CRICKET_API_KEY
+  const service = getCricketDataService()
 
   // Check if API is configured
-  if (!apiKey) {
+  if (!service) {
     return NextResponse.json({
       data: [],
       meta: {
@@ -25,7 +25,6 @@ export async function GET(
   }
 
   try {
-    const service = new CricketDataService({ apiKey })
     const standings = await service.getSeriesStandings(id)
 
     return NextResponse.json({
