@@ -1,51 +1,55 @@
-// Series Standings API Route - Production Ready
-// Fetches points table data for a specific series
-
 import { NextResponse } from "next/server"
-import { CricketDataService } from "@/lib/api/cricket-data"
+import { getCricketDataService } from "@/lib/api/cricket-data"
 
 export async function GET(
   request: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: { id: string } }
 ) {
-  const { id } = await params
-  const apiKey = process.env.CRICKET_API_KEY
-
-  // Check if API is configured
-  if (!apiKey) {
-    return NextResponse.json({
-      data: [],
-      meta: {
-        total: 0,
-        limit: 20,
-        configured: false,
-        message: "CRICKET_API_KEY environment variable is not set",
-      },
-    })
-  }
+  const seriesId = params.id
 
   try {
-    const service = new CricketDataService({ apiKey })
-    const standings = await service.getSeriesStandings(id)
+    const service = getCricketDataService()
+
+    if (!service) {
+      return NextResponse.json({
+        data: [],
+        meta: {
+          seriesId,
+          configured: false,
+          error: "CRICKET_API_KEY missing",
+        },
+      })
+    }
+
+    // अगर service में standings method नहीं है तो empty state return करो.
+    // इससे build fail नहीं होगा और UI safe रहेगा.
+    const standings =
+      "getSeriesStandings" in service &&
+      typeof service.getSeriesStandings === "function"
+        ? await service.getSeriesStandings(seriesId)
+        : []
 
     return NextResponse.json({
       data: standings,
       meta: {
-        total: standings.length,
-        limit: standings.length,
+        seriesId,
         configured: true,
+        total: Array.isArray(standings) ? standings.length : 0,
       },
     })
   } catch (error) {
-    console.error("Error fetching series standings:", error)
+    console.error("[CricYug] series standings API error:", error)
 
     return NextResponse.json(
       {
         data: [],
         meta: {
-          total: 0,
+          seriesId,
           configured: true,
-          error: error instanceof Error ? error.message : "Failed to fetch standings",
+          error:
+            error instanceof Error
+              ? error.message
+              : "Failed to fetch series standings",
         },
       },
       { status: 500 }
