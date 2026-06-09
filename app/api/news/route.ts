@@ -3,21 +3,19 @@
 // CricketData.org does not provide news data
 
 import { NextResponse } from "next/server"
+import { demoNews } from "@/lib/demo-data"
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
   const limit = parseInt(searchParams.get("limit") || "10")
 
-  // News requires a separate API integration (e.g., NewsAPI, custom RSS feed parser)
-  // Return empty data until a news source is configured
-  
   return NextResponse.json({
-    data: [],
+    data: demoNews.slice(0, limit),
     meta: { 
-      total: 0, 
+      total: demoNews.length,
       limit,
       configured: false,
-      message: "News API not configured. Integrate a news source (NewsAPI, RSS feeds, etc.)"
+      message: "Showing editorial demo stories. Integrate a news API or RSS feed for live news."
     }
   })
 }

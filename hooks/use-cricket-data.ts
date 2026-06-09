@@ -31,9 +31,10 @@ async function fetcher<T>(url: string): Promise<{ data: T; isConfigured: boolean
 
 // ============= Matches Hooks =============
 
-export function useMatches(params?: { status?: string; limit?: number }) {
+export function useMatches(params?: { status?: string; format?: string; limit?: number }) {
   const searchParams = new URLSearchParams()
   if (params?.status) searchParams.set("status", params.status)
+  if (params?.format) searchParams.set("format", params.format)
   if (params?.limit) searchParams.set("limit", String(params.limit))
   
   const { data, error, mutate, isLoading } = useSWR(

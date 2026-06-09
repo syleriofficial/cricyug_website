@@ -1,28 +1,29 @@
 import { NextResponse } from "next/server"
 import { getCricketDataService } from "@/lib/api/cricket-data"
+import { demoPointsTable } from "@/lib/demo-data"
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  const seriesId = params.id
+  const { id: seriesId } = await params
 
   try {
     const service = getCricketDataService()
 
     if (!service) {
       return NextResponse.json({
-        data: [],
+        data: demoPointsTable,
         meta: {
           seriesId,
           configured: false,
-          error: "CRICKET_API_KEY missing",
+          total: demoPointsTable.length,
+          message: "Showing demo standings. Add CRICKET_API_KEY for live points tables.",
         },
       })
     }
 
-    // अगर service में standings method नहीं है तो empty state return करो.
-    // इससे build fail नहीं होगा और UI safe रहेगा.
+    // Keep standings optional so the page remains stable across API plans.
     const standings =
       "getSeriesStandings" in service &&
       typeof service.getSeriesStandings === "function"
@@ -42,17 +43,19 @@ export async function GET(
 
     return NextResponse.json(
       {
-        data: [],
+        data: demoPointsTable,
         meta: {
           seriesId,
-          configured: true,
+          configured: false,
+          total: demoPointsTable.length,
           error:
             error instanceof Error
               ? error.message
               : "Failed to fetch series standings",
+          message: "Live API failed, so CricYug is showing demo standings.",
         },
       },
-      { status: 500 }
+      { status: 200 }
     )
   }
 }

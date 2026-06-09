@@ -1,4 +1,4 @@
-import type { Match } from "@/lib/types"
+import type { Match, Player, PointsTableEntry, SearchResult, Series, Team } from "@/lib/types"
 
 const CRICKET_API_BASE = "https://api.cricapi.com/v1"
 
@@ -50,6 +50,91 @@ class CricketDataService {
   async getCurrentMatches(): Promise<Match[]> {
     const result = await this.request("/currentMatches", { offset: "0" })
     return this.transformMatches(result?.data || [])
+  }
+
+  async getMatchInfo(matchId: string): Promise<Match | null> {
+    const result = await this.request("/match_info", { id: matchId })
+    const matches = this.transformMatches(result?.data ? [result.data] : [])
+    return matches[0] || null
+  }
+
+  async searchPlayers(query: string): Promise<Player[]> {
+    const result = await this.request("/players", { search: query, offset: "0" })
+    const players = Array.isArray(result?.data) ? result.data : []
+
+    return players.map<Player>((item: any) => ({
+      id: String(item.id || item.playerId || item.name || ""),
+      name: String(item.name || "Unknown Player"),
+      shortName: String(item.name || "Player"),
+      country: String(item.country || ""),
+      countryCode: String(item.country || "").slice(0, 2).toUpperCase(),
+      role: "Batsman",
+      image: item.playerImg,
+    }))
+  }
+
+  async getCountries(): Promise<Team[]> {
+    const result = await this.request("/countries", { offset: "0" })
+    const countries = Array.isArray(result?.data) ? result.data : []
+
+    return countries.map<Team>((item: any, index: number) => ({
+      id: String(item.id || item.name || index),
+      name: String(item.name || "Cricket Team"),
+      shortName: String(item.genericFlag || item.name || "TBA").slice(0, 3).toUpperCase(),
+      logo: item.genericFlag,
+      flag: item.genericFlag,
+      ranking: index + 1,
+    }))
+  }
+
+  async getSeriesList(type?: string): Promise<Series[]> {
+    const result = await this.request("/series", type ? { type, offset: "0" } : { offset: "0" })
+    const series = Array.isArray(result?.data) ? result.data : []
+
+    return series.map<Series>((item: any) => ({
+      id: String(item.id || item.series_id || item.name || ""),
+      name: String(item.name || "Cricket Series"),
+      shortName: String(item.name || "Series"),
+      type: "tournament",
+      format: "T20",
+      status: "ongoing",
+      startDate: String(item.startDate || item.date || ""),
+      endDate: String(item.endDate || item.date || ""),
+      totalMatches: Number(item.matches || 0),
+      teams: [],
+    }))
+  }
+
+  async getSeriesStandings(_seriesId: string): Promise<PointsTableEntry[]> {
+    return []
+  }
+
+  async search(query: string): Promise<SearchResult[]> {
+    const [matches, players] = await Promise.all([
+      this.getCurrentMatches(),
+      this.searchPlayers(query).catch(() => []),
+    ])
+
+    const q = query.toLowerCase()
+
+    return [
+      ...matches
+        .filter((match) => `${match.team1.team.name} ${match.team2.team.name} ${match.series.name}`.toLowerCase().includes(q))
+        .map<SearchResult>((match) => ({
+          type: "match",
+          id: match.id,
+          title: `${match.team1.team.shortName} vs ${match.team2.team.shortName}`,
+          subtitle: match.series.name,
+          url: `/matches/${match.id}`,
+        })),
+      ...players.map<SearchResult>((player) => ({
+        type: "player",
+        id: player.id,
+        title: player.name,
+        subtitle: player.country || player.role,
+        url: `/players`,
+      })),
+    ]
   }
 
   private transformMatches(data: unknown[]): Match[] {

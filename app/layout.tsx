@@ -1,16 +1,10 @@
 import type { Metadata, Viewport } from 'next'
-import { Inter } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
 
-const inter = Inter({ 
-  subsets: ["latin"],
-  variable: '--font-inter'
-})
-
 export const metadata: Metadata = {
-  title: 'CricYug - AI-Powered Cricket Platform',
-  description: 'Experience cricket like never before with AI-powered insights, live scores, predictions, and comprehensive coverage of matches worldwide.',
+  title: 'CricYug - Live Cricket Scores, News and Match Center',
+  description: 'Follow live cricket scores, fixtures, team rankings, player form, news and match insights on CricYug.',
   keywords: ['cricket', 'live scores', 'AI predictions', 'cricket news', 'IPL', 'T20', 'ODI', 'Test cricket'],
   generator: 'CricYug',
   icons: {
@@ -33,7 +27,7 @@ export const metadata: Metadata = {
 }
 
 export const viewport: Viewport = {
-  themeColor: '#0a0a0f',
+  themeColor: '#071426',
   width: 'device-width',
   initialScale: 1,
   maximumScale: 5,
@@ -46,7 +40,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="bg-background">
-      <body className={`${inter.variable} font-sans antialiased`}>
+      <body className="font-sans antialiased">
         {children}
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>

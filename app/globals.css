@@ -4,15 +4,15 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* CricYug Premium Midnight Blue Theme */
+  /* CricYug premium cricket theme */
   --background: #071426;
   --foreground: #F8FAFC;
   --card: #0F1E33;
   --card-foreground: #F8FAFC;
   --popover: #0F1E33;
   --popover-foreground: #F8FAFC;
-  --primary: #2563EB;
-  --primary-foreground: #FFFFFF;
+  --primary: #10B981;
+  --primary-foreground: #04120D;
   --secondary: #0F2847;
   --secondary-foreground: #F8FAFC;
   --muted: #0F2847;
@@ -23,8 +23,8 @@
   --destructive-foreground: #FFFFFF;
   --border: rgba(255, 255, 255, 0.08);
   --input: #0F1E33;
-  --ring: #2563EB;
-  --chart-1: #2563EB;
+  --ring: #10B981;
+  --chart-1: #10B981;
   --chart-2: #06B6D4;
   --chart-3: #10B981;
   --chart-4: #8B5CF6;
@@ -32,18 +32,18 @@
   --radius: 0.75rem;
   --success: #10B981;
   --success-foreground: #FFFFFF;
-  --warning: #3B82F6;
+  --warning: #F59E0B;
   --warning-foreground: #FFFFFF;
   --live: #EF4444;
   --live-foreground: #FFFFFF;
   --sidebar: #091B30;
   --sidebar-foreground: #F8FAFC;
-  --sidebar-primary: #2563EB;
-  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-primary: #10B981;
+  --sidebar-primary-foreground: #04120D;
   --sidebar-accent: #06B6D4;
   --sidebar-accent-foreground: #FFFFFF;
   --sidebar-border: rgba(255, 255, 255, 0.08);
-  --sidebar-ring: #2563EB;
+  --sidebar-ring: #10B981;
 }
 
 @theme inline {
@@ -118,7 +118,7 @@
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #06B6D4;
+  background: #10B981;
 }
 
 /* Live pulse animation */
@@ -135,9 +135,9 @@
   animation: live-pulse 1.5s ease-in-out infinite;
 }
 
-/* Gradient text utility - now blue themed */
+/* Gradient text utility */
 .text-gradient-brand {
-  background: linear-gradient(135deg, #2563EB, #06B6D4);
+  background: linear-gradient(135deg, #10B981, #06B6D4);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;

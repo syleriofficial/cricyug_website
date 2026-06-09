@@ -1,31 +1,41 @@
 import { NextResponse } from "next/server"
 import { getCricketDataService } from "@/lib/api/cricket-data"
+import { demoMatches } from "@/lib/demo-data"
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
   const status = searchParams.get("status")
+  const format = searchParams.get("format")
   const limit = Number(searchParams.get("limit") || "20")
 
   try {
     const service = getCricketDataService()
 
     if (!service) {
+      const filtered = demoMatches.filter((match) => {
+        const statusMatches = status ? match.status === status : true
+        const formatMatches = format ? match.format.toLowerCase() === format.toLowerCase() : true
+        return statusMatches && formatMatches
+      })
+
       return NextResponse.json({
-        data: [],
+        data: filtered.slice(0, limit),
         meta: {
-          total: 0,
+          total: filtered.length,
           limit,
           configured: false,
-          error: "CRICKET_API_KEY missing",
+          message: "Showing demo cricket data. Add CRICKET_API_KEY for live scores.",
         },
       })
     }
 
     const matches = await service.getCurrentMatches()
 
-    const filtered = status
-      ? matches.filter((m) => m.status === status)
-      : matches
+    const filtered = matches.filter((match) => {
+      const statusMatches = status ? match.status === status : true
+      const formatMatches = format ? match.format.toLowerCase() === format.toLowerCase() : true
+      return statusMatches && formatMatches
+    })
 
     return NextResponse.json({
       data: filtered.slice(0, limit),
@@ -40,15 +50,16 @@ export async function GET(request: Request) {
 
     return NextResponse.json(
       {
-        data: [],
+        data: demoMatches.slice(0, limit),
         meta: {
-          total: 0,
+          total: Math.min(demoMatches.length, limit),
           limit,
-          configured: true,
+          configured: false,
           error: error instanceof Error ? error.message : "Unknown API error",
+          message: "Live API failed, so CricYug is showing demo match data.",
         },
       },
-      { status: 500 }
+      { status: 200 }
     )
   }
 }

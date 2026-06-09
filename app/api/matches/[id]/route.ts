@@ -3,6 +3,7 @@
 
 import { NextResponse } from "next/server"
 import { getCricketDataService } from "@/lib/api/cricket-data"
+import { demoMatches } from "@/lib/demo-data"
 
 export async function GET(
   request: Request,
@@ -14,11 +15,13 @@ export async function GET(
     const service = getCricketDataService()
     
     if (!service) {
+      const match = demoMatches.find((item) => item.id === id) || demoMatches[0] || null
+
       return NextResponse.json({
-        data: null,
+        data: match,
         meta: { 
           configured: false,
-          message: "Cricket API not configured. Add CRICKET_API_KEY to environment variables."
+          message: "Showing demo match details. Add CRICKET_API_KEY for live data."
         }
       })
     }
@@ -43,11 +46,12 @@ export async function GET(
     console.error("[CricYug] Match Details API Error:", error)
     
     return NextResponse.json({
-      data: null,
+      data: demoMatches.find((item) => item.id === id) || demoMatches[0] || null,
       meta: { 
-        configured: true,
-        error: error instanceof Error ? error.message : "Failed to fetch match details"
+        configured: false,
+        error: error instanceof Error ? error.message : "Failed to fetch match details",
+        message: "Live API failed, so CricYug is showing demo match data."
       }
-    }, { status: 500 })
+    }, { status: 200 })
   }
 }

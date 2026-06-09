@@ -3,6 +3,7 @@
 
 import { NextResponse } from "next/server"
 import { getCricketDataService } from "@/lib/api/cricket-data"
+import { demoPlayers } from "@/lib/demo-data"
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
@@ -13,13 +14,17 @@ export async function GET(request: Request) {
     const service = getCricketDataService()
     
     if (!service) {
+      const filtered = search
+        ? demoPlayers.filter((player) => `${player.name} ${player.country} ${player.role}`.toLowerCase().includes(search.toLowerCase()))
+        : demoPlayers
+
       return NextResponse.json({
-        data: [],
+        data: filtered.slice(0, limit),
         meta: { 
-          total: 0, 
+          total: filtered.length,
           limit,
           configured: false,
-          message: "Cricket API not configured. Add CRICKET_API_KEY to environment variables."
+          message: "Showing demo player rankings. Add CRICKET_API_KEY for live data."
         }
       })
     }
@@ -27,12 +32,12 @@ export async function GET(request: Request) {
     // Search requires a query
     if (!search || search.length < 2) {
       return NextResponse.json({
-        data: [],
+        data: demoPlayers.slice(0, limit),
         meta: { 
-          total: 0, 
+          total: demoPlayers.length,
           limit,
           configured: true,
-          message: "Search query required (minimum 2 characters)"
+          message: "Showing featured players. Search query required for live player lookup."
         }
       })
     }
@@ -51,13 +56,13 @@ export async function GET(request: Request) {
     console.error("[CricYug] Players API Error:", error)
     
     return NextResponse.json({
-      data: [],
+      data: demoPlayers.slice(0, limit),
       meta: { 
-        total: 0, 
+        total: demoPlayers.length,
         limit,
-        configured: true,
+        configured: false,
         error: error instanceof Error ? error.message : "Failed to fetch players"
       }
-    }, { status: 500 })
+    }, { status: 200 })
   }
 }

@@ -19,6 +19,7 @@ import {
   X,
   Bookmark,
   Bell,
+  CircleDot,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -47,10 +48,14 @@ export function Header() {
           <div className="flex h-16 items-center justify-between">
             {/* Logo */}
             <Link href="/" className="flex items-center gap-2">
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary">
-                <span className="text-lg font-bold text-primary-foreground">C</span>
+              <div className="relative flex h-10 w-10 items-center justify-center rounded-xl border border-emerald-300/25 bg-emerald-400 text-emerald-950 shadow-lg shadow-emerald-950/30">
+                <CircleDot className="h-5 w-5" />
+                <span className="absolute -right-1 -top-1 h-3 w-3 rounded-full border-2 border-background bg-live" />
               </div>
-              <span className="text-xl font-bold text-gradient-brand">CricYug</span>
+              <div className="leading-none">
+                <span className="block text-xl font-black tracking-tight text-gradient-brand">CricYug</span>
+                <span className="hidden text-[10px] font-medium uppercase text-muted-foreground sm:block">Cricket hub</span>
+              </div>
             </Link>
 
             {/* Desktop Navigation */}
