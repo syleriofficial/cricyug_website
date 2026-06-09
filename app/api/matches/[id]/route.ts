@@ -3,7 +3,6 @@
 
 import { NextResponse } from "next/server"
 import { getCricketDataService } from "@/lib/api/cricket-data"
-import { demoMatches } from "@/lib/demo-data"
 
 export async function GET(
   request: Request,
@@ -15,15 +14,13 @@ export async function GET(
     const service = getCricketDataService()
     
     if (!service) {
-      const match = demoMatches.find((item) => item.id === id) || demoMatches[0] || null
-
       return NextResponse.json({
-        data: match,
+        data: null,
         meta: { 
           configured: false,
-          message: "Showing demo match details. Add CRICKET_API_KEY for live data."
+          message: "CRICKETDATA_API_KEY is required for live match details."
         }
-      })
+      }, { status: 503 })
     }
 
     const match = await service.getMatchInfo(id)
@@ -46,12 +43,11 @@ export async function GET(
     console.error("[CricYug] Match Details API Error:", error)
     
     return NextResponse.json({
-      data: demoMatches.find((item) => item.id === id) || demoMatches[0] || null,
+      data: null,
       meta: { 
-        configured: false,
+        configured: true,
         error: error instanceof Error ? error.message : "Failed to fetch match details",
-        message: "Live API failed, so CricYug is showing demo match data."
       }
-    }, { status: 200 })
+    }, { status: 502 })
   }
 }

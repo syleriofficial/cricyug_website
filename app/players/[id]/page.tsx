@@ -2,7 +2,7 @@ import Link from "next/link"
 import { Header, MobileNav } from "@/components/layout/navigation"
 import { Footer } from "@/components/layout/footer"
 import { Button } from "@/components/ui/button"
-import { demoPlayers } from "@/lib/demo-data"
+import { getCricketDataService } from "@/lib/api/cricket-data"
 
 export const metadata = {
   title: "Player Profile | CricYug",
@@ -11,7 +11,9 @@ export const metadata = {
 
 export default async function PlayerDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
-  const player = demoPlayers.find((item) => item.id === id) || demoPlayers[0]
+  const service = getCricketDataService()
+  const players = service ? await service.searchPlayers(id).catch(() => []) : []
+  const player = players.find((item) => item.id === id) || players[0] || null
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -20,21 +22,32 @@ export default async function PlayerDetailPage({ params }: { params: Promise<{ i
         <section className="mx-auto max-w-4xl px-4 py-10 lg:py-16">
           <Link href="/players" className="text-sm text-primary hover:underline">Back to Players</Link>
           <div className="mt-6 rounded-2xl border border-border bg-card p-6">
-            <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
-              <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-primary/10 text-2xl font-black text-primary">
-                {player.shortName.slice(0, 2)}
-              </div>
+            {player ? (
+              <>
+                <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
+                  <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-primary/10 text-2xl font-black text-primary">
+                    {player.shortName.slice(0, 2)}
+                  </div>
+                  <div>
+                    <h1 className="text-4xl font-bold">{player.name}</h1>
+                    <p className="mt-2 text-muted-foreground">{player.country || "Country unavailable"} • {player.role}</p>
+                  </div>
+                </div>
+                <div className="mt-8 grid gap-4 sm:grid-cols-2">
+                  <Info label="Batting" value={player.battingStyle || "Not available from provider"} />
+                  <Info label="Bowling" value={player.bowlingStyle || "Not available from provider"} />
+                  <Info label="Country Code" value={player.countryCode || "N/A"} />
+                  <Info label="Data Status" value="CricketData.org" />
+                </div>
+              </>
+            ) : (
               <div>
-                <h1 className="text-4xl font-bold">{player.name}</h1>
-                <p className="mt-2 text-muted-foreground">{player.country} • {player.role}</p>
+                <h1 className="text-3xl font-bold">Player profile unavailable</h1>
+                <p className="mt-3 text-muted-foreground">
+                  CricketData.org did not return a player profile for this id. Search live players from the players page.
+                </p>
               </div>
-            </div>
-            <div className="mt-8 grid gap-4 sm:grid-cols-2">
-              <Info label="Batting" value={player.battingStyle || "Profile update pending"} />
-              <Info label="Bowling" value={player.bowlingStyle || "Profile update pending"} />
-              <Info label="Country Code" value={player.countryCode} />
-              <Info label="Data Status" value="Manual profile" />
-            </div>
+            )}
           </div>
           <Button asChild className="mt-8">
             <Link href="/players">All players</Link>

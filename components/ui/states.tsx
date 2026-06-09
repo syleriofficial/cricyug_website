@@ -268,11 +268,11 @@ export function NoNews({ className }: { className?: string }) {
   )
 }
 
-export function NoPlayers({ className }: { className?: string }) {
+export function NoPlayers({ className, message }: { className?: string; message?: string }) {
   return (
     <EmptyState
       title="No Players"
-      message="No players found matching your criteria."
+      message={message || "No players found matching your criteria."}
       className={className}
     />
   )

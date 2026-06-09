@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server"
 import { getCricketDataService } from "@/lib/api/cricket-data"
-import { demoPointsTable } from "@/lib/demo-data"
 
 export async function GET(
   request: Request,
@@ -13,32 +12,25 @@ export async function GET(
 
     if (!service) {
       return NextResponse.json({
-        data: demoPointsTable,
+        data: [],
         meta: {
           seriesId,
           configured: false,
-          total: demoPointsTable.length,
-          message: "Showing demo standings. Add CRICKET_API_KEY for live points tables.",
+          total: 0,
+          message: "CRICKETDATA_API_KEY is required for points tables.",
         },
-      })
+      }, { status: 503 })
     }
 
-    // Keep standings optional so the page remains stable across API plans.
-    const standings =
-      "getSeriesStandings" in service &&
-      typeof service.getSeriesStandings === "function"
-        ? await service.getSeriesStandings(seriesId)
-        : []
+    const standings = await service.getSeriesStandings(seriesId)
 
     return NextResponse.json({
-      data: Array.isArray(standings) && standings.length > 0 ? standings : demoPointsTable,
+      data: standings,
       meta: {
         seriesId,
-        configured: Array.isArray(standings) && standings.length > 0,
-        total: Array.isArray(standings) && standings.length > 0 ? standings.length : demoPointsTable.length,
-        message: Array.isArray(standings) && standings.length > 0
-          ? undefined
-          : "Showing CricYug sample standings until official table data is available.",
+        configured: true,
+        total: standings.length,
+        message: standings.length > 0 ? undefined : "Official points table is not available for this series yet.",
       },
     })
   } catch (error) {
@@ -46,19 +38,18 @@ export async function GET(
 
     return NextResponse.json(
       {
-        data: demoPointsTable,
+        data: [],
         meta: {
           seriesId,
-          configured: false,
-          total: demoPointsTable.length,
+          configured: true,
+          total: 0,
           error:
             error instanceof Error
               ? error.message
               : "Failed to fetch series standings",
-          message: "Live API failed, so CricYug is showing demo standings.",
         },
       },
-      { status: 200 }
+      { status: 502 }
     )
   }
 }

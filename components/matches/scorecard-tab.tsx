@@ -4,18 +4,14 @@ import { cn } from "@/lib/utils"
 import { useMatch } from "@/hooks/use-cricket-data"
 import { LoadingState, ErrorState, EmptyState } from "@/components/ui/states"
 import { FileText } from "lucide-react"
-import type { Innings } from "@/lib/types"
 
 interface ScorecardTabProps {
   matchId: string
 }
 
 export function ScorecardTab({ matchId }: ScorecardTabProps) {
-  // Using useMatch to get match details which would include scorecard in a real API
   const { data: match, error, isLoading, mutate, isConfigured } = useMatch(matchId)
-
-  // In a production app, this would come from the match details or a separate scorecard endpoint
-  const scorecard: Innings[] = []
+  const scorecard = match?.scorecard || []
 
   if (isLoading) {
     return <LoadingState message="Loading scorecard..." />
@@ -39,7 +35,7 @@ export function ScorecardTab({ matchId }: ScorecardTabProps) {
         message={
           !isConfigured 
             ? "Connect the Cricket API to view detailed scorecards."
-            : "Detailed scorecards are not available from the current data source for this match yet."
+            : "Official scorecard data is not available for this match yet."
         }
       />
     )

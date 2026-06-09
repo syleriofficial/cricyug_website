@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server"
 import { getCricketDataService } from "@/lib/api/cricket-data"
-import { demoMatches } from "@/lib/demo-data"
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
@@ -12,21 +11,15 @@ export async function GET(request: Request) {
     const service = getCricketDataService()
 
     if (!service) {
-      const filtered = demoMatches.filter((match) => {
-        const statusMatches = status ? match.status === status : true
-        const formatMatches = format ? match.format.toLowerCase() === format.toLowerCase() : true
-        return statusMatches && formatMatches
-      })
-
       return NextResponse.json({
-        data: filtered.slice(0, limit),
+        data: [],
         meta: {
-          total: filtered.length,
+          total: 0,
           limit,
           configured: false,
-          message: "Showing demo cricket data. Add CRICKET_API_KEY for live scores.",
+          message: "CRICKETDATA_API_KEY is required for live match data.",
         },
-      })
+      }, { status: 503 })
     }
 
     const matches = await service.getCurrentMatches()
@@ -48,18 +41,14 @@ export async function GET(request: Request) {
   } catch (error) {
     console.error("[CricYug] /api/matches error:", error)
 
-    return NextResponse.json(
-      {
-        data: demoMatches.slice(0, limit),
-        meta: {
-          total: Math.min(demoMatches.length, limit),
-          limit,
-          configured: false,
-          error: error instanceof Error ? error.message : "Unknown API error",
-          message: "Live API failed, so CricYug is showing demo match data.",
-        },
+    return NextResponse.json({
+      data: [],
+      meta: {
+        total: 0,
+        limit,
+        configured: true,
+        error: error instanceof Error ? error.message : "Unknown API error",
       },
-      { status: 200 }
-    )
+    }, { status: 502 })
   }
 }

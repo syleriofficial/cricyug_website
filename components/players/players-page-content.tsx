@@ -34,7 +34,7 @@ export function PlayersPageContent() {
             </div>
             <div>
               <h1 className="text-3xl font-bold">Players</h1>
-              <p className="text-muted-foreground">ICC rankings and player statistics</p>
+              <p className="text-muted-foreground">Search live CricketData.org player profiles</p>
             </div>
           </div>
 
@@ -107,7 +107,7 @@ export function PlayersPageContent() {
 
         {/* Empty State */}
         {!isLoading && !error && (!players || players.length === 0) && (
-          searchQuery ? <NoResults query={searchQuery} /> : <NoPlayers />
+          searchQuery ? <NoResults query={searchQuery} /> : <NoPlayers message="Search by player name to load live CricketData.org profiles." />
         )}
 
         {/* Players grid */}

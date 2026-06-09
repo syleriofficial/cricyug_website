@@ -3,7 +3,7 @@
 
 import useSWR from "swr"
 import useSWRInfinite from "swr/infinite"
-import type { Match, Player, Team, Series, NewsArticle, SearchResult, PointsTableEntry } from "@/lib/types"
+import type { Match, MatchDetails, Player, Team, Series, NewsArticle, SearchResult, PointsTableEntry } from "@/lib/types"
 
 // ============= Fetcher =============
 
@@ -21,6 +21,10 @@ interface ApiResponse<T> {
 async function fetcher<T>(url: string): Promise<{ data: T; isConfigured: boolean; error?: string }> {
   const response = await fetch(url)
   const json: ApiResponse<T> = await response.json()
+
+  if (!response.ok) {
+    throw new Error(json.meta?.error || json.meta?.message || `Request failed with ${response.status}`)
+  }
   
   return {
     data: json.data,
@@ -70,7 +74,7 @@ export function useMatch(
 ) {
   const { data, error, mutate, isLoading } = useSWR(
     matchId ? `/api/matches/${matchId}` : null,
-    (url) => fetcher<Match | null>(url),
+    (url) => fetcher<MatchDetails | null>(url),
     { refreshInterval: 15000 }
   )
 

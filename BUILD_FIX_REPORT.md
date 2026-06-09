@@ -138,9 +138,9 @@ Route (app)
 
 | Variable | Purpose |
 |----------|---------|
-| `CRICKET_API_KEY` | CricketData.org API key for live data |
+| `CRICKETDATA_API_KEY` | CricketData.org API key for live data |
 
-When `CRICKET_API_KEY` is not set:
+When `CRICKETDATA_API_KEY` is not set:
 - All API routes return `configured: false`
 - UI shows "API Not Configured" banners
 - Empty states display helpful setup instructions

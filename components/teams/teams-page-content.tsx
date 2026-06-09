@@ -18,7 +18,11 @@ function TeamCard({ team }: { team: Team }) {
       <div className="group relative overflow-hidden rounded-xl bg-card border border-border p-4 transition-all duration-300 hover:border-primary/50 hover:bg-card/80">
         <div className="flex items-center gap-4">
           <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-muted text-2xl font-bold text-primary">
-            {team.shortName}
+            {team.logo || team.flag ? (
+              <img src={team.logo || team.flag} alt={team.name} className="h-9 w-9 object-contain" />
+            ) : (
+              team.shortName
+            )}
           </div>
           <div className="flex-1 min-w-0">
             <h3 className="font-semibold text-foreground truncate">{team.name}</h3>
@@ -114,7 +118,7 @@ export function TeamsPageContent() {
               <div className="flex-1">
                 <p className="text-sm font-medium text-foreground">API Not Configured</p>
                 <p className="text-xs text-muted-foreground">
-                  Add CRICKET_API_KEY environment variable to display live team data.
+                  Add CRICKETDATA_API_KEY environment variable to display live team data.
                 </p>
               </div>
             </div>

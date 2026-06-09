@@ -5,18 +5,14 @@ import { cn } from "@/lib/utils"
 import { useMatch } from "@/hooks/use-cricket-data"
 import { LoadingState, ErrorState, EmptyState } from "@/components/ui/states"
 import { MessageSquare } from "lucide-react"
-import type { CommentaryItem } from "@/lib/types"
 
 interface CommentaryTabProps {
   matchId: string
 }
 
 export function CommentaryTab({ matchId }: CommentaryTabProps) {
-  // Using useMatch to get match details which would include commentary in a real API
   const { data: match, error, isLoading, mutate, isConfigured } = useMatch(matchId)
-
-  // In a production app, this would come from the match details or a separate commentary endpoint
-  const commentary: CommentaryItem[] = []
+  const commentary = match?.commentary || []
 
   if (isLoading) {
     return <LoadingState message="Loading commentary..." />
@@ -40,7 +36,7 @@ export function CommentaryTab({ matchId }: CommentaryTabProps) {
         message={
           !isConfigured 
             ? "Connect the Cricket API to view live ball-by-ball commentary."
-            : "Ball-by-ball commentary is not available from the current data source for this match yet."
+            : "Official ball-by-ball commentary is not available for this match yet."
         }
       />
     )

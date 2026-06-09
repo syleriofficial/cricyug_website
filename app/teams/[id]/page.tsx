@@ -2,7 +2,7 @@ import Link from "next/link"
 import { Header, MobileNav } from "@/components/layout/navigation"
 import { Footer } from "@/components/layout/footer"
 import { Button } from "@/components/ui/button"
-import { demoTeams } from "@/lib/demo-data"
+import { getCricketDataService } from "@/lib/api/cricket-data"
 
 export const metadata = {
   title: "Team Profile | CricYug",
@@ -11,7 +11,9 @@ export const metadata = {
 
 export default async function TeamDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
-  const team = demoTeams.find((item) => item.id === id) || demoTeams[0]
+  const service = getCricketDataService()
+  const teams = service ? await service.getCountries().catch(() => []) : []
+  const team = teams.find((item) => item.id === id || item.countryCode?.toLowerCase() === id.toLowerCase()) || null
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -20,20 +22,35 @@ export default async function TeamDetailPage({ params }: { params: Promise<{ id:
         <section className="mx-auto max-w-4xl px-4 py-10 lg:py-16">
           <Link href="/teams" className="text-sm text-primary hover:underline">Back to Teams</Link>
           <div className="mt-6 rounded-2xl border border-border bg-card p-6">
-            <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
-              <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-primary/10 text-2xl font-black text-primary">
-                {team.shortName}
-              </div>
+            {team ? (
+              <>
+                <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
+                  <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-primary/10 text-2xl font-black text-primary">
+                    {team.logo || team.flag ? (
+                      <img src={team.logo || team.flag} alt={team.name} className="h-12 w-12 object-contain" />
+                    ) : (
+                      team.shortName
+                    )}
+                  </div>
+                  <div>
+                    <h1 className="text-4xl font-bold">{team.name}</h1>
+                    <p className="mt-2 text-muted-foreground">CricketData.org team profile</p>
+                  </div>
+                </div>
+                <div className="mt-8 grid gap-4 sm:grid-cols-3">
+                  <Info label="Short Name" value={team.shortName} />
+                  <Info label="Ranking" value={team.ranking ? `#${team.ranking}` : "N/A"} />
+                  <Info label="Country Code" value={team.countryCode || team.id.toUpperCase()} />
+                </div>
+              </>
+            ) : (
               <div>
-                <h1 className="text-4xl font-bold">{team.name}</h1>
-                <p className="mt-2 text-muted-foreground">Curated CricYug team profile</p>
+                <h1 className="text-3xl font-bold">Team profile unavailable</h1>
+                <p className="mt-3 text-muted-foreground">
+                  CricketData.org did not return a team profile for this id.
+                </p>
               </div>
-            </div>
-            <div className="mt-8 grid gap-4 sm:grid-cols-3">
-              <Info label="Short Name" value={team.shortName} />
-              <Info label="Ranking" value={team.ranking ? `#${team.ranking}` : "Pending"} />
-              <Info label="Country Code" value={team.countryCode || team.id.toUpperCase()} />
-            </div>
+            )}
           </div>
           <Button asChild className="mt-8">
             <Link href="/teams">All teams</Link>

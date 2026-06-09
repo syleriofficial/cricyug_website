@@ -3,7 +3,6 @@
 
 import { NextResponse } from "next/server"
 import { getCricketDataService } from "@/lib/api/cricket-data"
-import { getDemoSearchResults } from "@/lib/demo-data"
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
@@ -21,16 +20,15 @@ export async function GET(request: Request) {
     const service = getCricketDataService()
     
     if (!service) {
-      const results = getDemoSearchResults(query)
       return NextResponse.json({
-        data: results.slice(0, limit),
+        data: [],
         meta: { 
-          total: results.length,
+          total: 0,
           limit,
           configured: false,
-          message: "Showing demo search results. Add CRICKET_API_KEY for live data."
+          message: "CRICKETDATA_API_KEY is required for live search."
         }
-      })
+      }, { status: 503 })
     }
 
     const results = await service.search(query)
@@ -45,16 +43,15 @@ export async function GET(request: Request) {
     })
   } catch (error) {
     console.error("[CricYug] Search API Error:", error)
-    const results = getDemoSearchResults(query)
 
     return NextResponse.json({
-      data: results.slice(0, limit),
+      data: [],
       meta: {
-        total: results.length,
+        total: 0,
         limit,
-        configured: false,
+        configured: true,
         error: error instanceof Error ? error.message : "Search failed"
       }
-    }, { status: 200 })
+    }, { status: 502 })
   }
 }

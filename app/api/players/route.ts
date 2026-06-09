@@ -3,7 +3,6 @@
 
 import { NextResponse } from "next/server"
 import { getCricketDataService } from "@/lib/api/cricket-data"
-import { demoPlayers } from "@/lib/demo-data"
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
@@ -14,30 +13,25 @@ export async function GET(request: Request) {
     const service = getCricketDataService()
     
     if (!service) {
-      const filtered = search
-        ? demoPlayers.filter((player) => `${player.name} ${player.country} ${player.role}`.toLowerCase().includes(search.toLowerCase()))
-        : demoPlayers
-
       return NextResponse.json({
-        data: filtered.slice(0, limit),
+        data: [],
         meta: { 
-          total: filtered.length,
+          total: 0,
           limit,
           configured: false,
-          message: "Showing demo player rankings. Add CRICKET_API_KEY for live data."
+          message: "CRICKETDATA_API_KEY is required for player search."
         }
-      })
+      }, { status: 503 })
     }
 
-    // Search requires a query
     if (!search || search.length < 2) {
       return NextResponse.json({
-        data: demoPlayers.slice(0, limit),
+        data: [],
         meta: { 
-          total: demoPlayers.length,
+          total: 0,
           limit,
           configured: true,
-          message: "Showing featured players. Search query required for live player lookup."
+          message: "Enter at least two characters to search live players."
         }
       })
     }
@@ -56,13 +50,13 @@ export async function GET(request: Request) {
     console.error("[CricYug] Players API Error:", error)
     
     return NextResponse.json({
-      data: demoPlayers.slice(0, limit),
+      data: [],
       meta: { 
-        total: demoPlayers.length,
+        total: 0,
         limit,
-        configured: false,
+        configured: true,
         error: error instanceof Error ? error.message : "Failed to fetch players"
       }
-    }, { status: 200 })
+    }, { status: 502 })
   }
 }

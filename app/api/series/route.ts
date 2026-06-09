@@ -3,7 +3,6 @@
 
 import { NextResponse } from "next/server"
 import { getCricketDataService } from "@/lib/api/cricket-data"
-import { demoSeries } from "@/lib/demo-data"
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
@@ -15,17 +14,15 @@ export async function GET(request: Request) {
     const service = getCricketDataService()
     
     if (!service) {
-      const filtered = status ? demoSeries.filter((series) => series.status === status) : demoSeries
-
       return NextResponse.json({
-        data: filtered.slice(0, limit),
+        data: [],
         meta: { 
-          total: filtered.length,
+          total: 0,
           limit,
           configured: false,
-          message: "Showing demo series. Add CRICKET_API_KEY for live data."
+          message: "CRICKETDATA_API_KEY is required for live series data."
         }
-      })
+      }, { status: 503 })
     }
 
     const series = await service.getSeriesList(type || undefined)
@@ -48,13 +45,13 @@ export async function GET(request: Request) {
     console.error("[CricYug] Series API Error:", error)
     
     return NextResponse.json({
-      data: demoSeries.slice(0, limit),
+      data: [],
       meta: { 
-        total: demoSeries.length,
+        total: 0,
         limit,
-        configured: false,
+        configured: true,
         error: error instanceof Error ? error.message : "Failed to fetch series"
       }
-    }, { status: 200 })
+    }, { status: 502 })
   }
 }

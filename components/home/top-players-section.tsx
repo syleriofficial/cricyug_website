@@ -24,7 +24,7 @@ export function TopPlayersSection() {
             <div className="flex-1">
               <p className="text-sm font-medium text-foreground">API Not Configured</p>
               <p className="text-xs text-muted-foreground">
-                Add CRICKET_API_KEY environment variable to display live player and team data.
+                Add CRICKETDATA_API_KEY environment variable to display live player and team data.
               </p>
             </div>
           </div>

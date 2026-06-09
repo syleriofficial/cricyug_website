@@ -1,21 +1,20 @@
 // CricYug API - News
-// Production-ready endpoint - requires separate news API integration
-// CricketData.org does not provide news data
+// CricketData.org does not provide news data. Keep this endpoint server-owned
+// and empty until CricYug editorial/CMS data is connected.
 
 import { NextResponse } from "next/server"
-import { demoNews } from "@/lib/demo-data"
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
   const limit = parseInt(searchParams.get("limit") || "10")
 
   return NextResponse.json({
-    data: demoNews.slice(0, limit),
+    data: [],
     meta: { 
-      total: demoNews.length,
+      total: 0,
       limit,
       configured: true,
-      message: "Showing manually curated CricYug editorial stories."
+      message: "News CMS is ready for manual CricYug stories. No articles have been published yet."
     }
   })
 }
