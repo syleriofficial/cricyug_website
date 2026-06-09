@@ -80,7 +80,7 @@ class CricketDataService {
     return countries.map<Team>((item: any, index: number) => ({
       id: String(item.id || item.name || index),
       name: String(item.name || "Cricket Team"),
-      shortName: String(item.genericFlag || item.name || "TBA").slice(0, 3).toUpperCase(),
+      shortName: String(item.name || "TBA").slice(0, 3).toUpperCase(),
       logo: item.genericFlag,
       flag: item.genericFlag,
       ranking: index + 1,
@@ -91,18 +91,32 @@ class CricketDataService {
     const result = await this.request("/series", type ? { type, offset: "0" } : { offset: "0" })
     const series = Array.isArray(result?.data) ? result.data : []
 
-    return series.map<Series>((item: any) => ({
-      id: String(item.id || item.series_id || item.name || ""),
-      name: String(item.name || "Cricket Series"),
-      shortName: String(item.name || "Series"),
-      type: "tournament",
-      format: "T20",
-      status: "ongoing",
-      startDate: String(item.startDate || item.date || ""),
-      endDate: String(item.endDate || item.date || ""),
-      totalMatches: Number(item.matches || 0),
-      teams: [],
-    }))
+    return series.map<Series>((item: any) => {
+      const startDate = String(item.startDate || item.date || "")
+      const endDate = String(item.endDate || item.date || "")
+      const now = Date.now()
+      const start = startDate ? Date.parse(startDate) : Number.NaN
+      const end = endDate ? Date.parse(endDate) : Number.NaN
+      const status: Series["status"] =
+        Number.isFinite(start) && start > now
+          ? "upcoming"
+          : Number.isFinite(end) && end < now
+            ? "completed"
+            : "ongoing"
+
+      return {
+        id: String(item.id || item.series_id || item.name || ""),
+        name: String(item.name || "Cricket Series"),
+        shortName: String(item.name || "Series"),
+        type: "tournament",
+        format: "T20",
+        status,
+        startDate,
+        endDate,
+        totalMatches: Number(item.matches || 0),
+        teams: [],
+      }
+    })
   }
 
   async getSeriesStandings(_seriesId: string): Promise<PointsTableEntry[]> {

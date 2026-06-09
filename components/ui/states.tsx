@@ -237,11 +237,11 @@ export function EmptyState({ icon, title, message, action, className }: EmptySta
   )
 }
 
-export function NoMatches({ className }: { className?: string }) {
+export function NoMatches({ className, message }: { className?: string; message?: string }) {
   return (
     <EmptyState
       title="No Matches"
-      message="There are no matches scheduled at the moment. Check back later for updates."
+      message={message || "There are no matches scheduled at the moment. Check back later for updates."}
       className={className}
     />
   )

@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { motion } from "framer-motion"
-import { Newspaper, Search, AlertCircle } from "lucide-react"
+import { Newspaper, Search } from "lucide-react"
 import { NewsCard } from "@/components/cricket/news-card"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
@@ -16,7 +16,7 @@ export function NewsPageContent() {
   const [selectedCategory, setSelectedCategory] = useState<string | undefined>(undefined)
   const [searchQuery, setSearchQuery] = useState("")
 
-  const { data: news, error, isLoading, mutate, isConfigured } = useNews({
+  const { data: news, error, isLoading, mutate } = useNews({
     category: selectedCategory,
   })
 
@@ -24,7 +24,7 @@ export function NewsPageContent() {
   const filteredNews = news?.filter(article => {
     if (!searchQuery) return true
     const query = searchQuery.toLowerCase()
-    return article.title.toLowerCase().includes(query) || 
+    return article.title.toLowerCase().includes(query) ||
            article.excerpt.toLowerCase().includes(query)
   })
 
@@ -39,22 +39,9 @@ export function NewsPageContent() {
             </div>
             <div>
               <h1 className="text-3xl font-bold">Cricket News</h1>
-              <p className="text-muted-foreground">Latest updates from the cricket world</p>
+              <p className="text-muted-foreground">Manual CricYug editorial updates and analysis</p>
             </div>
           </div>
-
-          {/* API Status Banner */}
-          {!isConfigured && (
-            <div className="mb-6 flex items-center gap-3 rounded-lg bg-primary/10 border border-primary/20 px-4 py-3">
-              <AlertCircle className="h-5 w-5 text-primary shrink-0" />
-              <div className="flex-1">
-                <p className="text-sm font-medium text-foreground">News API Not Configured</p>
-                <p className="text-xs text-muted-foreground">
-                  Integrate a news source to display cricket news articles.
-                </p>
-              </div>
-            </div>
-          )}
 
           {/* Search and filters */}
           <div className="flex flex-col sm:flex-row gap-4 mt-6">
@@ -122,7 +109,9 @@ export function NewsPageContent() {
             {!isLoading && !error && filteredNews && filteredNews.length > 0 && (
               <>
                 {/* Featured article */}
-                <NewsCard article={filteredNews[0]} variant="featured" />
+                <Link href={`/news/${filteredNews[0].id}`}>
+                  <NewsCard article={filteredNews[0]} variant="featured" />
+                </Link>
 
                 {/* Regular articles */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -133,7 +122,9 @@ export function NewsPageContent() {
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.3, delay: index * 0.05 }}
                     >
-                      <NewsCard article={article} />
+                      <Link href={`/news/${article.id}`}>
+                        <NewsCard article={article} />
+                      </Link>
                     </motion.div>
                   ))}
                 </div>
@@ -167,26 +158,20 @@ export function NewsPageContent() {
                 <h3 className="font-semibold mb-4">Editor&apos;s Picks</h3>
                 <div className="space-y-1">
                   {filteredNews.slice(0, 3).map((article) => (
-                    <NewsCard key={article.id} article={article} variant="compact" />
+                    <Link key={article.id} href={`/news/${article.id}`}>
+                      <NewsCard article={article} variant="compact" />
+                    </Link>
                   ))}
                 </div>
               </div>
             )}
 
-            {/* Get API Key CTA */}
-            {!isConfigured && (
-              <div className="rounded-xl bg-card border border-border p-4">
-                <h3 className="font-semibold mb-2">Connect News API</h3>
-                <p className="text-sm text-muted-foreground mb-4">
-                  Integrate a news source to display live cricket news.
-                </p>
-                <Button variant="outline" className="w-full" asChild>
-                  <Link href="https://newsapi.org" target="_blank" rel="noopener noreferrer">
-                    Learn More
-                  </Link>
-                </Button>
-              </div>
-            )}
+            <div className="rounded-xl bg-card border border-border p-4">
+              <h3 className="font-semibold mb-2">Manual News Desk</h3>
+              <p className="text-sm text-muted-foreground">
+                CricYug stories are curated manually by your editorial team.
+              </p>
+            </div>
           </div>
         </div>
       </div>

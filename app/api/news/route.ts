@@ -14,8 +14,8 @@ export async function GET(request: Request) {
     meta: { 
       total: demoNews.length,
       limit,
-      configured: false,
-      message: "Showing editorial demo stories. Integrate a news API or RSS feed for live news."
+      configured: true,
+      message: "Showing manually curated CricYug editorial stories."
     }
   })
 }

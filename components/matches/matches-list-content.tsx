@@ -10,8 +10,9 @@ import { useMatches, useSeries } from "@/hooks/use-cricket-data"
 import { LoadingMatchCard, ErrorState, EmptyState } from "@/components/ui/states"
 import type { Match } from "@/lib/types"
 
-export function MatchesListContent() {
+export function MatchesListContent({ initialFormat }: { initialFormat?: string }) {
   const [selectedSeriesId, setSelectedSeriesId] = useState<string | null>(null)
+  const formatParam = initialFormat
   
   const { data: matches, error, isLoading, mutate, isConfigured } = useMatches()
   const { data: series } = useSeries({ limit: 10 })
@@ -19,7 +20,10 @@ export function MatchesListContent() {
   // Filter matches by series if selected
   const filteredMatches = selectedSeriesId 
     ? matches?.filter(m => m.series?.id === selectedSeriesId)
-    : matches
+    : matches?.filter((match) => {
+        if (!formatParam || formatParam === "ipl") return true
+        return match.format.toLowerCase() === formatParam.toLowerCase()
+      })
 
   return (
     <div className="py-8">

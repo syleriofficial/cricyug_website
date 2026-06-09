@@ -40,7 +40,7 @@ export function CommentaryTab({ matchId }: CommentaryTabProps) {
         message={
           !isConfigured 
             ? "Connect the Cricket API to view live ball-by-ball commentary."
-            : "Live commentary will appear once the match begins."
+            : "Ball-by-ball commentary is not available from the current data source for this match yet."
         }
       />
     )

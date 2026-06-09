@@ -1,6 +1,4 @@
 import Link from "next/link"
-import { Twitter, Instagram, Youtube, Facebook } from "lucide-react"
-
 export function Footer() {
   return (
     <footer className="bg-card border-t border-border py-12 hidden lg:block">
@@ -17,12 +15,7 @@ export function Footer() {
             <p className="text-sm text-muted-foreground mb-4">
               AI-powered cricket platform with live scores, predictions, and comprehensive coverage.
             </p>
-            <div className="flex items-center gap-3">
-              <SocialLink href="#" icon={Twitter} label="Twitter" />
-              <SocialLink href="#" icon={Instagram} label="Instagram" />
-              <SocialLink href="#" icon={Youtube} label="YouTube" />
-              <SocialLink href="#" icon={Facebook} label="Facebook" />
-            </div>
+            <p className="text-xs text-muted-foreground">Social channels coming soon.</p>
           </div>
 
           {/* Quick Links */}
@@ -54,7 +47,7 @@ export function Footer() {
               <FooterLink href="/matches?format=test">Test Cricket</FooterLink>
               <FooterLink href="/matches?format=odi">ODI</FooterLink>
               <FooterLink href="/matches?format=t20">T20</FooterLink>
-              <FooterLink href="/matches?format=ipl">IPL 2026</FooterLink>
+              <FooterLink href="/series">Tournaments</FooterLink>
             </ul>
           </div>
 
@@ -94,17 +87,5 @@ function FooterLink({ href, children }: { href: string; children: React.ReactNod
         {children}
       </Link>
     </li>
-  )
-}
-
-function SocialLink({ href, icon: Icon, label }: { href: string; icon: React.ElementType; label: string }) {
-  return (
-    <Link
-      href={href}
-      className="flex h-9 w-9 items-center justify-center rounded-lg bg-muted hover:bg-muted/80 text-muted-foreground hover:text-foreground transition-colors"
-    >
-      <Icon className="h-4 w-4" />
-      <span className="sr-only">{label}</span>
-    </Link>
   )
 }

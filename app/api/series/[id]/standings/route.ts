@@ -31,11 +31,14 @@ export async function GET(
         : []
 
     return NextResponse.json({
-      data: standings,
+      data: Array.isArray(standings) && standings.length > 0 ? standings : demoPointsTable,
       meta: {
         seriesId,
-        configured: true,
-        total: Array.isArray(standings) ? standings.length : 0,
+        configured: Array.isArray(standings) && standings.length > 0,
+        total: Array.isArray(standings) && standings.length > 0 ? standings.length : demoPointsTable.length,
+        message: Array.isArray(standings) && standings.length > 0
+          ? undefined
+          : "Showing CricYug sample standings until official table data is available.",
       },
     })
   } catch (error) {

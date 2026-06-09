@@ -64,7 +64,10 @@ export function useRecentMatches(limit = 10) {
   return useMatches({ status: "completed", limit })
 }
 
-export function useMatch(matchId: string | null) {
+export function useMatch(
+  matchId: string | null,
+  _options?: { includeScorecard?: boolean; includeCommentary?: boolean }
+) {
   const { data, error, mutate, isLoading } = useSWR(
     matchId ? `/api/matches/${matchId}` : null,
     (url) => fetcher<Match | null>(url),

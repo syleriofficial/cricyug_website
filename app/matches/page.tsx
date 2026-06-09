@@ -7,12 +7,19 @@ export const metadata = {
   description: "Browse all cricket matches - live, upcoming, and completed.",
 }
 
-export default function MatchesPage() {
+export default async function MatchesPage({
+  searchParams,
+}: {
+  searchParams?: Promise<{ format?: string }>
+}) {
+  const params = await searchParams
+  const format = params?.format
+
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
       <main className="flex-1 pb-20 lg:pb-0">
-        <MatchesListContent />
+        <MatchesListContent initialFormat={format} />
       </main>
       <Footer />
       <MobileNav />

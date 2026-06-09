@@ -5,16 +5,19 @@ import Link from "next/link"
 import { ArrowRight, Radio } from "lucide-react"
 import { LiveScoreCard } from "@/components/cricket/live-score-card"
 import { Button } from "@/components/ui/button"
-import { useLiveMatches, useUpcomingMatches } from "@/hooks/use-cricket-data"
+import { useLiveMatches, useUpcomingMatches, useRecentMatches } from "@/hooks/use-cricket-data"
 import { LoadingMatchCard, ErrorState, NoMatches } from "@/components/ui/states"
 
 export function LiveMatchesSection() {
   const { data: liveMatches, error: liveError, isLoading: liveLoading } = useLiveMatches()
   const { data: upcomingMatches, error: upcomingError, isLoading: upcomingLoading } = useUpcomingMatches(4)
+  const { data: recentMatches, error: recentError, isLoading: recentLoading } = useRecentMatches(4)
 
-  const isLoading = liveLoading || upcomingLoading
-  const error = liveError || upcomingError
-  const allMatches = [...(liveMatches || []), ...(upcomingMatches || [])].slice(0, 4)
+  const isLoading = liveLoading || upcomingLoading || recentLoading
+  const error = liveError || upcomingError || recentError
+  const liveAndUpcoming = [...(liveMatches || []), ...(upcomingMatches || [])]
+  const allMatches = (liveAndUpcoming.length > 0 ? liveAndUpcoming : (recentMatches || [])).slice(0, 4)
+  const isShowingResults = liveAndUpcoming.length === 0 && allMatches.length > 0
 
   return (
     <section className="py-12 lg:py-16">
@@ -26,8 +29,10 @@ export function LiveMatchesSection() {
               <Radio className="h-5 w-5 text-live animate-live-pulse" />
             </div>
             <div>
-              <h2 className="text-2xl font-bold">Live & Upcoming</h2>
-              <p className="text-sm text-muted-foreground">Real-time match coverage</p>
+              <h2 className="text-2xl font-bold">{isShowingResults ? "Recent Results" : "Live & Upcoming"}</h2>
+              <p className="text-sm text-muted-foreground">
+                {isShowingResults ? "Latest completed matches" : "Real-time match coverage"}
+              </p>
             </div>
           </div>
           <Link href="/live">
@@ -57,7 +62,7 @@ export function LiveMatchesSection() {
 
         {/* Empty State */}
         {!isLoading && !error && allMatches.length === 0 && (
-          <NoMatches />
+          <NoMatches message="No live, upcoming, or recent matches are available right now." />
         )}
 
         {/* Match cards grid */}

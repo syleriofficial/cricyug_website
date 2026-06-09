@@ -39,7 +39,7 @@ export function ScorecardTab({ matchId }: ScorecardTabProps) {
         message={
           !isConfigured 
             ? "Connect the Cricket API to view detailed scorecards."
-            : "The scorecard will be available once the match begins."
+            : "Detailed scorecards are not available from the current data source for this match yet."
         }
       />
     )

@@ -4,8 +4,13 @@ import { motion } from "framer-motion"
 import { ArrowRight, BarChart3, Brain, Radio, Shield, Sparkles, Trophy, Users, Zap } from "lucide-react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
+import { useMatches } from "@/hooks/use-cricket-data"
+import type { Match } from "@/lib/types"
 
 export function HeroSection() {
+  const { data: matches } = useMatches({ limit: 8 })
+  const featuredMatch = matches.find((match) => match.status === "live") || matches[0]
+
   return (
     <section className="relative overflow-hidden border-b border-border/70 py-10 lg:py-16">
       <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_20%_20%,rgba(16,185,129,0.18),transparent_30%),radial-gradient(circle_at_78%_12%,rgba(6,182,212,0.14),transparent_28%),linear-gradient(180deg,rgba(7,20,38,0),rgba(7,20,38,0.86))]" />
@@ -65,40 +70,7 @@ export function HeroSection() {
             transition={{ duration: 0.55, delay: 0.1 }}
             className="relative"
           >
-            <div className="rounded-2xl border border-white/10 bg-card/88 p-5 shadow-2xl shadow-black/30 backdrop-blur">
-              <div className="mb-5 flex items-center justify-between">
-                <div>
-                  <p className="text-xs font-semibold uppercase text-emerald-300">Featured live</p>
-                  <h2 className="mt-1 text-xl font-bold">India vs Australia</h2>
-                </div>
-                <span className="flex items-center gap-1.5 rounded-full bg-live/15 px-3 py-1 text-xs font-bold text-live">
-                  <span className="h-2 w-2 rounded-full bg-live animate-live-pulse" />
-                  LIVE
-                </span>
-              </div>
-
-              <div className="space-y-4">
-                <ScoreRow team="IND" name="India" score="186/4" overs="17.2 ov" tone="text-emerald-300" />
-                <ScoreRow team="AUS" name="Australia" score="182/7" overs="20.0 ov" />
-              </div>
-
-              <div className="mt-5 rounded-xl border border-emerald-400/20 bg-emerald-400/10 p-4">
-                <div className="mb-2 flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">Win probability</span>
-                  <span className="font-semibold text-emerald-300">IND 68%</span>
-                </div>
-                <div className="h-2 overflow-hidden rounded-full bg-muted">
-                  <div className="h-full w-[68%] rounded-full bg-emerald-400" />
-                </div>
-                <p className="mt-3 text-sm text-muted-foreground">India need 7 runs from 16 balls</p>
-              </div>
-
-              <div className="mt-5 grid grid-cols-3 gap-3">
-                <MiniMetric icon={Zap} label="RRR" value="2.63" />
-                <MiniMetric icon={BarChart3} label="CRR" value="10.73" />
-                <MiniMetric icon={Shield} label="Wkts" value="6" />
-              </div>
-            </div>
+            <FeaturedMatchPanel match={featuredMatch} />
           </motion.div>
         </div>
 
@@ -115,6 +87,76 @@ export function HeroSection() {
         </motion.div>
       </div>
     </section>
+  )
+}
+
+function FeaturedMatchPanel({ match }: { match?: Match }) {
+  if (!match) {
+    return (
+      <div className="rounded-2xl border border-white/10 bg-card/88 p-5 shadow-2xl shadow-black/30 backdrop-blur">
+        <p className="text-xs font-semibold uppercase text-emerald-300">Match center</p>
+        <h2 className="mt-2 text-xl font-bold">Cricket coverage is warming up</h2>
+        <p className="mt-3 text-sm text-muted-foreground">
+          Latest matches, results and editorial updates will appear here as soon as data is available.
+        </p>
+        <Link href="/matches">
+          <Button className="mt-5 gap-2">
+            Browse matches
+            <ArrowRight className="h-4 w-4" />
+          </Button>
+        </Link>
+      </div>
+    )
+  }
+
+  const isLive = match.status === "live"
+  const label = isLive ? "Featured live" : match.status === "upcoming" ? "Upcoming match" : "Recent result"
+  const title = `${match.team1.team.shortName} vs ${match.team2.team.shortName}`
+  const totalWickets = (match.team1.wickets || 0) + (match.team2.wickets || 0)
+
+  return (
+    <div className="rounded-2xl border border-white/10 bg-card/88 p-5 shadow-2xl shadow-black/30 backdrop-blur">
+      <div className="mb-5 flex items-center justify-between gap-4">
+        <div>
+          <p className="text-xs font-semibold uppercase text-emerald-300">{label}</p>
+          <h2 className="mt-1 text-xl font-bold">{title}</h2>
+        </div>
+        <span className={`flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold ${isLive ? "bg-live/15 text-live" : "bg-primary/15 text-primary"}`}>
+          {isLive && <span className="h-2 w-2 rounded-full bg-live animate-live-pulse" />}
+          {match.status.toUpperCase()}
+        </span>
+      </div>
+
+      <div className="space-y-4">
+        <ScoreRow
+          team={match.team1.team.shortName}
+          name={match.team1.team.name}
+          score={match.team1.score || "Yet to bat"}
+          overs={match.team1.overs ? `${match.team1.overs} ov` : match.startTime || match.format}
+          tone="text-emerald-300"
+        />
+        <ScoreRow
+          team={match.team2.team.shortName}
+          name={match.team2.team.name}
+          score={match.team2.score || "Yet to bat"}
+          overs={match.team2.overs ? `${match.team2.overs} ov` : match.venue?.name || match.format}
+        />
+      </div>
+
+      <div className="mt-5 rounded-xl border border-emerald-400/20 bg-emerald-400/10 p-4">
+        <div className="mb-2 flex items-center justify-between text-sm">
+          <span className="text-muted-foreground">{match.series.name}</span>
+          <span className="font-semibold text-emerald-300">{match.format}</span>
+        </div>
+        <p className="text-sm text-muted-foreground">{match.result || match.startTime || "Match details available in Match Center"}</p>
+      </div>
+
+      <div className="mt-5 grid grid-cols-3 gap-3">
+        <MiniMetric icon={Zap} label="Status" value={isLive ? "Live" : match.status === "upcoming" ? "Soon" : "Done"} />
+        <MiniMetric icon={BarChart3} label="Format" value={match.format} />
+        <MiniMetric icon={Shield} label="Wkts" value={String(totalWickets || "-")} />
+      </div>
+    </div>
   )
 }
 
