@@ -4,7 +4,7 @@ import { Footer } from "@/components/layout/footer"
 
 export const metadata = {
   title: "Teams | CricYug",
-  description: "Explore international cricket teams, rankings, and statistics.",
+  description: "Explore international cricket teams and country profiles on CricYug.",
 }
 
 export default function TeamsPage() {

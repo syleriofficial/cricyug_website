@@ -10,7 +10,26 @@ import { cn } from "@/lib/utils"
 import Link from "next/link"
 import type { Team } from "@/lib/types"
 
-const formats = ["All Formats", "Test", "ODI", "T20"]
+const fullMembers = new Set([
+  "Afghanistan",
+  "Australia",
+  "Bangladesh",
+  "England",
+  "India",
+  "Ireland",
+  "New Zealand",
+  "Pakistan",
+  "South Africa",
+  "Sri Lanka",
+  "West Indies",
+  "Zimbabwe",
+])
+
+const groups = ["All", "Full Members", "Associates"]
+
+function isFullMember(team: Team) {
+  return fullMembers.has(team.name)
+}
 
 function TeamCard({ team }: { team: Team }) {
   return (
@@ -27,11 +46,9 @@ function TeamCard({ team }: { team: Team }) {
           <div className="flex-1 min-w-0">
             <h3 className="font-semibold text-foreground truncate">{team.name}</h3>
             <div className="flex items-center gap-2 mt-1">
-              {team.ranking && (
-                <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full">
-                  #{team.ranking}
-                </span>
-              )}
+              <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full">
+                {isFullMember(team) ? "Full Member" : "Associate"}
+              </span>
               <span className="text-xs text-muted-foreground">{team.shortName}</span>
             </div>
           </div>
@@ -65,10 +82,10 @@ function TeamsLoadingSkeleton() {
 }
 
 export function TeamsPageContent() {
-  const [selectedFormat, setSelectedFormat] = useState("All Formats")
+  const [selectedGroup, setSelectedGroup] = useState("All")
   const [searchQuery, setSearchQuery] = useState("")
   
-  const { data: teams, isLoading, error, mutate, isConfigured } = useTeams()
+  const { data: teams, isLoading, error, mutate, isConfigured } = useTeams({ limit: 120 })
 
   if (isLoading) {
     return <TeamsLoadingSkeleton />
@@ -89,10 +106,17 @@ export function TeamsPageContent() {
   }
 
   const filteredTeams = (teams || []).filter(team => {
+    const groupMatches =
+      selectedGroup === "All" ||
+      (selectedGroup === "Full Members" && isFullMember(team)) ||
+      (selectedGroup === "Associates" && !isFullMember(team))
+    if (!groupMatches) return false
     if (!searchQuery) return true
     return team.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-           team.shortName.toLowerCase().includes(searchQuery.toLowerCase())
+           team.shortName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+           team.countryCode?.toLowerCase().includes(searchQuery.toLowerCase())
   })
+  const fullMemberCount = (teams || []).filter(isFullMember).length
 
   const showEmptyState = !teams || teams.length === 0
 
@@ -107,7 +131,7 @@ export function TeamsPageContent() {
             </div>
             <div>
               <h1 className="text-3xl font-bold">Teams</h1>
-              <p className="text-muted-foreground">ICC cricket teams and rankings</p>
+              <p className="text-muted-foreground">International cricket teams and country profiles</p>
             </div>
           </div>
 
@@ -118,7 +142,7 @@ export function TeamsPageContent() {
               <div className="flex-1">
                 <p className="text-sm font-medium text-foreground">API Not Configured</p>
                 <p className="text-xs text-muted-foreground">
-                  Add CRICKETDATA_API_KEY environment variable to display live team data.
+                  Add CRICKETDATA_API_KEY environment variable to display team data.
                 </p>
               </div>
             </div>
@@ -138,18 +162,18 @@ export function TeamsPageContent() {
                 />
               </div>
               <div className="flex items-center gap-2 p-1 rounded-lg bg-muted">
-                {formats.map((format) => (
+                {groups.map((group) => (
                   <Button
-                    key={format}
+                    key={group}
                     variant="ghost"
                     size="sm"
-                    onClick={() => setSelectedFormat(format)}
+                    onClick={() => setSelectedGroup(group)}
                     className={cn(
                       "whitespace-nowrap",
-                      selectedFormat === format && "bg-background shadow-sm"
+                      selectedGroup === group && "bg-background shadow-sm"
                     )}
                   >
-                    {format}
+                    {group}
                   </Button>
                 ))}
               </div>
@@ -165,7 +189,7 @@ export function TeamsPageContent() {
             message={
               isConfigured 
                 ? "Team data is currently unavailable. Please check back later."
-                : "Connect the Cricket API to view team rankings and statistics."
+                : "Connect the Cricket API to view cricket team profiles."
             }
           />
         ) : (
@@ -178,7 +202,7 @@ export function TeamsPageContent() {
                 </div>
                 <div>
                   <p className="text-2xl font-bold">{teams?.length || 0}</p>
-                  <p className="text-sm text-muted-foreground">Teams Available</p>
+                  <p className="text-sm text-muted-foreground">Countries Available</p>
                 </div>
               </div>
               <div className="rounded-xl bg-card border border-border p-4 flex items-center gap-4">
@@ -186,15 +210,15 @@ export function TeamsPageContent() {
                   <Globe className="h-6 w-6 text-success" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold">Live</p>
-                  <p className="text-sm text-muted-foreground">Data Status</p>
+                  <p className="text-2xl font-bold">{fullMemberCount}</p>
+                  <p className="text-sm text-muted-foreground">Full Members</p>
                 </div>
               </div>
             </div>
 
             {/* Teams grid */}
             <div>
-              <h2 className="text-xl font-bold mb-4">All Teams</h2>
+              <h2 className="text-xl font-bold mb-4">{selectedGroup === "All" ? "Cricket Teams" : selectedGroup}</h2>
               {filteredTeams.length === 0 ? (
                 <div className="text-center py-12 text-muted-foreground">
                   <Shield className="h-12 w-12 mx-auto mb-4 opacity-50" />

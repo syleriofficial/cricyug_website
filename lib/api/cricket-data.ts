@@ -161,18 +161,51 @@ class CricketDataService {
   }
 
   async getCountries(): Promise<Team[]> {
-    const result = await this.request("/countries", { offset: "0" }, { revalidate: 86400 })
-    const countries: any[] = Array.isArray(result?.data) ? result.data : []
+    const offsets = ["0", "25", "50", "75", "100", "125"]
+    const results = await Promise.all(
+      offsets.map((offset) => this.request("/countries", { offset }, { revalidate: 86400 }).catch(() => ({ data: [] })))
+    )
+    const countries: any[] = results.flatMap((result) => (Array.isArray(result?.data) ? result.data : []))
+    const priority = [
+      "India",
+      "Australia",
+      "England",
+      "South Africa",
+      "New Zealand",
+      "Pakistan",
+      "Sri Lanka",
+      "Bangladesh",
+      "West Indies",
+      "Afghanistan",
+      "Ireland",
+      "Zimbabwe",
+      "Netherlands",
+      "Scotland",
+      "United States of America",
+      "Canada",
+      "Nepal",
+      "Namibia",
+      "United Arab Emirates",
+    ]
 
-    return countries.map<Team>((item: any, index: number) => ({
+    const providerTeams = countries.map<Team>((item: any, index: number) => ({
       id: String(item.id || item.name || index),
       name: String(item.name || "Cricket Team"),
-      shortName: String(item.name || "TBA").slice(0, 3).toUpperCase(),
+      shortName: this.teamShortName(String(item.name || "TBA")),
       logo: item.genericFlag,
       flag: item.genericFlag,
       countryCode: String(item.id || item.name || "").toUpperCase(),
-      ranking: index + 1,
     }))
+    const teams = this.dedupeTeams([...this.curatedCricketTeams(), ...providerTeams])
+
+    return teams.sort((a, b) => {
+      const aPriority = priority.indexOf(a.name)
+      const bPriority = priority.indexOf(b.name)
+      if (aPriority !== -1 || bPriority !== -1) {
+        return (aPriority === -1 ? 999 : aPriority) - (bPriority === -1 ? 999 : bPriority)
+      }
+      return a.name.localeCompare(b.name)
+    })
   }
 
   async getSeriesList(type?: string): Promise<Series[]> {
@@ -480,6 +513,63 @@ class CricketDataService {
       if (item.id) byId.set(item.id, item)
     })
     return Array.from(byId.values())
+  }
+
+  private dedupeTeams(teams: Team[]) {
+    const byId = new Map<string, Team>()
+    teams.forEach((team) => {
+      const key = team.id || team.countryCode || team.name
+      if (key) byId.set(key.toLowerCase(), team)
+    })
+    return Array.from(byId.values())
+  }
+
+  private teamShortName(name: string) {
+    const known: Record<string, string> = {
+      Afghanistan: "AFG",
+      Australia: "AUS",
+      Bangladesh: "BAN",
+      England: "ENG",
+      India: "IND",
+      Ireland: "IRE",
+      "New Zealand": "NZ",
+      Pakistan: "PAK",
+      "South Africa": "SA",
+      "Sri Lanka": "SL",
+      "West Indies": "WI",
+      Zimbabwe: "ZIM",
+      Netherlands: "NED",
+      Scotland: "SCO",
+      "United States of America": "USA",
+      "United Arab Emirates": "UAE",
+    }
+    return known[name] || this.shortName(name)
+  }
+
+  private curatedCricketTeams(): Team[] {
+    const teams = [
+      ["af", "Afghanistan", "AFG", "AF"],
+      ["au", "Australia", "AUS", "AU"],
+      ["bd", "Bangladesh", "BAN", "BD"],
+      ["eng", "England", "ENG", "ENG"],
+      ["in", "India", "IND", "IN"],
+      ["ie", "Ireland", "IRE", "IE"],
+      ["nz", "New Zealand", "NZ", "NZ"],
+      ["pk", "Pakistan", "PAK", "PK"],
+      ["za", "South Africa", "SA", "ZA"],
+      ["lk", "Sri Lanka", "SL", "LK"],
+      ["wi", "West Indies", "WI", "WI"],
+      ["zw", "Zimbabwe", "ZIM", "ZW"],
+    ]
+
+    return teams.map(([id, name, shortName, countryCode]) => ({
+      id,
+      name,
+      shortName,
+      countryCode,
+      logo: id === "wi" || id === "eng" ? undefined : `https://cdorg.b-cdn.net/flags/generic/${countryCode}.svg`,
+      flag: id === "wi" || id === "eng" ? undefined : `https://cdorg.b-cdn.net/flags/generic/${countryCode}.svg`,
+    }))
   }
 
   private mapFormat(value: string): MatchFormat {

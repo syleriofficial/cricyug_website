@@ -39,7 +39,7 @@ export function HeroSection() {
             </h1>
 
             <p className="mb-7 max-w-2xl text-lg leading-8 text-muted-foreground">
-              Follow live scores, upcoming fixtures, team rankings, player form and sharp match analysis without the clutter.
+              Follow live scores, upcoming fixtures, team profiles, player form and sharp match analysis without the clutter.
             </p>
 
             <div className="mb-8 flex flex-col gap-3 sm:flex-row">

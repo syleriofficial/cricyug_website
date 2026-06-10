@@ -39,7 +39,7 @@ export default async function TeamDetailPage({ params }: { params: Promise<{ id:
                 </div>
                 <div className="mt-8 grid gap-4 sm:grid-cols-3">
                   <Info label="Short Name" value={team.shortName} />
-                  <Info label="Ranking" value={team.ranking ? `#${team.ranking}` : "N/A"} />
+                  <Info label="Profile Type" value="Country Team" />
                   <Info label="Country Code" value={team.countryCode || team.id.toUpperCase()} />
                 </div>
               </>

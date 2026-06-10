@@ -13,7 +13,7 @@ const nextConfig = {
           { key: "X-Frame-Options", value: "SAMEORIGIN" },
           {
             key: "Content-Security-Policy",
-            value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://va.vercel-scripts.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://g.cricapi.com https://h.cricapi.com; connect-src 'self' https://vitals.vercel-insights.com; font-src 'self' data:; frame-ancestors 'self'; base-uri 'self'; form-action 'self'",
+            value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://va.vercel-scripts.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://g.cricapi.com https://h.cricapi.com https://cdorg.b-cdn.net; connect-src 'self' https://vitals.vercel-insights.com; font-src 'self' data:; frame-ancestors 'self'; base-uri 'self'; form-action 'self'",
           },
         ],
       },

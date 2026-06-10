@@ -9,7 +9,7 @@ export default function AboutPage() {
   return (
     <StaticPage
       title="About CricYug"
-      description="CricYug is a modern cricket hub for scores, fixtures, rankings, points tables and manually curated cricket stories."
+      description="CricYug is a modern cricket hub for scores, fixtures, team profiles, points tables and manually curated cricket stories."
       sections={[
         {
           title: "What We Cover",

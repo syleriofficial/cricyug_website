@@ -39,7 +39,7 @@ export function TopPlayersSection() {
               </div>
               <div>
                 <h2 className="text-2xl font-bold">Top Players</h2>
-                <p className="text-sm text-muted-foreground">ICC World Rankings</p>
+                <p className="text-sm text-muted-foreground">Player profiles from CricketData</p>
               </div>
             </div>
             <Link href="/players">
@@ -63,7 +63,7 @@ export function TopPlayersSection() {
           {playersError && !playersLoading && (
             <ErrorState 
               title="Unable to load players"
-              message="We couldn&apos;t fetch player rankings. Please try again."
+              message="We couldn&apos;t fetch player profiles. Please try again."
               onRetry={() => mutatePlayers()}
             />
           )}
@@ -73,7 +73,7 @@ export function TopPlayersSection() {
             <EmptyState 
               icon={<User className="h-7 w-7 text-muted-foreground" />}
               title="No Players Available"
-              message={isConfigured ? "Player rankings will appear here once available." : "Connect the Cricket API to view player rankings."}
+              message={isConfigured ? "Player profiles will appear here once available." : "Connect the Cricket API to view player profiles."}
             />
           )}
 
@@ -104,8 +104,8 @@ export function TopPlayersSection() {
                 <Shield className="h-5 w-5 text-secondary" />
               </div>
               <div>
-                <h2 className="text-2xl font-bold">Top Teams</h2>
-                <p className="text-sm text-muted-foreground">ICC Team Rankings</p>
+                <h2 className="text-2xl font-bold">Cricket Teams</h2>
+                <p className="text-sm text-muted-foreground">International team profiles</p>
               </div>
             </div>
             <Link href="/teams">
@@ -129,7 +129,7 @@ export function TopPlayersSection() {
           {teamsError && !teamsLoading && (
             <ErrorState 
               title="Unable to load teams"
-              message="We couldn&apos;t fetch team rankings. Please try again."
+              message="We couldn&apos;t fetch team profiles. Please try again."
               onRetry={() => mutateTeams()}
             />
           )}
@@ -139,7 +139,7 @@ export function TopPlayersSection() {
             <EmptyState 
               icon={<Shield className="h-7 w-7 text-muted-foreground" />}
               title="No Teams Available"
-              message={isConfigured ? "Team rankings will appear here once available." : "Connect the Cricket API to view team rankings."}
+              message={isConfigured ? "Team profiles will appear here once available." : "Connect the Cricket API to view team profiles."}
             />
           )}
 
@@ -154,7 +154,7 @@ export function TopPlayersSection() {
                   transition={{ duration: 0.4, delay: index * 0.1 }}
                 >
                   <Link href={`/teams/${team.id}`}>
-                    <TeamCard team={team} rank={index + 1} />
+                    <TeamCard team={team} />
                   </Link>
                 </motion.div>
               ))}
@@ -197,7 +197,7 @@ function PlayerCard({ player }: { player: Player }) {
   )
 }
 
-function TeamCard({ team, rank }: { team: Team; rank: number }) {
+function TeamCard({ team }: { team: Team }) {
   return (
     <motion.div
       whileHover={{ scale: 1.02 }}
@@ -205,7 +205,7 @@ function TeamCard({ team, rank }: { team: Team; rank: number }) {
     >
       <div className="flex items-center gap-4">
         <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-lg font-bold text-primary">
-          #{rank}
+          {team.shortName.slice(0, 2)}
         </div>
         <div className="flex-1 min-w-0">
           <h3 className="font-semibold truncate">{team.name}</h3>
