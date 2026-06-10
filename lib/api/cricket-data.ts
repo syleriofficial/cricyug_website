@@ -271,7 +271,7 @@ class CricketDataService {
       const team2 = teamInfo[1] || { name: teams[1] }
       const score1 = m.score?.[0]
       const score2 = m.score?.[1]
-      const format = this.mapFormat(String(m.matchType || "T20"))
+      const format = this.mapFormat(String(m.matchType || m.name || "T20"))
       const seriesName = this.seriesNameFromMatch(String(m.name || "Cricket Match"))
 
       return {

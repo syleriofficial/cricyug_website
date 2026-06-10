@@ -18,7 +18,7 @@ interface ApiResponse<T> {
   }
 }
 
-async function fetcher<T>(url: string): Promise<{ data: T; isConfigured: boolean; error?: string }> {
+async function fetcher<T>(url: string): Promise<{ data: T; isConfigured: boolean; error?: string; message?: string }> {
   const response = await fetch(url)
   const json: ApiResponse<T> = await response.json()
 
@@ -30,6 +30,7 @@ async function fetcher<T>(url: string): Promise<{ data: T; isConfigured: boolean
     data: json.data,
     isConfigured: json.meta?.configured ?? true,
     error: json.meta?.error,
+    message: json.meta?.message,
   }
 }
 
@@ -53,6 +54,7 @@ export function useMatches(params?: { status?: string; format?: string; limit?: 
     error,
     mutate,
     isConfigured: data?.isConfigured ?? true,
+    message: data?.message,
   }
 }
 

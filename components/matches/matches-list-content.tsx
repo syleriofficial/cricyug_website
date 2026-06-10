@@ -15,7 +15,7 @@ export function MatchesListContent({ initialFormat }: { initialFormat?: string }
   const [selectedSeriesId, setSelectedSeriesId] = useState<string | null>(null)
   const formatParam = initialFormat
   
-  const { data: matches, error, isLoading, mutate, isConfigured } = useMatches()
+  const { data: matches, error, isLoading, mutate, isConfigured, message } = useMatches()
   const { data: series } = useSeries({ limit: 10 })
 
   // Filter matches by series if selected
@@ -58,6 +58,12 @@ export function MatchesListContent({ initialFormat }: { initialFormat?: string }
                   Add CRICKETDATA_API_KEY environment variable to display live match data.
                 </p>
               </div>
+            </div>
+          )}
+
+          {message && (
+            <div className="mb-6 rounded-lg border border-primary/20 bg-primary/10 px-4 py-3 text-sm text-primary">
+              {message}
             </div>
           )}
         </div>

@@ -20,7 +20,7 @@ export function LiveMatchesContent() {
   const [format, setFormat] = useState<FormatType>("all")
   const [selectedMatchId, setSelectedMatchId] = useState<string | null>(null)
 
-  const { data: matches, error, isLoading, mutate } = useMatches({
+  const { data: matches, error, isLoading, mutate, message } = useMatches({
     status: filter === "all" ? undefined : filter,
     format: format === "all" ? undefined : format.toUpperCase() as MatchFormat,
   })
@@ -48,6 +48,12 @@ export function LiveMatchesContent() {
               )}
             </div>
           </div>
+
+          {message && (
+            <div className="mt-4 rounded-lg border border-primary/20 bg-primary/10 px-4 py-3 text-sm text-primary">
+              {message}
+            </div>
+          )}
 
           {/* Filters */}
           <div className="flex flex-wrap items-center gap-4 mt-6">
