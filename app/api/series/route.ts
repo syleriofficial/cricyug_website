@@ -7,6 +7,7 @@ import { getCricketDataService } from "@/lib/api/cricket-data"
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
   const type = searchParams.get("type") as "international" | "league" | "domestic" | null
+  const category = searchParams.get("category")
   const status = searchParams.get("status")
   const limit = parseInt(searchParams.get("limit") || "20")
 
@@ -29,8 +30,17 @@ export async function GET(request: Request) {
     
     // Filter by status if provided
     let filtered = series
+    let usedFallback = false
     if (status) {
       filtered = series.filter(s => s.status === status)
+    }
+    if (category && category !== "all") {
+      filtered = filtered.filter(s => s.category === category)
+    }
+
+    if (filtered.length === 0 && category && category !== "all") {
+      filtered = series.slice(0, limit)
+      usedFallback = true
     }
 
     return NextResponse.json({
@@ -38,7 +48,11 @@ export async function GET(request: Request) {
       meta: { 
         total: filtered.length, 
         limit,
-        configured: true
+        configured: true,
+        category: category || "all",
+        message: usedFallback
+          ? `${category} series are not available right now, so latest series are shown.`
+          : undefined,
       }
     })
   } catch (error) {

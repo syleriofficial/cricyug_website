@@ -2,24 +2,31 @@
 
 import { useState } from "react"
 import { motion } from "framer-motion"
-import { Calendar, Trophy, MapPin, ChevronRight, Star } from "lucide-react"
+import { Calendar, Trophy, ChevronRight, Star } from "lucide-react"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
 import { useSeries, useFeaturedSeries } from "@/hooks/use-cricket-data"
 import { LoadingCard, ErrorState, EmptyState } from "@/components/ui/states"
 import type { Series } from "@/lib/types"
 
-const seriesCategories = ["All", "International", "T20 Leagues", "Domestic", "Women"]
+const seriesCategories = [
+  { label: "All", value: "all" },
+  { label: "International", value: "international" },
+  { label: "T20 Leagues", value: "league" },
+  { label: "Domestic", value: "domestic" },
+  { label: "Women", value: "women" },
+]
 
 export function SeriesPageContent() {
-  const [activeCategory, setActiveCategory] = useState("All")
+  const [activeCategory, setActiveCategory] = useState("all")
 
-  const { data: allSeries, error, isLoading, mutate } = useSeries()
+  const { data: allSeries, error, isLoading, mutate } = useSeries({
+    category: activeCategory === "all" ? undefined : activeCategory,
+    limit: 30,
+  })
   const { data: featuredSeries } = useFeaturedSeries()
 
-  const filteredSeries = allSeries?.filter(
-    (series) => activeCategory === "All" || series.type === activeCategory.toLowerCase()
-  ) || []
+  const filteredSeries = allSeries || []
 
   const liveSeries = filteredSeries.filter((s) => s.status === "ongoing")
   const upcomingSeries = filteredSeries.filter((s) => s.status === "upcoming")
@@ -46,16 +53,16 @@ export function SeriesPageContent() {
           <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-hide">
             {seriesCategories.map((category) => (
               <button
-                key={category}
-                onClick={() => setActiveCategory(category)}
+                key={category.value}
+                onClick={() => setActiveCategory(category.value)}
                 className={cn(
                   "px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors",
-                  activeCategory === category
+                  activeCategory === category.value
                     ? "bg-primary text-primary-foreground"
                     : "bg-card text-muted-foreground hover:text-foreground hover:bg-muted"
                 )}
               >
-                {category}
+                {category.label}
               </button>
             ))}
           </div>
@@ -93,7 +100,7 @@ export function SeriesPageContent() {
           {!isLoading && !error && filteredSeries.length > 0 && (
             <>
               {/* Featured Series */}
-              {activeCategory === "All" && featuredSeries && featuredSeries.length > 0 && (
+              {activeCategory === "all" && featuredSeries && featuredSeries.length > 0 && (
                 <section>
                   <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
                     <Star className="h-5 w-5 text-secondary" />

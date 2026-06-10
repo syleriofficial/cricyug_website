@@ -176,12 +176,15 @@ class CricketDataService {
   }
 
   async getSeriesList(type?: string): Promise<Series[]> {
-    const result = await this.request("/series", type ? { type, offset: "0" } : { offset: "0" }, { revalidate: 3600 })
-    const series: any[] = Array.isArray(result?.data) ? result.data : []
+    const offsets = ["0", "25", "50", "75", "100", "150", "200"]
+    const results = await Promise.all(
+      offsets.map((offset) =>
+        this.request("/series", type ? { type, offset } : { offset }, { revalidate: 3600 }).catch(() => ({ data: [] }))
+      )
+    )
+    const series: any[] = results.flatMap((result) => (Array.isArray(result?.data) ? result.data : []))
 
-    return series.map<Series>((item: any) => {
-      return this.transformSeries(item)
-    })
+    return this.dedupeSeries(series.map<Series>((item: any) => this.transformSeries(item)))
   }
 
   async getSeriesStandings(_seriesId: string): Promise<PointsTableEntry[]> {
@@ -282,6 +285,7 @@ class CricketDataService {
           id: String(m.series_id || ""),
           name: seriesName,
           type: "bilateral",
+          category: this.inferSeriesCategory(seriesName),
           format,
           status: "ongoing",
           startDate: String(m.date || ""),
@@ -435,6 +439,7 @@ class CricketDataService {
       name: String(item.name || "Cricket Series"),
       shortName: String(item.name || "Series"),
       type: Number(item.t20 || 0) > 10 ? "league" : "tournament",
+      category: this.inferSeriesCategory(String(item.name || "")),
       format: this.inferSeriesFormat(item),
       status,
       startDate,
@@ -458,6 +463,14 @@ class CricketDataService {
     return Array.from(byId.values())
   }
 
+  private dedupeSeries(series: Series[]) {
+    const byId = new Map<string, Series>()
+    series.forEach((item) => {
+      if (item.id) byId.set(item.id, item)
+    })
+    return Array.from(byId.values())
+  }
+
   private mapFormat(value: string): MatchFormat {
     const v = value.toLowerCase()
     if (v.includes("test")) return "Test"
@@ -470,6 +483,40 @@ class CricketDataService {
     if (Number(item.test || 0) > 0) return "Test"
     if (Number(item.odi || 0) > 0) return "ODI"
     return "T20"
+  }
+
+  private inferSeriesCategory(name: string): Series["category"] {
+    const value = name.toLowerCase()
+    if (
+      value.includes("premier league") ||
+      value.includes("big bash") ||
+      value.includes("hundred") ||
+      value.includes("sa20") ||
+      value.includes("ilt20") ||
+      value.includes("psl") ||
+      value.includes("bpl") ||
+      value.includes("lpl") ||
+      value.includes("mlc") ||
+      value.includes("super smash") ||
+      value.includes("t20 blast") ||
+      value.includes("maharaja trophy") ||
+      value.includes("global super league") ||
+      value.includes("legends")
+    ) {
+      return "league"
+    }
+    if (
+      value.includes("ranji") ||
+      value.includes("county") ||
+      value.includes("domestic") ||
+      value.includes("trophy") ||
+      value.includes("cup") ||
+      value.includes("shield")
+    ) {
+      return "domestic"
+    }
+    if (value.includes("women") || /\bw\b/.test(value)) return "women"
+    return "international"
   }
 
   private mapPlayerRole(value: unknown): PlayerRole {

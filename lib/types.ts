@@ -168,6 +168,7 @@ export interface Series {
   name: string
   shortName?: string
   type: "bilateral" | "tournament" | "league"
+  category?: "international" | "league" | "domestic" | "women"
   format: MatchFormat
   status: "upcoming" | "ongoing" | "completed"
   startDate: string

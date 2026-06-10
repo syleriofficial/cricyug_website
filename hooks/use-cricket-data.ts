@@ -170,10 +170,11 @@ export function useTeam(teamId: string | null) {
 
 // ============= Series Hooks =============
 
-export function useSeries(params?: { status?: string; type?: string; limit?: number }) {
+export function useSeries(params?: { status?: string; type?: string; category?: string; limit?: number }) {
   const searchParams = new URLSearchParams()
   if (params?.status) searchParams.set("status", params.status)
   if (params?.type) searchParams.set("type", params.type)
+  if (params?.category) searchParams.set("category", params.category)
   if (params?.limit) searchParams.set("limit", String(params.limit))
   
   const { data, error, mutate, isLoading } = useSWR(
