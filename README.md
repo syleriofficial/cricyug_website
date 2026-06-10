@@ -20,7 +20,11 @@ cp .env.example .env.local
 
 ```bash
 CRICKETDATA_API_KEY=your_cricketdata_api_key_here
+OPENAI_API_KEY=your_openai_api_key_here
+OPENAI_MODEL=gpt-4o-mini
 ```
+
+`OPENAI_API_KEY` is optional. If it is not set, CricYug still returns server-side cricket-rule predictions from official match data. Never expose either key with a `NEXT_PUBLIC_` prefix.
 
 4. Run the development server:
 
@@ -44,6 +48,11 @@ npm run build
 - `/api/teams` returns CricketData.org country/team data.
 - `/api/news` is ready for a future server-side editorial/CMS source and returns an empty list until articles are published.
 - `/api/news/[id]` returns one manually written CricYug article.
+- `/api/ai/prediction?matchId=...` returns win probability, favorite, confidence and factors.
+- `/api/ai/preview?matchId=...` returns an AI-ready match preview.
+- `/api/ai/live-insights?matchId=...` returns momentum, pressure and next-phase insights.
+- `/api/ai/news-draft` accepts `POST { "headline": "...", "notes": "...", "category": "..." }` and returns an editorial draft.
+- `/api/ai/search?q=india match` returns an AI-style answer backed by CricYug search results.
 
 ## Manual News
 
@@ -86,6 +95,8 @@ Set this variable in Netlify or your hosting provider:
 
 ```bash
 CRICKETDATA_API_KEY=your_cricketdata_api_key_here
+OPENAI_API_KEY=your_openai_api_key_here
+OPENAI_MODEL=gpt-4o-mini
 ```
 
-Do not prefix the key with `NEXT_PUBLIC_`. Client components call only local `/api/*` routes, so the CricketData.org key stays server-side.
+Do not prefix the keys with `NEXT_PUBLIC_`. Client components call only local `/api/*` routes, so CricketData.org and AI provider keys stay server-side.

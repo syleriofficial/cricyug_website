@@ -1,14 +1,58 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { Brain, Sparkles, BarChart3, Zap, Target, TrendingUp, Lock } from "lucide-react"
+import useSWR from "swr"
+import Link from "next/link"
+import { Brain, Sparkles, BarChart3, Zap, Target, TrendingUp, AlertCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { useMatches } from "@/hooks/use-cricket-data"
+import type { AILiveInsight, AIMatchPreview, AIPrediction } from "@/lib/ai-cricket"
+import type { Match } from "@/lib/types"
+
+interface AIResponse<T> {
+  data: T | null
+  meta: {
+    configured: boolean
+    aiConfigured: boolean
+    message?: string
+    error?: string
+  }
+}
+
+async function fetchAI<T>(url: string) {
+  const response = await fetch(url)
+  const json: AIResponse<T> = await response.json()
+  if (!response.ok) throw new Error(json.meta?.error || json.meta?.message || "AI request failed")
+  return json
+}
 
 export function PredictionsPageContent() {
+  const { data: matches, isLoading: matchesLoading } = useMatches({ limit: 6 })
+  const selectedMatch = matches.find((match) => match.status === "live") || matches.find((match) => match.status === "upcoming") || matches[0]
+  const matchQuery = selectedMatch ? `?matchId=${encodeURIComponent(selectedMatch.id)}` : ""
+
+  const { data: prediction, error: predictionError, isLoading: predictionLoading } = useSWR(
+    selectedMatch ? `/api/ai/prediction${matchQuery}` : null,
+    (url) => fetchAI<AIPrediction>(url),
+    { refreshInterval: selectedMatch?.status === "live" ? 30000 : 120000 }
+  )
+  const { data: preview } = useSWR(
+    selectedMatch ? `/api/ai/preview${matchQuery}` : null,
+    (url) => fetchAI<AIMatchPreview>(url)
+  )
+  const { data: insight } = useSWR(
+    selectedMatch ? `/api/ai/live-insights${matchQuery}` : null,
+    (url) => fetchAI<AILiveInsight>(url),
+    { refreshInterval: selectedMatch?.status === "live" ? 30000 : 120000 }
+  )
+
+  const predictionData = prediction?.data
+  const previewData = preview?.data
+  const insightData = insight?.data
+
   return (
     <div className="py-8">
       <div className="mx-auto max-w-7xl px-4">
-        {/* Page header */}
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-4">
             <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/20">
@@ -16,161 +60,148 @@ export function PredictionsPageContent() {
             </div>
             <div>
               <h1 className="text-3xl font-bold">AI Predictions</h1>
-              <p className="text-muted-foreground">Machine learning powered cricket analytics</p>
+              <p className="text-muted-foreground">Live cricket prediction, preview and match intelligence</p>
             </div>
           </div>
-        </div>
-
-        {/* Coming Soon Hero */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="rounded-2xl bg-gradient-to-br from-primary/20 via-card to-secondary/10 border border-primary/20 p-8 md:p-12 text-center mb-12"
-        >
-          <div className="flex justify-center mb-6">
-            <div className="relative">
-              <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-primary/20">
-                <Brain className="h-10 w-10 text-primary" />
-              </div>
-              <div className="absolute -top-2 -right-2 flex h-8 w-8 items-center justify-center rounded-full bg-secondary">
-                <Sparkles className="h-4 w-4 text-secondary-foreground" />
-              </div>
+          {prediction && !prediction.meta.aiConfigured && (
+            <div className="flex items-start gap-3 rounded-xl border border-primary/20 bg-primary/10 p-4 text-sm">
+              <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
+              <p className="text-muted-foreground">
+                AI provider key is not configured, so CricYug is using server-side cricket rules on official match data. Add OPENAI_API_KEY to enable language-model enhanced analysis.
+              </p>
             </div>
-          </div>
-          <h2 className="text-2xl md:text-3xl font-bold mb-4">AI Predictions Coming Soon</h2>
-          <p className="text-muted-foreground max-w-2xl mx-auto mb-8">
-            We&apos;re building advanced machine learning models to provide accurate match predictions, 
-            player performance forecasts, and real-time analytics. Stay tuned for the launch.
-          </p>
-          <Button size="lg" className="gap-2">
-            <Lock className="h-4 w-4" />
-            Get Early Access
-          </Button>
-        </motion.div>
-
-        {/* Feature Preview */}
-        <h2 className="text-xl font-semibold mb-6">What&apos;s Coming</h2>
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mb-12">
-          <FeatureCard
-            icon={Target}
-            title="Match Predictions"
-            description="Real-time win probability powered by advanced ML models analyzing historical data, player form, and match conditions."
-            delay={0.1}
-          />
-          <FeatureCard
-            icon={BarChart3}
-            title="Player Analytics"
-            description="Deep performance insights, form tracking, and career trajectory analysis for all international players."
-            delay={0.2}
-          />
-          <FeatureCard
-            icon={Zap}
-            title="Live Insights"
-            description="Instant analysis during live matches with momentum shifts, key moments, and tactical recommendations."
-            delay={0.3}
-          />
-          <FeatureCard
-            icon={TrendingUp}
-            title="Performance Forecasts"
-            description="Predict individual player performances based on venue, opposition, and current form metrics."
-            delay={0.4}
-          />
-          <FeatureCard
-            icon={Sparkles}
-            title="Fantasy Suggestions"
-            description="AI-powered recommendations for fantasy cricket teams based on predicted performances."
-            delay={0.5}
-          />
-          <FeatureCard
-            icon={Brain}
-            title="Match Analysis"
-            description="Post-match AI analysis breaking down key decisions, turning points, and tactical insights."
-            delay={0.6}
-          />
+          )}
         </div>
 
-        {/* How It Works */}
-        <div className="rounded-xl bg-card border border-border p-6 md:p-8 mb-12">
-          <h2 className="text-xl font-semibold mb-6">How Our AI Works</h2>
-          <div className="grid gap-6 md:grid-cols-4">
-            <StepCard
-              number={1}
-              title="Data Collection"
-              description="We gather comprehensive cricket data including match history, player stats, and conditions."
-            />
-            <StepCard
-              number={2}
-              title="Model Training"
-              description="Our ML models learn patterns from thousands of matches to identify winning factors."
-            />
-            <StepCard
-              number={3}
-              title="Real-time Analysis"
-              description="During live matches, our system processes data in real-time for instant predictions."
-            />
-            <StepCard
-              number={4}
-              title="Continuous Learning"
-              description="Models are continuously updated with new match data to improve accuracy."
-            />
+        <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/15 via-card to-secondary/15 p-6"
+          >
+            <div className="mb-6 flex items-center justify-between gap-4">
+              <div>
+                <p className="text-xs font-semibold uppercase text-primary">Featured prediction</p>
+                <h2 className="mt-1 text-2xl font-bold">{predictionData?.title || selectedMatchTitle(selectedMatch)}</h2>
+              </div>
+              <Sparkles className="h-6 w-6 text-primary" />
+            </div>
+
+            {matchesLoading || predictionLoading ? (
+              <div className="space-y-3">
+                <div className="h-8 animate-pulse rounded bg-muted" />
+                <div className="h-28 animate-pulse rounded-xl bg-muted" />
+              </div>
+            ) : predictionError ? (
+              <p className="text-sm text-muted-foreground">AI prediction is temporarily unavailable. Please try again in a moment.</p>
+            ) : predictionData ? (
+              <>
+                <div className="mb-5 grid grid-cols-2 gap-3">
+                  <ProbabilityCard label={selectedMatch?.team1.team.shortName || "Team 1"} value={predictionData.winProbability.team1} />
+                  <ProbabilityCard label={selectedMatch?.team2.team.shortName || "Team 2"} value={predictionData.winProbability.team2} />
+                </div>
+                <div className="rounded-xl border border-border bg-background/35 p-4">
+                  <p className="text-sm text-muted-foreground">Favorite</p>
+                  <p className="mt-1 text-xl font-bold text-primary">{predictionData.favorite}</p>
+                  <p className="mt-2 text-sm text-muted-foreground">Confidence: {predictionData.confidence}</p>
+                </div>
+                <div className="mt-5 space-y-2">
+                  {predictionData.factors.map((factor) => (
+                    <p key={factor} className="rounded-lg bg-muted/50 px-3 py-2 text-sm text-muted-foreground">{factor}</p>
+                  ))}
+                </div>
+                <p className="mt-5 text-xs text-muted-foreground">{predictionData.disclaimer}</p>
+              </>
+            ) : (
+              <p className="text-sm text-muted-foreground">No match is available for AI prediction right now.</p>
+            )}
+          </motion.div>
+
+          <div className="space-y-6">
+            <InfoPanel icon={Target} title="AI Match Preview">
+              <p className="text-sm text-muted-foreground">{previewData?.summary || "Preview will appear when match data is available."}</p>
+              {previewData && (
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {previewData.keyFactors.map((item) => (
+                    <span key={item} className="rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary">{item}</span>
+                  ))}
+                </div>
+              )}
+            </InfoPanel>
+
+            <InfoPanel icon={Zap} title="Live Insight">
+              <p className="text-sm text-muted-foreground">{insightData?.momentum || "Live insight will update once score data is available."}</p>
+              {insightData && (
+                <div className="mt-4 space-y-2">
+                  <p className="text-sm"><span className="text-muted-foreground">Pressure:</span> {insightData.pressure}</p>
+                  <p className="text-sm"><span className="text-muted-foreground">Next phase:</span> {insightData.nextPhase}</p>
+                </div>
+              )}
+            </InfoPanel>
           </div>
         </div>
 
-        {/* Disclaimer */}
-        <div className="rounded-xl bg-muted/30 border border-border p-4">
-          <p className="text-xs text-muted-foreground text-center">
-            AI predictions will be based on historical data, current form, and various match factors. 
-            Predictions are for informational purposes only and should not be used for betting or gambling.
-          </p>
+        <h2 className="mb-4 mt-10 text-xl font-semibold">AI Tools Active</h2>
+        <div className="grid gap-4 md:grid-cols-3">
+          <ToolCard icon={TrendingUp} title="Prediction API" description="/api/ai/prediction returns win probability and factors." />
+          <ToolCard icon={BarChart3} title="Preview API" description="/api/ai/preview creates match previews from official data." />
+          <ToolCard icon={Brain} title="News Draft API" description="/api/ai/news-draft helps you write CricYug articles." />
         </div>
+
+        {selectedMatch && (
+          <div className="mt-8">
+            <Link href={`/matches/${selectedMatch.id}`}>
+              <Button className="gap-2">
+                Open Match AI Analysis
+                <Zap className="h-4 w-4" />
+              </Button>
+            </Link>
+          </div>
+        )}
       </div>
     </div>
   )
 }
 
-function FeatureCard({ 
-  icon: Icon, 
-  title, 
-  description,
-  delay 
-}: { 
-  icon: React.ElementType
-  title: string
-  description: string
-  delay: number
-}) {
+function selectedMatchTitle(match?: Match) {
+  if (!match) return "No match selected"
+  return `${match.team1.team.shortName} vs ${match.team2.team.shortName}`
+}
+
+function ProbabilityCard({ label, value }: { label: string; value: number }) {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay }}
-      className="rounded-xl bg-card border border-border p-6 hover:border-primary/30 transition-colors"
-    >
-      <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 mb-4">
-        <Icon className="h-6 w-6 text-primary" />
+    <div className="rounded-xl border border-border bg-background/35 p-4">
+      <div className="flex items-center justify-between gap-3">
+        <p className="font-semibold">{label}</p>
+        <p className="text-2xl font-black text-primary">{value}%</p>
       </div>
-      <h3 className="font-semibold text-lg mb-2">{title}</h3>
-      <p className="text-sm text-muted-foreground">{description}</p>
-    </motion.div>
+      <div className="mt-3 h-2 overflow-hidden rounded-full bg-muted">
+        <div className="h-full rounded-full bg-primary" style={{ width: `${value}%` }} />
+      </div>
+    </div>
   )
 }
 
-function StepCard({ 
-  number, 
-  title, 
-  description 
-}: { 
-  number: number
-  title: string
-  description: string
-}) {
+function InfoPanel({ icon: Icon, title, children }: { icon: React.ElementType; title: string; children: React.ReactNode }) {
   return (
-    <div className="text-center">
-      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary font-bold text-lg mx-auto mb-4">
-        {number}
+    <div className="rounded-xl border border-border bg-card p-5">
+      <div className="mb-3 flex items-center gap-3">
+        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
+          <Icon className="h-5 w-5 text-primary" />
+        </div>
+        <h3 className="font-semibold">{title}</h3>
       </div>
-      <h3 className="font-semibold mb-2">{title}</h3>
-      <p className="text-sm text-muted-foreground">{description}</p>
+      {children}
+    </div>
+  )
+}
+
+function ToolCard({ icon: Icon, title, description }: { icon: React.ElementType; title: string; description: string }) {
+  return (
+    <div className="rounded-xl border border-border bg-card p-5">
+      <Icon className="mb-3 h-5 w-5 text-primary" />
+      <h3 className="font-semibold">{title}</h3>
+      <p className="mt-1 text-sm text-muted-foreground">{description}</p>
     </div>
   )
 }

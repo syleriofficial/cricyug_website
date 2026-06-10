@@ -17,12 +17,12 @@ export function AIInsightsSection() {
             </div>
             <div>
               <h2 className="text-2xl font-bold">AI-Powered Analytics</h2>
-              <p className="text-sm text-muted-foreground">Coming soon - Powered by machine learning</p>
+              <p className="text-sm text-muted-foreground">Predictions, previews and live match intelligence</p>
             </div>
           </div>
           <Link href="/predictions">
             <Button variant="ghost" className="gap-2 text-muted-foreground hover:text-foreground">
-              Learn More
+              Open AI
               <ArrowRight className="h-4 w-4" />
             </Button>
           </Link>
@@ -41,7 +41,7 @@ export function AIInsightsSection() {
             </div>
             <h3 className="font-semibold text-lg mb-2">Match Predictions</h3>
             <p className="text-sm text-muted-foreground">
-              Real-time win probability and match outcome predictions powered by advanced ML models.
+              Server-side win probability based on live score, format, wickets and official match state.
             </p>
           </motion.div>
 
@@ -56,7 +56,7 @@ export function AIInsightsSection() {
             </div>
             <h3 className="font-semibold text-lg mb-2">Player Analytics</h3>
             <p className="text-sm text-muted-foreground">
-              Deep performance analysis, form tracking, and career trajectory predictions.
+              AI-ready analysis layer for player impact, form notes and matchup context.
             </p>
           </motion.div>
 
@@ -71,12 +71,11 @@ export function AIInsightsSection() {
             </div>
             <h3 className="font-semibold text-lg mb-2">Live Insights</h3>
             <p className="text-sm text-muted-foreground">
-              Instant analysis during live matches with momentum shifts and key moments.
+              Instant read on momentum, pressure and next phase during live matches.
             </p>
           </motion.div>
         </div>
 
-        {/* Coming Soon Banner */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -84,9 +83,9 @@ export function AIInsightsSection() {
           className="mt-8 rounded-xl bg-card border border-border p-6 text-center"
         >
           <Brain className="h-10 w-10 text-primary mx-auto mb-4" />
-          <h3 className="font-semibold text-lg mb-2">AI Features Coming Soon</h3>
+          <h3 className="font-semibold text-lg mb-2">AI APIs Are Live</h3>
           <p className="text-sm text-muted-foreground max-w-md mx-auto">
-            We&apos;re building powerful AI analytics to provide you with unparalleled cricket insights. Stay tuned for updates.
+            CricYug now exposes prediction, preview, live insight, news draft and AI search routes behind server-only keys.
           </p>
         </motion.div>
       </div>
