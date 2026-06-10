@@ -8,9 +8,6 @@ export const metadata: Metadata = {
   description: 'Follow live cricket scores, fixtures, team rankings, player form, news and match insights on CricYug.',
   keywords: ['cricket', 'live scores', 'AI predictions', 'cricket news', 'IPL', 'T20', 'ODI', 'Test cricket'],
   generator: 'CricYug',
-  alternates: {
-    canonical: '/',
-  },
   openGraph: {
     title: 'CricYug - Live Cricket Scores, News and Match Center',
     description: 'Follow live cricket scores, fixtures, team rankings, player form, news and match insights on CricYug.',

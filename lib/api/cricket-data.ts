@@ -277,6 +277,11 @@ class CricketDataService {
       const format = this.mapFormat(String(m.matchType || m.name || "T20"))
       const seriesName = this.seriesNameFromMatch(String(m.name || "Cricket Match"))
 
+      const team1Name = String(team1?.name || "TBA")
+      const team2Name = String(team2?.name || "TBA")
+      const team1ScoreText = score1 ? `${score1.r}/${score1.w}` : undefined
+      const team2ScoreText = score2 ? `${score2.r}/${score2.w}` : undefined
+
       return {
         id: String(m.id || ""),
         status: this.mapMatchStatus(m),
@@ -302,28 +307,34 @@ class CricketDataService {
         team1: {
           team: {
             id: String(team1?.id || team1?.name || ""),
-            name: String(team1?.name || "TBA"),
+            name: team1Name,
             shortName: String(team1?.shortname || this.shortName(team1?.name) || "TBA"),
             logo: String(team1?.img || ""),
             flag: String(team1?.img || ""),
           },
-          score: score1 ? `${score1.r}/${score1.w}` : undefined,
+          score: team1ScoreText,
           overs: score1 ? String(score1.o || "") : undefined,
           wickets: score1 ? Number(score1.w || 0) : undefined,
         },
         team2: {
           team: {
             id: String(team2?.id || team2?.name || ""),
-            name: String(team2?.name || "TBA"),
+            name: team2Name,
             shortName: String(team2?.shortname || this.shortName(team2?.name) || "TBA"),
             logo: String(team2?.img || ""),
             flag: String(team2?.img || ""),
           },
-          score: score2 ? `${score2.r}/${score2.w}` : undefined,
+          score: team2ScoreText,
           overs: score2 ? String(score2.o || "") : undefined,
           wickets: score2 ? Number(score2.w || 0) : undefined,
         },
-        result: String(m.status || ""),
+        result: this.normalizeMatchResult(String(m.status || ""), {
+          status: this.mapMatchStatus(m),
+          team1Name,
+          team2Name,
+          score1,
+          score2,
+        }),
         startTime: String(m.dateTimeGMT || m.date || ""),
         toss: m.tossWinner
           ? {
@@ -487,6 +498,7 @@ class CricketDataService {
 
   private inferSeriesCategory(name: string): Series["category"] {
     const value = name.toLowerCase()
+    if (value.includes("women") || /\bw\b/.test(value)) return "women"
     if (
       value.includes("premier league") ||
       value.includes("big bash") ||
@@ -515,8 +527,36 @@ class CricketDataService {
     ) {
       return "domestic"
     }
-    if (value.includes("women") || /\bw\b/.test(value)) return "women"
     return "international"
+  }
+
+  private normalizeMatchResult(
+    providerResult: string,
+    context: {
+      status: Match["status"]
+      team1Name: string
+      team2Name: string
+      score1?: { r?: number | string; w?: number | string }
+      score2?: { r?: number | string; w?: number | string }
+    }
+  ) {
+    if (context.status !== "completed" || !context.score1 || !context.score2) return providerResult
+
+    const team1Runs = Number(context.score1.r || 0)
+    const team2Runs = Number(context.score2.r || 0)
+    const team2Wickets = Number(context.score2.w || 0)
+    if (!Number.isFinite(team1Runs) || !Number.isFinite(team2Runs) || team1Runs === team2Runs) return providerResult
+
+    const inferredWinner = team1Runs > team2Runs ? context.team1Name : context.team2Name
+    const losingTeam = team1Runs > team2Runs ? context.team2Name : context.team1Name
+    const providerLower = providerResult.toLowerCase()
+    const contradictsScore =
+      providerLower.includes(losingTeam.toLowerCase()) &&
+      !providerLower.includes(inferredWinner.toLowerCase())
+
+    if (!contradictsScore) return providerResult
+    if (team1Runs > team2Runs) return `${context.team1Name} won by ${team1Runs - team2Runs} runs`
+    return `${context.team2Name} won by ${Math.max(10 - team2Wickets, 0)} wickets`
   }
 
   private mapPlayerRole(value: unknown): PlayerRole {

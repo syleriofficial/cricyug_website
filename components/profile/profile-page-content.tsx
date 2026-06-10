@@ -13,20 +13,20 @@ export function ProfilePageContent() {
             <User className="h-10 w-10 text-primary" />
           </div>
           <div className="flex-1">
-            <p className="text-sm font-semibold uppercase text-primary">Account Center</p>
-            <h1 className="mt-1 text-3xl font-bold">Profile features are coming soon</h1>
+            <p className="text-sm font-semibold uppercase text-primary">CricYug Center</p>
+            <h1 className="mt-1 text-3xl font-bold">Your cricket shortcuts</h1>
             <p className="mt-3 max-w-2xl text-muted-foreground">
-              CricYug accounts will support saved teams, match alerts, bookmarks and personalized cricket feeds. Until login is ready, this page stays transparent instead of showing fake user data.
+              Jump quickly to live scores, AI predictions, teams and editorial tools. CricYug keeps this page lightweight until account login is connected.
             </p>
           </div>
         </div>
       </section>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <PreviewCard icon={Bell} title="Match Alerts" body="Follow live and upcoming matches." />
-        <PreviewCard icon={Bookmark} title="Bookmarks" body="Save stories and scorecards." />
-        <PreviewCard icon={Shield} title="Favorite Teams" body="Personalize team coverage." />
-        <PreviewCard icon={Trophy} title="Predictions" body="Track AI insights when launched." />
+        <PreviewCard icon={Bell} title="Live Scores" body="Open active matches and scorecards." />
+        <PreviewCard icon={Bookmark} title="News Desk" body="Read manually published CricYug stories." />
+        <PreviewCard icon={Shield} title="Teams" body="Browse country and team profiles." />
+        <PreviewCard icon={Trophy} title="Predictions" body="Track active AI match insights." />
       </div>
 
       <section>

@@ -17,7 +17,7 @@ export default function PrivacyPage() {
         },
         {
           title: "User Accounts",
-          body: "Profile features are currently product placeholders. Do not enter sensitive personal information until a real authentication and privacy workflow is added.",
+          body: "CricYug does not currently collect account passwords or sensitive profile data. Use contact@cricyug.com for privacy questions.",
         },
       ]}
     />

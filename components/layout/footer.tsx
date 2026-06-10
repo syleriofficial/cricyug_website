@@ -15,7 +15,7 @@ export function Footer() {
             <p className="text-sm text-muted-foreground mb-4">
               AI-powered cricket platform with live scores, predictions, and comprehensive coverage.
             </p>
-            <p className="text-xs text-muted-foreground">Social channels coming soon.</p>
+            <p className="text-xs text-muted-foreground">Contact: contact@cricyug.com</p>
           </div>
 
           {/* Quick Links */}

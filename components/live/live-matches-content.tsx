@@ -8,7 +8,7 @@ import { LiveScoreCard } from "@/components/cricket/live-score-card"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { useMatches } from "@/hooks/use-cricket-data"
-import { useDetectedRegion, useLocalizedMatches } from "@/hooks/use-localized-matches"
+import { useRegionPreference, useLocalizedMatches } from "@/hooks/use-localized-matches"
 import { LoadingMatchCard, ErrorState, NoMatches } from "@/components/ui/states"
 import type { Match, MatchStatus, MatchFormat } from "@/lib/types"
 
@@ -19,7 +19,7 @@ export function LiveMatchesContent() {
   const [filter, setFilter] = useState<FilterType>("all")
   const [format, setFormat] = useState<FormatType>("all")
   const [selectedMatchId, setSelectedMatchId] = useState<string | null>(null)
-  const regionForRequest = useDetectedRegion()
+  const { region: regionForRequest, selectedCode, setRegionCode, options: regionOptions } = useRegionPreference()
 
   const { data: matches, error, isLoading, mutate, message } = useMatches({
     status: filter === "all" ? undefined : filter,
@@ -59,6 +59,21 @@ export function LiveMatchesContent() {
 
           {/* Filters */}
           <div className="flex flex-wrap items-center gap-4 mt-6">
+            <label className="flex items-center gap-2 rounded-lg bg-muted p-1 pl-3 text-sm text-muted-foreground">
+              <MapPin className="h-4 w-4 text-primary" />
+              <select
+                value={selectedCode}
+                onChange={(event) => setRegionCode(event.target.value)}
+                className="rounded-md bg-background px-3 py-2 text-foreground outline-none"
+                aria-label="Prioritize matches by region"
+              >
+                <option value="">Auto location</option>
+                {regionOptions.map((item) => (
+                  <option key={item.code} value={item.code}>{item.label}</option>
+                ))}
+              </select>
+            </label>
+
             <div className="flex items-center gap-2 p-1 rounded-lg bg-muted">
               {(["all", "live", "upcoming", "completed"] as FilterType[]).map((f) => (
                 <Button
@@ -150,15 +165,24 @@ export function LiveMatchesContent() {
 
           {/* Sidebar */}
           <div className="space-y-4">
-            {/* Match schedule placeholder */}
             <div className="rounded-xl bg-card border border-border p-4">
               <div className="flex items-center gap-2 mb-4">
                 <Clock className="h-5 w-5 text-primary" />
                 <h3 className="font-semibold">Today&apos;s Schedule</h3>
               </div>
-              <div className="py-8 text-center text-muted-foreground">
-                <Calendar className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                <p className="text-sm">No upcoming matches scheduled</p>
+              <div className="space-y-3">
+                {localizedMatches.filter((match) => match.status === "upcoming").slice(0, 4).map((match) => (
+                  <Link key={match.id} href={`/matches/${match.id}`} className="block rounded-lg bg-muted/40 p-3 hover:bg-muted">
+                    <p className="text-sm font-medium">{match.team1.team.shortName} vs {match.team2.team.shortName}</p>
+                    <p className="mt-1 text-xs text-muted-foreground">{match.startTime || match.series.name}</p>
+                  </Link>
+                ))}
+                {localizedMatches.filter((match) => match.status === "upcoming").length === 0 && (
+                  <div className="py-6 text-center text-muted-foreground">
+                    <Calendar className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                    <p className="text-sm">No upcoming matches in this filter</p>
+                  </div>
+                )}
               </div>
             </div>
 

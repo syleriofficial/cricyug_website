@@ -7,14 +7,14 @@ import { Trophy, Filter, AlertCircle, MapPin } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { useMatches, useSeries } from "@/hooks/use-cricket-data"
-import { useDetectedRegion, useLocalizedMatches } from "@/hooks/use-localized-matches"
+import { useRegionPreference, useLocalizedMatches } from "@/hooks/use-localized-matches"
 import { LoadingMatchCard, ErrorState, EmptyState } from "@/components/ui/states"
 import type { Match } from "@/lib/types"
 
 export function MatchesListContent({ initialFormat }: { initialFormat?: string }) {
   const [selectedSeriesId, setSelectedSeriesId] = useState<string | null>(null)
   const formatParam = initialFormat
-  const regionForRequest = useDetectedRegion()
+  const { region: regionForRequest, selectedCode, setRegionCode, options: regionOptions } = useRegionPreference()
   
   const { data: matches, error, isLoading, mutate, isConfigured, message } = useMatches({ country: regionForRequest?.code })
   const { data: series } = useSeries({ limit: 10 })
@@ -67,6 +67,21 @@ export function MatchesListContent({ initialFormat }: { initialFormat?: string }
               {message}
             </div>
           )}
+
+          <label className="mb-6 inline-flex items-center gap-2 rounded-lg bg-muted p-1 pl-3 text-sm text-muted-foreground">
+            <MapPin className="h-4 w-4 text-primary" />
+            <select
+              value={selectedCode}
+              onChange={(event) => setRegionCode(event.target.value)}
+              className="rounded-md bg-background px-3 py-2 text-foreground outline-none"
+              aria-label="Prioritize matches by region"
+            >
+              <option value="">Auto location</option>
+              {regionOptions.map((item) => (
+                <option key={item.code} value={item.code}>{item.label}</option>
+              ))}
+            </select>
+          </label>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">

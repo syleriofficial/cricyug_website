@@ -134,22 +134,14 @@ export function NewsPageContent() {
 
           {/* Sidebar */}
           <div className="space-y-6">
-            {/* Newsletter signup */}
             <div className="rounded-xl bg-gradient-to-br from-primary/20 to-secondary/20 border border-primary/30 p-6">
-              <h3 className="font-bold text-lg mb-2">Stay Updated</h3>
+              <h3 className="font-bold text-lg mb-2">Publish CricYug News</h3>
               <p className="text-sm text-muted-foreground mb-4">
-                Get the latest cricket news delivered to your inbox daily.
+                News is manually controlled. Draft articles with AI, then publish approved stories through the manual news file.
               </p>
-              <div className="space-y-3">
-                <input
-                  type="email"
-                  placeholder="Enter your email"
-                  className="w-full px-4 py-2 rounded-lg bg-background border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-                />
-                <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90">
-                  Subscribe
-                </Button>
-              </div>
+              <Button asChild className="w-full bg-primary text-primary-foreground hover:bg-primary/90">
+                <Link href="/predictions">Open AI Tools</Link>
+              </Button>
             </div>
 
             {/* Editor's picks */}

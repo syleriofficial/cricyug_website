@@ -13,7 +13,7 @@ export default function ContactPage() {
       sections={[
         {
           title: "Email",
-          body: "For now, use your official CricYug contact email on this page once it is finalized. This placeholder keeps the production route live instead of sending users to a 404.",
+          body: "Email the CricYug team at contact@cricyug.com for editorial, product and partnership messages.",
         },
         {
           title: "Editorial Notes",

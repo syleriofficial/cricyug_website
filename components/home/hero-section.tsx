@@ -83,7 +83,7 @@ export function HeroSection() {
           <FeatureCard icon={Radio} label="Live Scores" description="Ball-by-ball pulse" />
           <FeatureCard icon={Users} label="Players" description="Stats & profiles" />
           <FeatureCard icon={Trophy} label="Match Center" description="Schedules & results" />
-          <FeatureCard icon={Brain} label="AI Insights" description="Predictions soon" />
+          <FeatureCard icon={Brain} label="AI Insights" description="Live predictions" />
         </motion.div>
       </div>
     </section>

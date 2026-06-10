@@ -64,7 +64,7 @@ function scoreWickets(score?: string) {
 
 function oversValue(overs?: string) {
   if (!overs) return 0
-  const [whole, balls] = overs.split(".").map((part) => Number(part) || 0)
+  const [whole = 0, balls = 0] = overs.split(".").map((part) => Number(part) || 0)
   return whole + Math.min(balls, 5) / 6
 }
 
@@ -73,8 +73,34 @@ function clamp(value: number, min: number, max: number) {
 }
 
 function roundProbability(team1: number) {
-  const safeTeam1 = Math.round(clamp(team1, 12, 88))
+  const safeInput = Number.isFinite(team1) ? team1 : 50
+  const safeTeam1 = Math.round(clamp(safeInput, 12, 88))
   return { team1: safeTeam1, team2: 100 - safeTeam1 }
+}
+
+function normalizePrediction(candidate: Partial<AIPrediction> | null, fallback: AIPrediction): AIPrediction {
+  if (!candidate) return fallback
+  const rawTeam1 = Number(candidate.winProbability?.team1)
+  const probabilities = roundProbability(Number.isFinite(rawTeam1) ? rawTeam1 : fallback.winProbability.team1)
+  const favorite =
+    typeof candidate.favorite === "string" && candidate.favorite.trim()
+      ? candidate.favorite
+      : probabilities.team1 >= probabilities.team2
+        ? fallback.favorite
+        : fallback.favorite
+
+  return {
+    ...fallback,
+    ...candidate,
+    favorite,
+    confidence: candidate.confidence === "high" || candidate.confidence === "medium" || candidate.confidence === "low"
+      ? candidate.confidence
+      : fallback.confidence,
+    provider: candidate.provider === "openai" ? "openai" : fallback.provider,
+    winProbability: probabilities,
+    factors: Array.isArray(candidate.factors) && candidate.factors.length > 0 ? candidate.factors : fallback.factors,
+    disclaimer: DISCLAIMER,
+  }
 }
 
 function fallbackPrediction(match: Match): AIPrediction {
@@ -239,7 +265,7 @@ export async function createPrediction(match: Match): Promise<AIPrediction> {
     JSON.stringify({ task: "match_prediction", fallback, match })
   )
 
-  return enhanced ? { ...fallback, ...enhanced, provider: "openai", disclaimer: DISCLAIMER } : fallback
+  return enhanced ? normalizePrediction({ ...enhanced, provider: "openai" }, fallback) : fallback
 }
 
 export async function createMatchPreview(match: Match): Promise<AIMatchPreview> {
