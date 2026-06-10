@@ -3,10 +3,11 @@
 import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import Link from "next/link"
-import { Trophy, Filter, AlertCircle } from "lucide-react"
+import { Trophy, Filter, AlertCircle, MapPin } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { useMatches, useSeries } from "@/hooks/use-cricket-data"
+import { useLocalizedMatches } from "@/hooks/use-localized-matches"
 import { LoadingMatchCard, ErrorState, EmptyState } from "@/components/ui/states"
 import type { Match } from "@/lib/types"
 
@@ -24,6 +25,7 @@ export function MatchesListContent({ initialFormat }: { initialFormat?: string }
         if (!formatParam || formatParam === "ipl") return true
         return match.format.toLowerCase() === formatParam.toLowerCase()
       })
+  const { matches: localizedMatches, region } = useLocalizedMatches(filteredMatches || [])
 
   return (
     <div className="py-8">
@@ -37,6 +39,12 @@ export function MatchesListContent({ initialFormat }: { initialFormat?: string }
             <div>
               <h1 className="text-3xl font-bold">All Matches</h1>
               <p className="text-muted-foreground">Browse cricket matches worldwide</p>
+              {region && (
+                <p className="mt-1 flex items-center gap-1 text-sm text-primary">
+                  <MapPin className="h-4 w-4" />
+                  {region.label} relevant matches are shown first
+                </p>
+              )}
             </div>
           </div>
 
@@ -118,7 +126,7 @@ export function MatchesListContent({ initialFormat }: { initialFormat?: string }
             )}
 
             {/* Empty State */}
-            {!isLoading && !error && (!filteredMatches || filteredMatches.length === 0) && (
+            {!isLoading && !error && localizedMatches.length === 0 && (
               <EmptyState 
                 icon={<Trophy className="h-7 w-7 text-muted-foreground" />}
                 title="No Matches Available"
@@ -127,10 +135,10 @@ export function MatchesListContent({ initialFormat }: { initialFormat?: string }
             )}
 
             {/* Matches */}
-            {!isLoading && !error && filteredMatches && filteredMatches.length > 0 && (
+            {!isLoading && !error && localizedMatches.length > 0 && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <AnimatePresence mode="popLayout">
-                  {filteredMatches.map((match, index) => (
+                  {localizedMatches.map((match, index) => (
                     <motion.div
                       key={match.id}
                       layout

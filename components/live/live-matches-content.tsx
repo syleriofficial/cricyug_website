@@ -3,11 +3,12 @@
 import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import Link from "next/link"
-import { Radio, Calendar, Clock } from "lucide-react"
+import { Radio, Calendar, Clock, MapPin } from "lucide-react"
 import { LiveScoreCard } from "@/components/cricket/live-score-card"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { useMatches } from "@/hooks/use-cricket-data"
+import { useLocalizedMatches } from "@/hooks/use-localized-matches"
 import { LoadingMatchCard, ErrorState, NoMatches } from "@/components/ui/states"
 import type { Match, MatchStatus, MatchFormat } from "@/lib/types"
 
@@ -24,7 +25,8 @@ export function LiveMatchesContent() {
     format: format === "all" ? undefined : format.toUpperCase() as MatchFormat,
   })
 
-  const selectedMatch = matches?.find(m => m.id === selectedMatchId) || matches?.[0]
+  const { matches: localizedMatches, region } = useLocalizedMatches(matches || [])
+  const selectedMatch = localizedMatches.find(m => m.id === selectedMatchId) || localizedMatches[0]
 
   return (
     <div className="py-8">
@@ -38,6 +40,12 @@ export function LiveMatchesContent() {
             <div>
               <h1 className="text-3xl font-bold">Live Matches</h1>
               <p className="text-muted-foreground">Real-time cricket scores and updates</p>
+              {region && (
+                <p className="mt-1 flex items-center gap-1 text-sm text-primary">
+                  <MapPin className="h-4 w-4" />
+                  {region.label} matches are prioritized from your device locale
+                </p>
+              )}
             </div>
           </div>
 
@@ -102,14 +110,14 @@ export function LiveMatchesContent() {
             )}
 
             {/* Empty State */}
-            {!isLoading && !error && (!matches || matches.length === 0) && (
+            {!isLoading && !error && localizedMatches.length === 0 && (
               <NoMatches />
             )}
 
             {/* Matches List */}
             <AnimatePresence mode="popLayout">
-              {!isLoading && !error && matches && matches.length > 0 && 
-                matches.map((match, index) => (
+              {!isLoading && !error && localizedMatches.length > 0 && 
+                localizedMatches.map((match, index) => (
                   <motion.div
                     key={match.id}
                     layout
