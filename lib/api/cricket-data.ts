@@ -31,7 +31,11 @@ class CricketDataService {
     this.timeout = config.timeout || 15000
   }
 
-  private async request<T = any>(endpoint: string, params: Record<string, string> = {}): Promise<T> {
+  private async request<T = any>(
+    endpoint: string,
+    params: Record<string, string> = {},
+    options: { revalidate?: number } = {}
+  ): Promise<T> {
     const url = new URL(`${CRICKET_API_BASE}${endpoint}`)
     url.searchParams.set("apikey", this.apiKey)
 
@@ -47,7 +51,7 @@ class CricketDataService {
         method: "GET",
         headers: { Accept: "application/json" },
         signal: controller.signal,
-        next: { revalidate: 60 },
+        next: { revalidate: options.revalidate ?? 300 },
       })
 
       const text = await response.text()
@@ -69,13 +73,13 @@ class CricketDataService {
   }
 
   async getCurrentMatches(): Promise<Match[]> {
-    const result = await this.request("/currentMatches", { offset: "0" })
+    const result = await this.request("/currentMatches", { offset: "0" }, { revalidate: 30 })
     return this.transformMatches(result?.data || [])
   }
 
   async getMatches(status?: Match["status"]): Promise<Match[]> {
     if (status === "upcoming") {
-      const result = await this.request("/matches", { offset: "0" })
+      const result = await this.request("/matches", { offset: "0" }, { revalidate: 900 })
       return this.transformMatches(result?.data || []).filter((match) => match.status === "upcoming")
     }
 
@@ -85,7 +89,7 @@ class CricketDataService {
       return currentMatches.filter((match) => match.status === status)
     }
 
-    const upcomingResult = await this.request("/matches", { offset: "0" }).catch(() => ({ data: [] }))
+    const upcomingResult = await this.request("/matches", { offset: "0" }, { revalidate: 900 }).catch(() => ({ data: [] }))
     const upcomingMatches = this.transformMatches(upcomingResult?.data || []).filter((match) => match.status === "upcoming")
 
     return this.dedupeMatches([...currentMatches, ...upcomingMatches])
@@ -96,12 +100,12 @@ class CricketDataService {
     options: { includeScorecard?: boolean; includeCommentary?: boolean } = {}
   ): Promise<MatchDetails | null> {
     const [infoResult, scorecardResult, commentaryResult] = await Promise.allSettled([
-      this.request("/match_info", { id: matchId }),
+      this.request("/match_info", { id: matchId }, { revalidate: 60 }),
       options.includeScorecard
-        ? this.request("/match_scorecard", { id: matchId })
+        ? this.request("/match_scorecard", { id: matchId }, { revalidate: 300 })
         : Promise.resolve(null),
       options.includeCommentary
-        ? this.request("/match_bbb", { id: matchId })
+        ? this.request("/match_bbb", { id: matchId }, { revalidate: 30 })
         : Promise.resolve(null),
     ])
 
@@ -123,7 +127,7 @@ class CricketDataService {
   }
 
   async searchPlayers(query: string): Promise<Player[]> {
-    const result = await this.request("/players", { search: query, offset: "0" })
+    const result = await this.request("/players", { search: query, offset: "0" }, { revalidate: 86400 })
     const players: any[] = Array.isArray(result?.data) ? result.data : []
 
     return players.map<Player>((item: any) => ({
@@ -137,8 +141,27 @@ class CricketDataService {
     }))
   }
 
+  async getPlayerInfo(playerId: string): Promise<Player | null> {
+    const result = await this.request("/players_info", { id: playerId }, { revalidate: 86400 })
+    const player = result?.data
+    if (!player) return null
+
+    return {
+      id: String(player.id || playerId),
+      name: String(player.name || "Unknown Player"),
+      shortName: String(player.name || "Player"),
+      country: String(player.country || ""),
+      countryCode: String(player.country || "").slice(0, 2).toUpperCase(),
+      role: this.mapPlayerRole(player.role),
+      battingStyle: player.battingStyle,
+      bowlingStyle: player.bowlingStyle,
+      dateOfBirth: player.dateOfBirth || player.dob,
+      image: player.playerImg,
+    }
+  }
+
   async getCountries(): Promise<Team[]> {
-    const result = await this.request("/countries", { offset: "0" })
+    const result = await this.request("/countries", { offset: "0" }, { revalidate: 86400 })
     const countries: any[] = Array.isArray(result?.data) ? result.data : []
 
     return countries.map<Team>((item: any, index: number) => ({
@@ -153,7 +176,7 @@ class CricketDataService {
   }
 
   async getSeriesList(type?: string): Promise<Series[]> {
-    const result = await this.request("/series", type ? { type, offset: "0" } : { offset: "0" })
+    const result = await this.request("/series", type ? { type, offset: "0" } : { offset: "0" }, { revalidate: 3600 })
     const series: any[] = Array.isArray(result?.data) ? result.data : []
 
     return series.map<Series>((item: any) => {
@@ -162,7 +185,7 @@ class CricketDataService {
   }
 
   async getSeriesStandings(_seriesId: string): Promise<PointsTableEntry[]> {
-    const result = await this.request("/series_points", { id: _seriesId })
+    const result = await this.request("/series_points", { id: _seriesId }, { revalidate: 900 })
     const points: any[] = Array.isArray(result?.data) ? result.data : []
 
     return points.map<PointsTableEntry>((item: any, index: number) => {
@@ -195,7 +218,7 @@ class CricketDataService {
   }
 
   async getSeriesInfo(seriesId: string): Promise<Series | null> {
-    const result = await this.request("/series_info", { id: seriesId })
+    const result = await this.request("/series_info", { id: seriesId }, { revalidate: 3600 })
     const info = result?.data?.info
     if (!info) return null
 

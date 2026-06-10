@@ -12,8 +12,7 @@ export const metadata = {
 export default async function PlayerDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
   const service = getCricketDataService()
-  const players = service ? await service.searchPlayers(id).catch(() => []) : []
-  const player = players.find((item) => item.id === id) || players[0] || null
+  const player = service ? await service.getPlayerInfo(id).catch(() => null) : null
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -37,7 +36,7 @@ export default async function PlayerDetailPage({ params }: { params: Promise<{ i
                   <Info label="Batting" value={player.battingStyle || "Not available from provider"} />
                   <Info label="Bowling" value={player.bowlingStyle || "Not available from provider"} />
                   <Info label="Country Code" value={player.countryCode || "N/A"} />
-                  <Info label="Data Status" value="CricketData.org" />
+                  <Info label="Source" value="CricketData.org" />
                 </div>
               </>
             ) : (

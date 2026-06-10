@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { motion } from "framer-motion"
-import { Trophy, ChevronDown, Table } from "lucide-react"
+import { Trophy, ChevronDown, Table, CalendarDays } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useFeaturedSeries, usePointsTable } from "@/hooks/use-cricket-data"
 import { LoadingTable, ErrorState, EmptyState } from "@/components/ui/states"
@@ -41,18 +41,18 @@ export function PointsTableContent() {
             <div className="relative">
               <button
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                className="flex items-center justify-between w-full sm:w-auto sm:min-w-[280px] px-4 py-3 rounded-xl bg-card border border-border hover:border-primary/30 transition-colors"
+                className="flex w-full min-w-0 items-center justify-between px-4 py-3 rounded-xl bg-card border border-border hover:border-primary/30 transition-colors sm:w-auto sm:min-w-[280px] sm:max-w-md"
               >
-                <div className="flex items-center gap-3">
+                <div className="flex min-w-0 items-center gap-3">
                   <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
                     <Trophy className="h-5 w-5 text-primary" />
                   </div>
-                  <div className="text-left">
-                    <p className="font-medium">{selectedSeries?.name || "Select Tournament"}</p>
+                  <div className="min-w-0 text-left">
+                    <p className="truncate font-medium">{selectedSeries?.name || "Select Tournament"}</p>
                     <p className="text-sm text-muted-foreground">{selectedSeries?.format} Tournament</p>
                   </div>
                 </div>
-                <ChevronDown className={cn("h-5 w-5 text-muted-foreground transition-transform", isDropdownOpen && "rotate-180")} />
+                <ChevronDown className={cn("h-5 w-5 shrink-0 text-muted-foreground transition-transform", isDropdownOpen && "rotate-180")} />
               </button>
 
               {isDropdownOpen && (
@@ -60,7 +60,7 @@ export function PointsTableContent() {
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
-                  className="absolute top-full left-0 right-0 sm:right-auto mt-2 z-10 rounded-xl bg-card border border-border shadow-xl overflow-hidden"
+                  className="absolute top-full left-0 right-0 sm:right-auto mt-2 z-10 max-w-full rounded-xl bg-card border border-border shadow-xl overflow-hidden sm:w-[420px]"
                 >
                   {series.map((tournament) => (
                     <button
@@ -75,7 +75,7 @@ export function PointsTableContent() {
                       )}
                     >
                       <Trophy className="h-4 w-4 text-primary" />
-                      <span className="font-medium">{tournament.name}</span>
+                      <span className="min-w-0 flex-1 truncate font-medium">{tournament.name}</span>
                       <span className="text-xs text-muted-foreground ml-auto">{tournament.format}</span>
                     </button>
                   ))}
@@ -98,11 +98,25 @@ export function PointsTableContent() {
 
           {/* Empty State */}
           {!isLoading && !error && (!standings || standings.length === 0) && (
-            <EmptyState
-              icon={<Table className="h-7 w-7 text-muted-foreground" />}
-              title="No Standings Available"
-              message="Points table data is not available for this tournament."
-            />
+            <div className="overflow-hidden rounded-xl border border-border bg-card p-4 sm:p-6">
+              <EmptyState
+                icon={<Table className="h-7 w-7 text-muted-foreground" />}
+                title="Official Table Not Available"
+                message={
+                  selectedSeries
+                    ? `CricketData.org has not published standings for ${selectedSeries.name} yet. Try another tournament from the selector.`
+                    : "Select a tournament to check whether official standings are available."
+                }
+                className="py-8"
+              />
+              {selectedSeries && (
+                <div className="mt-2 grid min-w-0 gap-3 sm:grid-cols-3">
+                  <InfoPill label="Series" value={selectedSeries.name} />
+                  <InfoPill label="Format" value={selectedSeries.format} />
+                  <InfoPill label="Status" value={selectedSeries.status} />
+                </div>
+              )}
+            </div>
           )}
 
           {/* Points Table */}
@@ -143,6 +157,18 @@ export function PointsTableContent() {
           )}
         </div>
       </div>
+    </div>
+  )
+}
+
+function InfoPill({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="min-w-0 rounded-lg border border-border bg-background/50 p-3">
+      <div className="flex min-w-0 items-center gap-2 text-xs uppercase text-muted-foreground">
+        <CalendarDays className="h-3.5 w-3.5" />
+        {label}
+      </div>
+      <p className="mt-1 truncate font-medium capitalize">{value}</p>
     </div>
   )
 }

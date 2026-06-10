@@ -2,6 +2,7 @@ import Link from "next/link"
 import { Header, MobileNav } from "@/components/layout/navigation"
 import { Footer } from "@/components/layout/footer"
 import { Button } from "@/components/ui/button"
+import { getManualNewsArticle } from "@/lib/news"
 
 export const metadata = {
   title: "CricYug Story",
@@ -9,7 +10,8 @@ export const metadata = {
 }
 
 export default async function NewsArticlePage({ params }: { params: Promise<{ id: string }> }) {
-  await params
+  const { id } = await params
+  const article = getManualNewsArticle(id)
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -19,16 +21,23 @@ export default async function NewsArticlePage({ params }: { params: Promise<{ id
           <Link href="/news" className="text-sm text-primary hover:underline">Back to News</Link>
           <div className="mt-6">
             <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
-              Editorial
+              {article?.category || "Editorial"}
             </span>
-            <h1 className="mt-4 text-4xl font-bold tracking-tight">Story not published yet</h1>
+            <h1 className="mt-4 text-4xl font-bold tracking-tight">
+              {article?.title || "Story not published yet"}
+            </h1>
             <p className="mt-4 text-lg leading-8 text-muted-foreground">
-              CricYug news is ready for manual editorial stories. No live article exists for this URL yet.
+              {article?.excerpt || "CricYug news is ready for manual editorial stories. No live article exists for this URL yet."}
             </p>
+            {article && (
+              <div className="mt-4 text-sm text-muted-foreground">
+                {article.author || "CricYug Desk"} • {new Date(article.publishedAt).toLocaleDateString()}
+              </div>
+            )}
           </div>
           <div className="mt-8 rounded-xl border border-border bg-card p-6">
             <p className="leading-8 text-muted-foreground">
-              Add articles through your future CMS or server-side editorial source. The frontend does not expose any API keys or use fake story content.
+              {article?.content || "Add articles in content/news.ts. The frontend does not expose any API keys or use fake story content."}
             </p>
           </div>
           <Button asChild className="mt-8">

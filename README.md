@@ -43,6 +43,42 @@ npm run build
 - `/api/players` searches CricketData.org players. Use `?search=player-name`.
 - `/api/teams` returns CricketData.org country/team data.
 - `/api/news` is ready for a future server-side editorial/CMS source and returns an empty list until articles are published.
+- `/api/news/[id]` returns one manually written CricYug article.
+
+## Manual News
+
+Write CricYug stories in `content/news.ts`. Add objects that match the `NewsArticle` type:
+
+```ts
+export const manualNews = [
+  {
+    id: "india-preview-2026",
+    title: "India prepare for a packed cricket season",
+    excerpt: "Short summary for cards and SEO.",
+    content: "Full article body.",
+    category: "Analysis",
+    author: "CricYug Desk",
+    publishedAt: "2026-06-10T10:00:00.000Z",
+    tags: ["India", "Preview"],
+  },
+]
+```
+
+Redeploy after editing this file.
+
+## Google Search Console
+
+Submit this sitemap URL in Google Search Console:
+
+```text
+https://cricyug.netlify.app/sitemap.xml
+```
+
+Robots file:
+
+```text
+https://cricyug.netlify.app/robots.txt
+```
 
 ## Production Environment
 
