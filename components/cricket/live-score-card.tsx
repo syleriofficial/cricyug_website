@@ -18,6 +18,7 @@ export function LiveScoreCard({ match, className }: LiveScoreCardProps) {
       transition={{ duration: 0.2 }}
       className={cn(
         "relative overflow-hidden rounded-xl bg-card border border-border p-4 cursor-pointer group",
+        match.status === "live" && "border-live/35 bg-[linear-gradient(135deg,rgba(227,54,62,0.22),rgba(43,36,31,0.96)_48%,rgba(43,36,31,0.9))]",
         className
       )}
     >
@@ -53,7 +54,7 @@ export function LiveScoreCard({ match, className }: LiveScoreCardProps) {
       </div>
 
       {/* Hover gradient */}
-      <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-secondary/5 opacity-0 group-hover:opacity-100 transition-opacity -z-10" />
+      <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-secondary/10 opacity-0 group-hover:opacity-100 transition-opacity -z-10" />
     </motion.div>
   )
 }

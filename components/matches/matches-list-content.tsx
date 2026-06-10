@@ -173,7 +173,10 @@ function MatchCard({ match }: { match: Match }) {
   return (
     <motion.div
       whileHover={{ scale: 1.02 }}
-      className="rounded-xl bg-card border border-border p-4 cursor-pointer group"
+      className={cn(
+        "rounded-xl bg-card border border-border p-4 cursor-pointer group transition-colors",
+        match.status === "live" && "border-live/35 bg-[linear-gradient(135deg,rgba(227,54,62,0.22),rgba(43,36,31,0.96)_48%,rgba(43,36,31,0.9))]"
+      )}
     >
       {/* Live indicator */}
       {match.status === "live" && (

@@ -4,46 +4,46 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* CricYug premium cricket theme */
-  --background: #071426;
-  --foreground: #F8FAFC;
-  --card: #0F1E33;
-  --card-foreground: #F8FAFC;
-  --popover: #0F1E33;
-  --popover-foreground: #F8FAFC;
-  --primary: #10B981;
-  --primary-foreground: #04120D;
-  --secondary: #0F2847;
-  --secondary-foreground: #F8FAFC;
-  --muted: #0F2847;
-  --muted-foreground: #CBD5E1;
-  --accent: #06B6D4;
-  --accent-foreground: #FFFFFF;
-  --destructive: #EF4444;
+  /* CricYug stadium-night cricket theme */
+  --background: #1B1C17;
+  --foreground: #FFF8EA;
+  --card: #2B241F;
+  --card-foreground: #FFF8EA;
+  --popover: #302720;
+  --popover-foreground: #FFF8EA;
+  --primary: #FFF15A;
+  --primary-foreground: #17140D;
+  --secondary: #E3363E;
+  --secondary-foreground: #FFFFFF;
+  --muted: #363027;
+  --muted-foreground: #D9CDB9;
+  --accent: #A7A556;
+  --accent-foreground: #17140D;
+  --destructive: #F0444D;
   --destructive-foreground: #FFFFFF;
-  --border: rgba(255, 255, 255, 0.08);
-  --input: #0F1E33;
-  --ring: #10B981;
-  --chart-1: #10B981;
-  --chart-2: #06B6D4;
-  --chart-3: #10B981;
-  --chart-4: #8B5CF6;
-  --chart-5: #F43F5E;
+  --border: rgba(255, 248, 234, 0.11);
+  --input: #332C25;
+  --ring: #FFF15A;
+  --chart-1: #E3363E;
+  --chart-2: #FFF15A;
+  --chart-3: #A7A556;
+  --chart-4: #F59E4A;
+  --chart-5: #F0444D;
   --radius: 0.75rem;
-  --success: #10B981;
-  --success-foreground: #FFFFFF;
-  --warning: #F59E0B;
-  --warning-foreground: #FFFFFF;
-  --live: #EF4444;
+  --success: #A7A556;
+  --success-foreground: #17140D;
+  --warning: #F6C453;
+  --warning-foreground: #17140D;
+  --live: #F0444D;
   --live-foreground: #FFFFFF;
-  --sidebar: #091B30;
-  --sidebar-foreground: #F8FAFC;
-  --sidebar-primary: #10B981;
-  --sidebar-primary-foreground: #04120D;
-  --sidebar-accent: #06B6D4;
+  --sidebar: #211F19;
+  --sidebar-foreground: #FFF8EA;
+  --sidebar-primary: #FFF15A;
+  --sidebar-primary-foreground: #17140D;
+  --sidebar-accent: #E3363E;
   --sidebar-accent-foreground: #FFFFFF;
-  --sidebar-border: rgba(255, 255, 255, 0.08);
-  --sidebar-ring: #10B981;
+  --sidebar-border: rgba(255, 248, 234, 0.11);
+  --sidebar-ring: #FFF15A;
 }
 
 @theme inline {
@@ -99,6 +99,11 @@
   }
   body {
     @apply bg-background text-foreground;
+    background:
+      radial-gradient(circle at 18% 4%, rgba(255, 241, 90, 0.1), transparent 27rem),
+      radial-gradient(circle at 82% 8%, rgba(227, 54, 62, 0.12), transparent 28rem),
+      linear-gradient(180deg, #24251f 0%, #1b1c17 52%, #15150f 100%);
+    min-height: 100vh;
   }
 }
 
@@ -109,16 +114,16 @@
 }
 
 ::-webkit-scrollbar-track {
-  background: #0F1E33;
+  background: #2B241F;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 248, 234, 0.16);
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #10B981;
+  background: #FFF15A;
 }
 
 /* Live pulse animation */
@@ -137,7 +142,7 @@
 
 /* Gradient text utility */
 .text-gradient-brand {
-  background: linear-gradient(135deg, #10B981, #06B6D4);
+  background: linear-gradient(135deg, #FFF15A 0%, #F6C453 42%, #E3363E 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -145,7 +150,7 @@
 
 /* Glass effect */
 .glass {
-  background: rgba(15, 30, 51, 0.85);
+  background: rgba(33, 31, 25, 0.88);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
 }
