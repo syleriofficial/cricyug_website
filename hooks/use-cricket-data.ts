@@ -36,11 +36,12 @@ async function fetcher<T>(url: string): Promise<{ data: T; isConfigured: boolean
 
 // ============= Matches Hooks =============
 
-export function useMatches(params?: { status?: string; format?: string; limit?: number }) {
+export function useMatches(params?: { status?: string; format?: string; limit?: number; country?: string }) {
   const searchParams = new URLSearchParams()
   if (params?.status) searchParams.set("status", params.status)
   if (params?.format) searchParams.set("format", params.format)
   if (params?.limit) searchParams.set("limit", String(params.limit))
+  if (params?.country) searchParams.set("country", params.country)
   
   const { data, error, mutate, isLoading } = useSWR(
     `/api/matches?${searchParams.toString()}`,
@@ -58,16 +59,16 @@ export function useMatches(params?: { status?: string; format?: string; limit?: 
   }
 }
 
-export function useLiveMatches() {
-  return useMatches({ status: "live" })
+export function useLiveMatches(country?: string) {
+  return useMatches({ status: "live", country })
 }
 
-export function useUpcomingMatches(limit = 10) {
-  return useMatches({ status: "upcoming", limit })
+export function useUpcomingMatches(limit = 10, country?: string) {
+  return useMatches({ status: "upcoming", limit, country })
 }
 
-export function useRecentMatches(limit = 10) {
-  return useMatches({ status: "completed", limit })
+export function useRecentMatches(limit = 10, country?: string) {
+  return useMatches({ status: "completed", limit, country })
 }
 
 export function useMatch(

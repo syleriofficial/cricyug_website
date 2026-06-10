@@ -1,10 +1,12 @@
 import { NextResponse } from "next/server"
 import { getCricketDataService } from "@/lib/api/cricket-data"
+import { getRegionByCode, sortMatchesForRegion } from "@/lib/match-location"
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
   const status = searchParams.get("status")
   const format = searchParams.get("format")
+  const country = searchParams.get("country")
   const limit = Number(searchParams.get("limit") || "20")
 
   try {
@@ -52,13 +54,17 @@ export async function GET(request: Request) {
       message = `${status} matches are not available right now, so latest available matches are shown.`
     }
 
+    const region = getRegionByCode(country)
+    const sorted = sortMatchesForRegion(filtered, region)
+
     return NextResponse.json({
-      data: filtered.slice(0, limit),
+      data: sorted.slice(0, limit),
       meta: {
         total: filtered.length,
         limit,
         configured: true,
         message,
+        country: region?.code,
       },
     })
   } catch (error) {

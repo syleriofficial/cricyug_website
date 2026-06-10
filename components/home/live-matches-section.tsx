@@ -6,13 +6,14 @@ import { ArrowRight, MapPin, Radio } from "lucide-react"
 import { LiveScoreCard } from "@/components/cricket/live-score-card"
 import { Button } from "@/components/ui/button"
 import { useLiveMatches, useUpcomingMatches, useRecentMatches } from "@/hooks/use-cricket-data"
-import { useLocalizedMatches } from "@/hooks/use-localized-matches"
+import { useDetectedRegion, useLocalizedMatches } from "@/hooks/use-localized-matches"
 import { LoadingMatchCard, ErrorState, NoMatches } from "@/components/ui/states"
 
 export function LiveMatchesSection() {
-  const { data: liveMatches, error: liveError, isLoading: liveLoading } = useLiveMatches()
-  const { data: upcomingMatches, error: upcomingError, isLoading: upcomingLoading } = useUpcomingMatches(4)
-  const { data: recentMatches, error: recentError, isLoading: recentLoading } = useRecentMatches(4)
+  const regionForRequest = useDetectedRegion()
+  const { data: liveMatches, error: liveError, isLoading: liveLoading } = useLiveMatches(regionForRequest?.code)
+  const { data: upcomingMatches, error: upcomingError, isLoading: upcomingLoading } = useUpcomingMatches(4, regionForRequest?.code)
+  const { data: recentMatches, error: recentError, isLoading: recentLoading } = useRecentMatches(4, regionForRequest?.code)
 
   const isLoading = liveLoading || upcomingLoading || recentLoading
   const error = liveError || upcomingError || recentError

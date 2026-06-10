@@ -73,13 +73,13 @@ class CricketDataService {
   }
 
   async getCurrentMatches(): Promise<Match[]> {
-    const result = await this.request("/currentMatches", { offset: "0" }, { revalidate: 30 })
+    const result = await this.request("/currentMatches", { offset: "0" }, { revalidate: 15 })
     return this.transformMatches(result?.data || [])
   }
 
   async getMatches(status?: Match["status"]): Promise<Match[]> {
     if (status === "upcoming") {
-      const result = await this.request("/matches", { offset: "0" }, { revalidate: 900 })
+      const result = await this.request("/matches", { offset: "0" }, { revalidate: 60 })
       return this.transformMatches(result?.data || []).filter((match) => match.status === "upcoming")
     }
 
@@ -89,7 +89,7 @@ class CricketDataService {
       return currentMatches.filter((match) => match.status === status)
     }
 
-    const upcomingResult = await this.request("/matches", { offset: "0" }, { revalidate: 900 }).catch(() => ({ data: [] }))
+    const upcomingResult = await this.request("/matches", { offset: "0" }, { revalidate: 60 }).catch(() => ({ data: [] }))
     const upcomingMatches = this.transformMatches(upcomingResult?.data || []).filter((match) => match.status === "upcoming")
 
     return this.dedupeMatches([...currentMatches, ...upcomingMatches])

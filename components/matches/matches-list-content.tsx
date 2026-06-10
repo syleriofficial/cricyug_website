@@ -7,15 +7,16 @@ import { Trophy, Filter, AlertCircle, MapPin } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { useMatches, useSeries } from "@/hooks/use-cricket-data"
-import { useLocalizedMatches } from "@/hooks/use-localized-matches"
+import { useDetectedRegion, useLocalizedMatches } from "@/hooks/use-localized-matches"
 import { LoadingMatchCard, ErrorState, EmptyState } from "@/components/ui/states"
 import type { Match } from "@/lib/types"
 
 export function MatchesListContent({ initialFormat }: { initialFormat?: string }) {
   const [selectedSeriesId, setSelectedSeriesId] = useState<string | null>(null)
   const formatParam = initialFormat
+  const regionForRequest = useDetectedRegion()
   
-  const { data: matches, error, isLoading, mutate, isConfigured, message } = useMatches()
+  const { data: matches, error, isLoading, mutate, isConfigured, message } = useMatches({ country: regionForRequest?.code })
   const { data: series } = useSeries({ limit: 10 })
 
   // Filter matches by series if selected
