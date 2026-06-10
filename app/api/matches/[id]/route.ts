@@ -9,6 +9,9 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params
+  const { searchParams } = new URL(request.url)
+  const includeScorecard = searchParams.get("includeScorecard") === "true"
+  const includeCommentary = searchParams.get("includeCommentary") === "true"
 
   try {
     const service = getCricketDataService()
@@ -23,7 +26,7 @@ export async function GET(
       }, { status: 503 })
     }
 
-    const match = await service.getMatchInfo(id)
+    const match = await service.getMatchInfo(id, { includeScorecard, includeCommentary })
     
     if (!match) {
       return NextResponse.json({

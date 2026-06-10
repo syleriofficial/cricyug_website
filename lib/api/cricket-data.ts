@@ -73,11 +73,36 @@ class CricketDataService {
     return this.transformMatches(result?.data || [])
   }
 
-  async getMatchInfo(matchId: string): Promise<MatchDetails | null> {
+  async getMatches(status?: Match["status"]): Promise<Match[]> {
+    if (status === "upcoming") {
+      const result = await this.request("/matches", { offset: "0" })
+      return this.transformMatches(result?.data || []).filter((match) => match.status === "upcoming")
+    }
+
+    const currentMatches = await this.getCurrentMatches()
+
+    if (status === "live" || status === "completed") {
+      return currentMatches.filter((match) => match.status === status)
+    }
+
+    const upcomingResult = await this.request("/matches", { offset: "0" }).catch(() => ({ data: [] }))
+    const upcomingMatches = this.transformMatches(upcomingResult?.data || []).filter((match) => match.status === "upcoming")
+
+    return this.dedupeMatches([...currentMatches, ...upcomingMatches])
+  }
+
+  async getMatchInfo(
+    matchId: string,
+    options: { includeScorecard?: boolean; includeCommentary?: boolean } = {}
+  ): Promise<MatchDetails | null> {
     const [infoResult, scorecardResult, commentaryResult] = await Promise.allSettled([
       this.request("/match_info", { id: matchId }),
-      this.request("/match_scorecard", { id: matchId }),
-      this.request("/match_bbb", { id: matchId }),
+      options.includeScorecard
+        ? this.request("/match_scorecard", { id: matchId })
+        : Promise.resolve(null),
+      options.includeCommentary
+        ? this.request("/match_bbb", { id: matchId })
+        : Promise.resolve(null),
     ])
 
     const infoData = infoResult.status === "fulfilled" ? infoResult.value?.data : null
@@ -132,30 +157,7 @@ class CricketDataService {
     const series: any[] = Array.isArray(result?.data) ? result.data : []
 
     return series.map<Series>((item: any) => {
-      const startDate = String(item.startDate || item.date || "")
-      const endDate = String(item.endDate || item.date || "")
-      const now = Date.now()
-      const start = startDate ? Date.parse(startDate) : Number.NaN
-      const end = endDate ? Date.parse(endDate) : Number.NaN
-      const status: Series["status"] =
-        Number.isFinite(start) && start > now
-          ? "upcoming"
-          : Number.isFinite(end) && end < now
-            ? "completed"
-            : "ongoing"
-
-      return {
-        id: String(item.id || item.series_id || item.name || ""),
-        name: String(item.name || "Cricket Series"),
-        shortName: String(item.name || "Series"),
-        type: "tournament",
-        format: this.inferSeriesFormat(item),
-        status,
-        startDate,
-        endDate,
-        totalMatches: Number(item.matches || 0),
-        teams: [],
-      }
+      return this.transformSeries(item)
     })
   }
 
@@ -394,7 +396,7 @@ class CricketDataService {
 
   private transformSeries(item: any): Series {
     const startDate = String(item.startDate || item.startdate || item.date || "")
-    const endDate = String(item.endDate || item.enddate || item.date || "")
+    const endDate = this.normalizeEndDate(String(item.endDate || item.enddate || item.date || ""), startDate)
     const now = Date.now()
     const start = startDate ? Date.parse(startDate) : Number.NaN
     const end = endDate ? Date.parse(endDate) : Number.NaN
@@ -423,6 +425,14 @@ class CricketDataService {
     if (match.matchStarted && !match.matchEnded) return "live"
     if (!match.matchStarted) return "upcoming"
     return "completed"
+  }
+
+  private dedupeMatches(matches: Match[]) {
+    const byId = new Map<string, Match>()
+    matches.forEach((match) => {
+      if (match.id) byId.set(match.id, match)
+    })
+    return Array.from(byId.values())
   }
 
   private mapFormat(value: string): MatchFormat {
@@ -492,6 +502,12 @@ class CricketDataService {
     const words = name.split(/\s+/).filter(Boolean)
     if (words.length === 1) return words[0].slice(0, 3).toUpperCase()
     return words.map((word) => word[0]).join("").slice(0, 4).toUpperCase()
+  }
+
+  private normalizeEndDate(endDate: string, startDate: string) {
+    if (!endDate || /\d{4}/.test(endDate)) return endDate
+    const year = startDate.match(/\d{4}/)?.[0]
+    return year ? `${endDate} ${year}` : endDate
   }
 }
 

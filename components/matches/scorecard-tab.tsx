@@ -10,7 +10,7 @@ interface ScorecardTabProps {
 }
 
 export function ScorecardTab({ matchId }: ScorecardTabProps) {
-  const { data: match, error, isLoading, mutate, isConfigured } = useMatch(matchId)
+  const { data: match, error, isLoading, mutate, isConfigured } = useMatch(matchId, { includeScorecard: true })
   const scorecard = match?.scorecard || []
 
   if (isLoading) {

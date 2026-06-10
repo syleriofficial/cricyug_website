@@ -70,10 +70,15 @@ export function useRecentMatches(limit = 10) {
 
 export function useMatch(
   matchId: string | null,
-  _options?: { includeScorecard?: boolean; includeCommentary?: boolean }
+  options?: { includeScorecard?: boolean; includeCommentary?: boolean }
 ) {
+  const searchParams = new URLSearchParams()
+  if (options?.includeScorecard) searchParams.set("includeScorecard", "true")
+  if (options?.includeCommentary) searchParams.set("includeCommentary", "true")
+  const query = searchParams.toString()
+
   const { data, error, mutate, isLoading } = useSWR(
-    matchId ? `/api/matches/${matchId}` : null,
+    matchId ? `/api/matches/${matchId}${query ? `?${query}` : ""}` : null,
     (url) => fetcher<MatchDetails | null>(url),
     { refreshInterval: 15000 }
   )

@@ -22,7 +22,11 @@ export async function GET(request: Request) {
       }, { status: 503 })
     }
 
-    const matches = await service.getCurrentMatches()
+    const requestedStatus =
+      status === "live" || status === "upcoming" || status === "completed"
+        ? status
+        : undefined
+    const matches = await service.getMatches(requestedStatus)
 
     const filtered = matches.filter((match) => {
       const statusMatches = status ? match.status === status : true

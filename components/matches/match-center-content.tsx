@@ -35,10 +35,7 @@ export function MatchCenterContent({ params }: { params: Promise<{ id: string }>
   const { id } = use(params)
   const [activeTab, setActiveTab] = useState<Tab>("scorecard")
   
-  const { data: match, error, isLoading, mutate } = useMatch(id, {
-    includeScorecard: true,
-    includeCommentary: activeTab === "commentary",
-  })
+  const { data: match, error, isLoading, mutate } = useMatch(id)
 
   return (
     <div className="py-6">

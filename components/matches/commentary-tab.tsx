@@ -11,7 +11,7 @@ interface CommentaryTabProps {
 }
 
 export function CommentaryTab({ matchId }: CommentaryTabProps) {
-  const { data: match, error, isLoading, mutate, isConfigured } = useMatch(matchId)
+  const { data: match, error, isLoading, mutate, isConfigured } = useMatch(matchId, { includeCommentary: true })
   const commentary = match?.commentary || []
 
   if (isLoading) {
