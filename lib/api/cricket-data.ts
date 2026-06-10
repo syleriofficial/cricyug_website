@@ -130,15 +130,32 @@ class CricketDataService {
     const result = await this.request("/players", { search: query, offset: "0" }, { revalidate: 86400 })
     const players: any[] = Array.isArray(result?.data) ? result.data : []
 
-    return players.map<Player>((item: any) => ({
-      id: String(item.id || item.playerId || item.name || ""),
-      name: String(item.name || "Unknown Player"),
-      shortName: String(item.name || "Player"),
-      country: String(item.country || ""),
-      countryCode: String(item.country || "").slice(0, 2).toUpperCase(),
-      role: this.mapPlayerRole(item.role),
-      image: item.playerImg,
-    }))
+    return players.map<Player>((item: any) => {
+      const name = String(item.name || "Unknown Player")
+      const country = this.knownPlayerCountry(name) || String(item.country || "")
+      return {
+        id: String(item.id || item.playerId || name || ""),
+        name,
+        shortName: name,
+        country,
+        countryCode: this.countryCode(country),
+        role: this.knownPlayerRole(name) || this.mapPlayerRole(item.role),
+        image: item.playerImg,
+      }
+    })
+  }
+
+  async getFeaturedPlayers(role?: PlayerRole): Promise<Player[]> {
+    const seedsByRole: Record<PlayerRole, string[]> = {
+      Batsman: ["Virat Kohli", "Rohit Sharma", "Babar Azam", "Steve Smith", "Kane Williamson", "Joe Root"],
+      Bowler: ["Jasprit Bumrah", "Mitchell Starc", "Shaheen Afridi", "Rashid Khan", "Pat Cummins", "Trent Boult"],
+      "All-rounder": ["Hardik Pandya", "Ben Stokes", "Shakib Al Hasan", "Ravindra Jadeja", "Glenn Maxwell", "Wanindu Hasaranga"],
+      "Wicket-keeper": ["MS Dhoni", "Rishabh Pant", "Jos Buttler", "Mohammad Rizwan", "Quinton de Kock", "Sanju Samson"],
+    }
+    const seeds = role ? seedsByRole[role] : Object.values(seedsByRole).flat()
+    const results = await Promise.all(seeds.map((seed) => this.searchPlayers(seed).catch(() => [])))
+    const players = this.dedupePlayers(results.flat())
+    return role ? players.filter((player) => player.role === role) : players
   }
 
   async getPlayerInfo(playerId: string): Promise<Player | null> {
@@ -524,6 +541,15 @@ class CricketDataService {
     return Array.from(byId.values())
   }
 
+  private dedupePlayers(players: Player[]) {
+    const byId = new Map<string, Player>()
+    players.forEach((player) => {
+      const key = player.name || player.id
+      if (key) byId.set(key.toLowerCase(), player)
+    })
+    return Array.from(byId.values())
+  }
+
   private teamShortName(name: string) {
     const known: Record<string, string> = {
       Afghanistan: "AFG",
@@ -655,6 +681,54 @@ class CricketDataService {
     if (role.includes("all")) return "All-rounder"
     if (role.includes("keeper") || role.includes("wicket")) return "Wicket-keeper"
     return "Batsman"
+  }
+
+  private knownPlayerRole(name: string): PlayerRole | null {
+    const normalized = name.toLowerCase()
+    const roles: Array<[PlayerRole, string[]]> = [
+      ["Wicket-keeper", ["dhoni", "rishabh pant", "buttler", "rizwan", "de kock", "sanju samson", "kl rahul", "jonny bairstow"]],
+      ["All-rounder", ["hardik", "ben stokes", "shakib", "jadeja", "glenn maxwell", "hasaranga", "marsh", "moin ali", "moeen ali", "sam curran"]],
+      ["Bowler", ["bumrah", "starc", "shaheen", "rashid khan", "pat cummins", "trent boult", "rabada", "archer", "shami", "siraj"]],
+      ["Batsman", ["virat", "rohit", "babar", "steve smith", "kane williamson", "joe root", "warner", "gill", "suryakumar"]],
+    ]
+
+    return roles.find(([, keywords]) => keywords.some((keyword) => normalized.includes(keyword)))?.[0] || null
+  }
+
+  private knownPlayerCountry(name: string) {
+    const normalized = name.toLowerCase()
+    const countries: Array<[string, string[]]> = [
+      ["India", ["virat", "rohit", "bumrah", "hardik", "rishabh pant", "dhoni", "jadeja", "sanju samson"]],
+      ["Pakistan", ["babar", "shaheen", "rizwan"]],
+      ["Afghanistan", ["rashid khan"]],
+      ["Australia", ["steve smith", "starc", "pat cummins", "glenn maxwell", "warner"]],
+      ["England", ["joe root", "ben stokes", "jos buttler"]],
+      ["New Zealand", ["kane williamson", "trent boult"]],
+      ["Bangladesh", ["shakib"]],
+      ["Sri Lanka", ["hasaranga"]],
+      ["South Africa", ["de kock", "rabada"]],
+    ]
+    return countries.find(([, keywords]) => keywords.some((keyword) => normalized.includes(keyword)))?.[0]
+  }
+
+  private countryCode(country: string) {
+    const known: Record<string, string> = {
+      Afghanistan: "AFG",
+      Australia: "AUS",
+      Bangladesh: "BAN",
+      England: "ENG",
+      India: "IND",
+      Ireland: "IRE",
+      "New Zealand": "NZ",
+      Pakistan: "PAK",
+      "South Africa": "SA",
+      "Sri Lanka": "SL",
+      "West Indies": "WI",
+      Zimbabwe: "ZIM",
+      Netherlands: "NED",
+      Nepal: "NEP",
+    }
+    return known[country] || country.slice(0, 2).toUpperCase()
   }
 
   private playerFromApi(player: any): Player {

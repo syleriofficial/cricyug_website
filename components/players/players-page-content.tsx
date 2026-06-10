@@ -18,9 +18,11 @@ export function PlayersPageContent() {
   const [selectedFormat, setSelectedFormat] = useState("All Formats")
   const [searchQuery, setSearchQuery] = useState("")
 
-  const { data: players, error, isLoading, mutate } = usePlayers({
+  const { data: players, error, isLoading, mutate, message } = usePlayers({
     role: selectedRole === "All" ? undefined : selectedRole,
     search: searchQuery || undefined,
+    format: selectedFormat === "All Formats" ? undefined : selectedFormat,
+    limit: 24,
   })
 
   return (
@@ -34,7 +36,7 @@ export function PlayersPageContent() {
             </div>
             <div>
               <h1 className="text-3xl font-bold">Players</h1>
-              <p className="text-muted-foreground">Search live CricketData.org player profiles</p>
+              <p className="text-muted-foreground">Live CricketData.org player profiles by role</p>
             </div>
           </div>
 
@@ -50,8 +52,8 @@ export function PlayersPageContent() {
                 className="w-full pl-10 pr-4 py-2 rounded-lg bg-muted border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
               />
             </div>
-            <div className="flex flex-wrap gap-4">
-              <div className="flex items-center gap-2 p-1 rounded-lg bg-muted">
+            <div className="flex min-w-0 flex-col gap-3 lg:flex-row">
+              <div className="flex max-w-full items-center gap-2 overflow-x-auto rounded-lg bg-muted p-1">
                 {roles.map((role) => (
                   <Button
                     key={role}
@@ -59,7 +61,7 @@ export function PlayersPageContent() {
                     size="sm"
                     onClick={() => setSelectedRole(role)}
                     className={cn(
-                      "whitespace-nowrap",
+                      "shrink-0 whitespace-nowrap",
                       selectedRole === role && "bg-background shadow-sm"
                     )}
                   >
@@ -67,7 +69,7 @@ export function PlayersPageContent() {
                   </Button>
                 ))}
               </div>
-              <div className="flex items-center gap-2 p-1 rounded-lg bg-muted">
+              <div className="flex max-w-full items-center gap-2 overflow-x-auto rounded-lg bg-muted p-1">
                 {formats.map((format) => (
                   <Button
                     key={format}
@@ -75,7 +77,7 @@ export function PlayersPageContent() {
                     size="sm"
                     onClick={() => setSelectedFormat(format)}
                     className={cn(
-                      "whitespace-nowrap",
+                      "shrink-0 whitespace-nowrap",
                       selectedFormat === format && "bg-background shadow-sm"
                     )}
                   >
@@ -85,6 +87,12 @@ export function PlayersPageContent() {
               </div>
             </div>
           </div>
+
+          {message && (
+            <div className="mt-4 rounded-lg border border-primary/20 bg-primary/10 px-4 py-3 text-sm text-primary">
+              {message}
+            </div>
+          )}
         </div>
 
         {/* Loading State */}
@@ -107,7 +115,7 @@ export function PlayersPageContent() {
 
         {/* Empty State */}
         {!isLoading && !error && (!players || players.length === 0) && (
-          searchQuery ? <NoResults query={searchQuery} /> : <NoPlayers message="Search by player name to load live CricketData.org profiles." />
+          searchQuery ? <NoResults query={searchQuery} /> : <NoPlayers message="Featured CricketData.org player profiles will appear here once available." />
         )}
 
         {/* Players grid */}

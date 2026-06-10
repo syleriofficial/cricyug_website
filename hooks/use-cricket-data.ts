@@ -97,11 +97,12 @@ export function useMatch(
 
 // ============= Players Hooks =============
 
-export function usePlayers(params?: { search?: string; country?: string; role?: string; limit?: number }) {
+export function usePlayers(params?: { search?: string; country?: string; role?: string; format?: string; limit?: number }) {
   const searchParams = new URLSearchParams()
   if (params?.search) searchParams.set("search", params.search)
   if (params?.country) searchParams.set("country", params.country)
   if (params?.role) searchParams.set("role", params.role)
+  if (params?.format) searchParams.set("format", params.format)
   if (params?.limit) searchParams.set("limit", String(params.limit))
   
   const { data, error, mutate, isLoading } = useSWR(
@@ -115,6 +116,7 @@ export function usePlayers(params?: { search?: string; country?: string; role?: 
     error,
     mutate,
     isConfigured: data?.isConfigured ?? true,
+    message: data?.message,
   }
 }
 

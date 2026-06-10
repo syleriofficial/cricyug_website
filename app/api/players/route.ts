@@ -3,10 +3,13 @@
 
 import { NextResponse } from "next/server"
 import { getCricketDataService } from "@/lib/api/cricket-data"
+import type { PlayerRole } from "@/lib/types"
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
   const search = searchParams.get("search")
+  const role = searchParams.get("role")
+  const format = searchParams.get("format")
   const limit = parseInt(searchParams.get("limit") || "20")
 
   try {
@@ -24,26 +27,28 @@ export async function GET(request: Request) {
       }, { status: 503 })
     }
 
-    if (!search || search.length < 2) {
-      return NextResponse.json({
-        data: [],
-        meta: { 
-          total: 0,
-          limit,
-          configured: true,
-          message: "Enter at least two characters to search live players."
-        }
-      })
-    }
+    const requestedRole =
+      role === "Batsman" || role === "Bowler" || role === "All-rounder" || role === "Wicket-keeper"
+        ? role as PlayerRole
+        : undefined
 
-    const players = await service.searchPlayers(search)
+    const players = search && search.length >= 2
+      ? await service.searchPlayers(search)
+      : await service.getFeaturedPlayers(requestedRole)
+
+    const filtered = requestedRole
+      ? players.filter((player) => player.role === requestedRole)
+      : players
 
     return NextResponse.json({
-      data: players.slice(0, limit),
+      data: filtered.slice(0, limit),
       meta: { 
-        total: players.length, 
+        total: filtered.length, 
         limit,
-        configured: true
+        configured: true,
+        message: format && format !== "All Formats"
+          ? `${format} selected. CricketData.org player profiles are format-neutral, so matching profiles are shown.`
+          : undefined,
       }
     })
   } catch (error) {
