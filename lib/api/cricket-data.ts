@@ -73,8 +73,14 @@ class CricketDataService {
   }
 
   async getCurrentMatches(): Promise<Match[]> {
-    const result = await this.request("/currentMatches", { offset: "0" }, { revalidate: 30 })
-    return this.transformMatches(result?.data || [])
+    const offsets = ["0", "25", "50", "75"]
+    const results = await Promise.all(
+      offsets.map((offset) =>
+        this.request("/currentMatches", { offset }, { revalidate: 30 }).catch(() => ({ data: [] }))
+      )
+    )
+    const matches = results.flatMap((result) => this.transformMatches(result?.data || []))
+    return this.dedupeMatches(matches)
   }
 
   async getMatches(status?: Match["status"]): Promise<Match[]> {
