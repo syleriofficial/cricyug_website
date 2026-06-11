@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import type { ReactNode } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import Link from "next/link"
 import { Radio, Calendar, Clock, MapPin } from "lucide-react"
@@ -14,6 +15,20 @@ import type { Match, MatchStatus, MatchFormat } from "@/lib/types"
 
 type FilterType = "all" | MatchStatus
 type FormatType = "all" | "test" | "odi" | "t20"
+
+const statusFilters: { value: FilterType; label: string }[] = [
+  { value: "all", label: "All" },
+  { value: "live", label: "Live" },
+  { value: "upcoming", label: "Upcoming" },
+  { value: "completed", label: "Completed" },
+]
+
+const formatFilters: { value: FormatType; label: string }[] = [
+  { value: "all", label: "All" },
+  { value: "test", label: "Test" },
+  { value: "odi", label: "ODI" },
+  { value: "t20", label: "T20" },
+]
 
 export function LiveMatchesContent() {
   const [filter, setFilter] = useState<FilterType>("all")
@@ -29,6 +44,9 @@ export function LiveMatchesContent() {
 
   const { matches: localizedMatches, region } = useLocalizedMatches(matches || [])
   const selectedMatch = localizedMatches.find(m => m.id === selectedMatchId) || localizedMatches[0]
+  const activeRegionLabel = selectedCode
+    ? regionOptions.find((item) => item.code === selectedCode)?.label
+    : region?.label
 
   return (
     <div className="py-8">
@@ -58,61 +76,89 @@ export function LiveMatchesContent() {
           )}
 
           {/* Filters */}
-          <div className="flex flex-wrap items-center gap-4 mt-6">
-            <label className="flex items-center gap-2 rounded-lg bg-muted p-1 pl-3 text-sm text-muted-foreground">
-              <MapPin className="h-4 w-4 text-primary" />
-              <select
-                value={selectedCode}
-                onChange={(event) => setRegionCode(event.target.value)}
-                className="rounded-md bg-background px-3 py-2 text-foreground outline-none"
-                aria-label="Prioritize matches by region"
-              >
-                <option value="">Auto location</option>
-                {regionOptions.map((item) => (
-                  <option key={item.code} value={item.code}>{item.label}</option>
-                ))}
-              </select>
-            </label>
-
-            <div className="min-w-0 space-y-1">
-              <p className="px-1 text-xs font-medium uppercase text-muted-foreground">Status</p>
-              <div className="flex max-w-full items-center gap-2 overflow-x-auto rounded-lg bg-muted p-1">
-                {(["all", "live", "upcoming", "completed"] as FilterType[]).map((f) => (
-                  <Button
-                    key={f}
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setFilter(f)}
-                    className={cn(
-                      "shrink-0 capitalize",
-                      filter === f ? "bg-background shadow-sm" : "hover:bg-background/50"
-                    )}
-                  >
-                    {f === "live" && <span className="h-2 w-2 rounded-full bg-live animate-live-pulse mr-1.5" />}
-                    {f}
-                  </Button>
-                ))}
+          <div className="mt-6 rounded-xl border border-border bg-card p-3 shadow-sm sm:p-4">
+            <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <p className="text-xs font-semibold uppercase text-muted-foreground">Match Controls</p>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  {localizedMatches.length} matches shown
+                  {activeRegionLabel ? ` • ${activeRegionLabel} priority` : ""}
+                </p>
               </div>
+              {filter !== "all" || format !== "all" ? (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    setFilter("all")
+                    setFormat("all")
+                  }}
+                  className="text-muted-foreground hover:text-foreground"
+                >
+                  Reset
+                </Button>
+              ) : null}
             </div>
 
-            <div className="min-w-0 space-y-1">
-              <p className="px-1 text-xs font-medium uppercase text-muted-foreground">Format</p>
-              <div className="flex max-w-full items-center gap-2 overflow-x-auto rounded-lg bg-muted p-1">
-                {(["all", "test", "odi", "t20"] as FormatType[]).map((f) => (
+            <div className="grid gap-4 lg:grid-cols-[minmax(210px,0.8fr)_minmax(0,1.3fr)_minmax(0,1fr)]">
+              <label className="min-w-0 space-y-2">
+                <span className="flex items-center gap-2 px-1 text-xs font-semibold uppercase text-muted-foreground">
+                  <MapPin className="h-4 w-4 text-primary" />
+                  Location
+                </span>
+                <select
+                  value={selectedCode}
+                  onChange={(event) => setRegionCode(event.target.value)}
+                  className="h-10 w-full rounded-lg border border-border bg-background px-3 text-sm font-medium text-foreground outline-none transition-colors hover:border-primary/40 focus:border-primary"
+                  aria-label="Prioritize matches by region"
+                >
+                  <option value="">Auto location</option>
+                  {regionOptions.map((item) => (
+                    <option key={item.code} value={item.code}>{item.label}</option>
+                  ))}
+                </select>
+              </label>
+
+              <FilterGroup label="Status">
+                {statusFilters.map((item) => (
                   <Button
-                    key={f}
+                    key={item.value}
                     variant="ghost"
                     size="sm"
-                    onClick={() => setFormat(f)}
+                    aria-pressed={filter === item.value}
+                    onClick={() => setFilter(item.value)}
                     className={cn(
-                      "shrink-0 uppercase",
-                      format === f ? "bg-background shadow-sm" : "hover:bg-background/50"
+                      "h-9 shrink-0 rounded-lg px-3 text-sm",
+                      filter === item.value
+                        ? "bg-primary text-primary-foreground shadow-sm hover:bg-primary/90 hover:text-primary-foreground"
+                        : "bg-background/60 text-muted-foreground hover:bg-background hover:text-foreground"
                     )}
                   >
-                    {f}
+                    {item.value === "live" && <span className="h-2 w-2 rounded-full bg-live animate-live-pulse" />}
+                    {item.label}
                   </Button>
                 ))}
-              </div>
+              </FilterGroup>
+
+              <FilterGroup label="Format">
+                {formatFilters.map((item) => (
+                  <Button
+                    key={item.value}
+                    variant="ghost"
+                    size="sm"
+                    aria-pressed={format === item.value}
+                    onClick={() => setFormat(item.value)}
+                    className={cn(
+                      "h-9 shrink-0 rounded-lg px-3 text-sm",
+                      format === item.value
+                        ? "bg-primary text-primary-foreground shadow-sm hover:bg-primary/90 hover:text-primary-foreground"
+                        : "bg-background/60 text-muted-foreground hover:bg-background hover:text-foreground"
+                    )}
+                  >
+                    {item.label}
+                  </Button>
+                ))}
+              </FilterGroup>
             </div>
           </div>
         </div>
@@ -212,6 +258,17 @@ export function LiveMatchesContent() {
             </div>
           </div>
         </div>
+      </div>
+    </div>
+  )
+}
+
+function FilterGroup({ label, children }: { label: string; children: ReactNode }) {
+  return (
+    <div className="min-w-0 space-y-2">
+      <p className="px-1 text-xs font-semibold uppercase text-muted-foreground">{label}</p>
+      <div className="flex max-w-full items-center gap-2 overflow-x-auto rounded-lg bg-muted p-1">
+        {children}
       </div>
     </div>
   )
