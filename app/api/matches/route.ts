@@ -54,6 +54,11 @@ export async function GET(request: Request) {
       message = `${status} matches are not available right now, so latest available matches are shown.`
     }
 
+    if (filtered.length === 0 && format) {
+      filtered = allMatchesForFallback
+      message = `${format.toUpperCase()} matches are not available right now, so latest official matches are shown.`
+    }
+
     const region = getRegionByCode(country)
     const sorted = sortMatchesForRegion(filtered, region)
 

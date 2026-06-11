@@ -13,19 +13,19 @@ import type { Match } from "@/lib/types"
 
 export function MatchesListContent({ initialFormat }: { initialFormat?: string }) {
   const [selectedSeriesId, setSelectedSeriesId] = useState<string | null>(null)
-  const formatParam = initialFormat
+  const formatParam = initialFormat && initialFormat !== "ipl" ? initialFormat.toUpperCase() : undefined
   const { region: regionForRequest, selectedCode, setRegionCode, options: regionOptions } = useRegionPreference()
   
-  const { data: matches, error, isLoading, mutate, isConfigured, message } = useMatches({ country: regionForRequest?.code })
+  const { data: matches, error, isLoading, mutate, isConfigured, message } = useMatches({
+    country: regionForRequest?.code,
+    format: formatParam,
+  })
   const { data: series } = useSeries({ limit: 10 })
 
   // Filter matches by series if selected
   const filteredMatches = selectedSeriesId 
     ? matches?.filter(m => m.series?.id === selectedSeriesId)
-    : matches?.filter((match) => {
-        if (!formatParam || formatParam === "ipl") return true
-        return match.format.toLowerCase() === formatParam.toLowerCase()
-      })
+    : matches
   const { matches: localizedMatches, region } = useLocalizedMatches(filteredMatches || [])
 
   return (
