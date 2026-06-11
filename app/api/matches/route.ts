@@ -2,18 +2,72 @@ import { NextResponse } from "next/server"
 import { getCricketDataService } from "@/lib/api/cricket-data"
 import { getRegionByCode, sortMatchesForRegion } from "@/lib/match-location"
 
+export const revalidate = 30
+
+const MATCH_CACHE_TTL_MS = 30_000
+const MATCH_CACHE_HEADERS = {
+  "Cache-Control": "public, s-maxage=30, stale-while-revalidate=120",
+  "CDN-Cache-Control": "public, s-maxage=30, stale-while-revalidate=120",
+  "Netlify-CDN-Cache-Control": "public, s-maxage=30, stale-while-revalidate=120",
+}
+
+type MatchApiPayload = {
+  data: unknown[]
+  meta: Record<string, unknown>
+}
+
+type MatchCacheEntry = {
+  expiresAt: number
+  payload: MatchApiPayload
+}
+
+const globalMatchCache = globalThis as typeof globalThis & {
+  __cricyugMatchCache?: Map<string, MatchCacheEntry>
+}
+
+function matchCache() {
+  globalMatchCache.__cricyugMatchCache ??= new Map()
+  return globalMatchCache.__cricyugMatchCache
+}
+
+function cacheKey(params: URLSearchParams) {
+  return ["status", "format", "country", "limit"]
+    .map((key) => `${key}:${params.get(key) || ""}`)
+    .join("|")
+}
+
+function jsonResponse(payload: MatchApiPayload, status = 200, cacheStatus = "MISS") {
+  const headers = status < 400
+    ? MATCH_CACHE_HEADERS
+    : { "Cache-Control": "no-store" }
+
+  return NextResponse.json(payload, {
+    status,
+    headers: {
+      ...headers,
+      "X-CricYug-Cache": cacheStatus,
+    },
+  })
+}
+
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
   const status = searchParams.get("status")
   const format = searchParams.get("format")
   const country = searchParams.get("country")
   const limit = Number(searchParams.get("limit") || "20")
+  const key = cacheKey(searchParams)
+  const cached = matchCache().get(key)
+
+  if (cached && cached.expiresAt > Date.now()) {
+    return jsonResponse(cached.payload, 200, "HIT")
+  }
 
   try {
     const service = getCricketDataService()
 
     if (!service) {
-      return NextResponse.json({
+      return jsonResponse({
         data: [],
         meta: {
           total: 0,
@@ -21,7 +75,7 @@ export async function GET(request: Request) {
           configured: false,
           message: "CRICKETDATA_API_KEY is required for live match data.",
         },
-      }, { status: 503 })
+      }, 503)
     }
 
     const requestedStatus =
@@ -50,7 +104,7 @@ export async function GET(request: Request) {
     const region = getRegionByCode(country)
     const sorted = sortMatchesForRegion(filtered, region)
 
-    return NextResponse.json({
+    const payload = {
       data: sorted.slice(0, limit),
       meta: {
         total: filtered.length,
@@ -59,11 +113,18 @@ export async function GET(request: Request) {
         message,
         country: region?.code,
       },
+    }
+
+    matchCache().set(key, {
+      expiresAt: Date.now() + MATCH_CACHE_TTL_MS,
+      payload,
     })
+
+    return jsonResponse(payload)
   } catch (error) {
     console.error("[CricYug] /api/matches error:", error)
 
-    return NextResponse.json({
+    return jsonResponse({
       data: [],
       meta: {
         total: 0,
@@ -71,6 +132,6 @@ export async function GET(request: Request) {
         configured: true,
         error: error instanceof Error ? error.message : "Unknown API error",
       },
-    }, { status: 502 })
+    }, 502)
   }
 }

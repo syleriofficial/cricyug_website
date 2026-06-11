@@ -73,7 +73,7 @@ class CricketDataService {
   }
 
   async getCurrentMatches(): Promise<Match[]> {
-    const result = await this.request("/currentMatches", { offset: "0" }, { revalidate: 15 })
+    const result = await this.request("/currentMatches", { offset: "0" }, { revalidate: 30 })
     return this.transformMatches(result?.data || [])
   }
 
