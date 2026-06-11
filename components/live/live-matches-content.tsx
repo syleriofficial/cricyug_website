@@ -17,17 +17,17 @@ type FilterType = "all" | MatchStatus
 type FormatType = "all" | "test" | "odi" | "t20"
 
 const statusFilters: { value: FilterType; label: string }[] = [
-  { value: "all", label: "All" },
   { value: "live", label: "Live" },
   { value: "upcoming", label: "Upcoming" },
   { value: "completed", label: "Completed" },
+  { value: "all", label: "All" },
 ]
 
 const formatFilters: { value: FormatType; label: string }[] = [
-  { value: "all", label: "All" },
   { value: "test", label: "Test" },
   { value: "odi", label: "ODI" },
   { value: "t20", label: "T20" },
+  { value: "all", label: "All" },
 ]
 
 export function LiveMatchesContent() {
