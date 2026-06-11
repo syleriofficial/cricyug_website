@@ -29,8 +29,7 @@ export function LiveScoreCard({ match, className }: LiveScoreCardProps) {
         <div className="absolute right-3 top-3">
           <StatusBadge status={match.status} label={statusLabel} />
         </div>
-        <p className="text-xs font-semibold uppercase text-primary">{statusLabel}</p>
-        <p className="mt-1 text-sm font-semibold leading-snug">{match.series.name}</p>
+        <p className="text-sm font-semibold leading-snug">{match.series.name}</p>
         <p className="text-xs text-muted-foreground mt-0.5">
           {match.format} {match.venue && `• ${match.venue.name}`}
         </p>
