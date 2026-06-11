@@ -9,6 +9,7 @@ export async function GET(request: Request) {
   const type = searchParams.get("type") as "international" | "league" | "domestic" | null
   const category = searchParams.get("category")
   const status = searchParams.get("status")
+  const featured = searchParams.get("featured") === "true"
   const limit = parseInt(searchParams.get("limit") || "20")
 
   try {
@@ -29,7 +30,7 @@ export async function GET(request: Request) {
     const series = await service.getSeriesList(type || undefined)
     
     // Filter by status if provided
-    let filtered = series
+    let filtered = featured ? series.filter(s => s.status === "ongoing") : series
     let usedFallback = false
     if (status) {
       filtered = series.filter(s => s.status === status)
@@ -41,6 +42,23 @@ export async function GET(request: Request) {
     if (filtered.length === 0 && category && category !== "all") {
       filtered = series.slice(0, limit)
       usedFallback = true
+    }
+
+    if (featured && filtered.length > 0) {
+      const candidates = filtered.slice(0, 12)
+      const standingsCounts = await Promise.all(
+        candidates.map(async (item) => {
+          const standings = await service.getSeriesStandings(item.id).catch(() => [])
+          return [item.id, standings.length] as const
+        })
+      )
+      const countBySeries = new Map(standingsCounts)
+
+      filtered = [...filtered].sort((a, b) => {
+        const standingsDelta = (countBySeries.get(b.id) || 0) - (countBySeries.get(a.id) || 0)
+        if (standingsDelta !== 0) return standingsDelta
+        return a.name.localeCompare(b.name)
+      })
     }
 
     return NextResponse.json({
