@@ -38,25 +38,40 @@ export async function GET(request: Request) {
     })
     let message: string | undefined
 
-    if (filtered.length === 0 && format) {
-      const formatFallback = allMatchesForFallback.filter(
+    if (filtered.length === 0 && requestedStatus && format) {
+      const sameStatusFallback = allMatchesForFallback.filter(
+        (match) => match.status === requestedStatus
+      )
+      const sameFormatFallback = allMatchesForFallback.filter(
         (match) => match.format.toLowerCase() === format.toLowerCase()
       )
 
-      if (formatFallback.length > 0) {
-        filtered = formatFallback
-        message = `${format.toUpperCase()} matches are shown across all statuses because none are available in the selected status.`
+      if (sameStatusFallback.length > 0) {
+        filtered = sameStatusFallback
+        message = `${format.toUpperCase()} ${requestedStatus} matches are not available right now, so ${requestedStatus} matches from other formats are shown.`
+      } else if (sameFormatFallback.length > 0) {
+        filtered = sameFormatFallback
+        message = `${format.toUpperCase()} ${requestedStatus} matches are not available right now, so ${format.toUpperCase()} matches across all statuses are shown.`
       }
     }
 
-    if (filtered.length === 0 && status) {
-      filtered = allMatchesForFallback.slice(0, limit)
-      message = `${status} matches are not available right now, so latest available matches are shown.`
+    if (filtered.length === 0 && format) {
+      const sameFormatFallback = allMatchesForFallback.filter(
+        (match) => match.format.toLowerCase() === format.toLowerCase()
+      )
+
+      if (sameFormatFallback.length > 0) {
+        filtered = sameFormatFallback
+        message = `${format.toUpperCase()} matches are shown across all statuses because none are available in the selected status.`
+      } else {
+        filtered = allMatchesForFallback
+        message = `${format.toUpperCase()} matches are not available right now, so latest official matches are shown.`
+      }
     }
 
-    if (filtered.length === 0 && format) {
+    if (filtered.length === 0 && requestedStatus) {
       filtered = allMatchesForFallback
-      message = `${format.toUpperCase()} matches are not available right now, so latest official matches are shown.`
+      message = `${requestedStatus} matches are not available right now, so latest available matches are shown.`
     }
 
     const region = getRegionByCode(country)

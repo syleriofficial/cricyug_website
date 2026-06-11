@@ -74,39 +74,45 @@ export function LiveMatchesContent() {
               </select>
             </label>
 
-            <div className="flex items-center gap-2 p-1 rounded-lg bg-muted">
-              {(["all", "live", "upcoming", "completed"] as FilterType[]).map((f) => (
-                <Button
-                  key={f}
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setFilter(f)}
-                  className={cn(
-                    "capitalize",
-                    filter === f ? "bg-background shadow-sm" : "hover:bg-background/50"
-                  )}
-                >
-                  {f === "live" && <span className="h-2 w-2 rounded-full bg-live animate-live-pulse mr-1.5" />}
-                  {f}
-                </Button>
-              ))}
+            <div className="min-w-0 space-y-1">
+              <p className="px-1 text-xs font-medium uppercase text-muted-foreground">Status</p>
+              <div className="flex max-w-full items-center gap-2 overflow-x-auto rounded-lg bg-muted p-1">
+                {(["all", "live", "upcoming", "completed"] as FilterType[]).map((f) => (
+                  <Button
+                    key={f}
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setFilter(f)}
+                    className={cn(
+                      "shrink-0 capitalize",
+                      filter === f ? "bg-background shadow-sm" : "hover:bg-background/50"
+                    )}
+                  >
+                    {f === "live" && <span className="h-2 w-2 rounded-full bg-live animate-live-pulse mr-1.5" />}
+                    {f}
+                  </Button>
+                ))}
+              </div>
             </div>
 
-            <div className="flex items-center gap-2 p-1 rounded-lg bg-muted">
-              {(["all", "test", "odi", "t20"] as FormatType[]).map((f) => (
-                <Button
-                  key={f}
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setFormat(f)}
-                  className={cn(
-                    "uppercase",
-                    format === f ? "bg-background shadow-sm" : "hover:bg-background/50"
-                  )}
-                >
-                  {f}
-                </Button>
-              ))}
+            <div className="min-w-0 space-y-1">
+              <p className="px-1 text-xs font-medium uppercase text-muted-foreground">Format</p>
+              <div className="flex max-w-full items-center gap-2 overflow-x-auto rounded-lg bg-muted p-1">
+                {(["all", "test", "odi", "t20"] as FormatType[]).map((f) => (
+                  <Button
+                    key={f}
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setFormat(f)}
+                    className={cn(
+                      "shrink-0 uppercase",
+                      format === f ? "bg-background shadow-sm" : "hover:bg-background/50"
+                    )}
+                  >
+                    {f}
+                  </Button>
+                ))}
+              </div>
             </div>
           </div>
         </div>
