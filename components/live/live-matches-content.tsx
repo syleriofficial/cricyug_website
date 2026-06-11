@@ -47,6 +47,8 @@ export function LiveMatchesContent() {
   const activeRegionLabel = selectedCode
     ? regionOptions.find((item) => item.code === selectedCode)?.label
     : region?.label
+  const selectedFormatLabel = formatFilters.find((item) => item.value === format)?.label || "All"
+  const selectedStatusLabel = statusFilters.find((item) => item.value === filter)?.label || "All"
 
   return (
     <div className="py-8">
@@ -186,7 +188,13 @@ export function LiveMatchesContent() {
 
             {/* Empty State */}
             {!isLoading && !error && localizedMatches.length === 0 && (
-              <NoMatches />
+              <NoMatches
+                message={
+                  format !== "all"
+                    ? `No ${selectedFormatLabel} ${filter === "all" ? "" : selectedStatusLabel.toLowerCase()} matches are available from CricketData.org right now.`
+                    : "There are no matches scheduled at the moment. Check back later for updates."
+                }
+              />
             )}
 
             {/* Matches List */}

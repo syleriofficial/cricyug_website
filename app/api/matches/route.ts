@@ -38,38 +38,11 @@ export async function GET(request: Request) {
     })
     let message: string | undefined
 
-    if (filtered.length === 0 && requestedStatus && format) {
-      const sameStatusFallback = allMatchesForFallback.filter(
-        (match) => match.status === requestedStatus
-      )
-      const sameFormatFallback = allMatchesForFallback.filter(
-        (match) => match.format.toLowerCase() === format.toLowerCase()
-      )
-
-      if (sameStatusFallback.length > 0) {
-        filtered = sameStatusFallback
-        message = `${format.toUpperCase()} ${requestedStatus} matches are not available right now, so ${requestedStatus} matches from other formats are shown.`
-      } else if (sameFormatFallback.length > 0) {
-        filtered = sameFormatFallback
-        message = `${format.toUpperCase()} ${requestedStatus} matches are not available right now, so ${format.toUpperCase()} matches across all statuses are shown.`
-      }
-    }
-
     if (filtered.length === 0 && format) {
-      const sameFormatFallback = allMatchesForFallback.filter(
-        (match) => match.format.toLowerCase() === format.toLowerCase()
-      )
-
-      if (sameFormatFallback.length > 0) {
-        filtered = sameFormatFallback
-        message = `${format.toUpperCase()} matches are shown across all statuses because none are available in the selected status.`
-      } else {
-        filtered = allMatchesForFallback
-        message = `${format.toUpperCase()} matches are not available right now, so latest official matches are shown.`
-      }
-    }
-
-    if (filtered.length === 0 && requestedStatus) {
+      message = requestedStatus
+        ? `${format.toUpperCase()} ${requestedStatus} matches are not available right now.`
+        : `${format.toUpperCase()} matches are not available right now.`
+    } else if (filtered.length === 0 && requestedStatus) {
       filtered = allMatchesForFallback
       message = `${requestedStatus} matches are not available right now, so latest available matches are shown.`
     }
