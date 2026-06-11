@@ -116,9 +116,6 @@ export function LiveMatchesContent() {
                 </p>
               </div>
               <div className="flex flex-wrap items-center gap-2">
-                <div className="rounded-lg border border-border bg-background px-3 py-2 text-xs text-muted-foreground">
-                  <span className="font-medium text-foreground">{refreshIn}s</span> refresh
-                </div>
                 <Button
                   variant="ghost"
                   size="sm"
