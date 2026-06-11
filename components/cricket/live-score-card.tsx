@@ -10,6 +10,8 @@ interface LiveScoreCardProps {
 }
 
 export function LiveScoreCard({ match, className }: LiveScoreCardProps) {
+  const statusLabel = match.status === "completed" ? "RESULT" : match.status === "live" ? "LIVE" : "UPCOMING"
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -22,17 +24,13 @@ export function LiveScoreCard({ match, className }: LiveScoreCardProps) {
         className
       )}
     >
-      {/* Live indicator */}
-      {match.status === "live" && (
-        <div className="absolute top-3 right-3 flex items-center gap-1.5 px-2 py-1 rounded-full bg-live/20 text-live text-xs font-semibold">
-          <span className="h-1.5 w-1.5 rounded-full bg-live animate-live-pulse" />
-          LIVE
-        </div>
-      )}
-
       {/* Match info */}
-      <div className="mb-3">
-        <p className="text-xs text-muted-foreground">{match.series.name}</p>
+      <div className="mb-4 pr-20">
+        <div className="absolute right-3 top-3">
+          <StatusBadge status={match.status} label={statusLabel} />
+        </div>
+        <p className="text-xs font-semibold uppercase text-primary">{statusLabel}</p>
+        <p className="mt-1 text-sm font-semibold leading-snug">{match.series.name}</p>
         <p className="text-xs text-muted-foreground mt-0.5">
           {match.format} {match.venue && `• ${match.venue.name}`}
         </p>
@@ -47,7 +45,12 @@ export function LiveScoreCard({ match, className }: LiveScoreCardProps) {
       {/* Result or status */}
       <div className="mt-3 pt-3 border-t border-border">
         {match.result ? (
-          <p className="text-sm text-primary font-medium">{match.result}</p>
+          <p className={cn(
+            "text-sm font-semibold leading-snug",
+            match.status === "live" ? "text-live" : "text-primary"
+          )}>
+            {match.result}
+          </p>
         ) : match.startTime ? (
           <p className="text-sm text-muted-foreground">{match.startTime}</p>
         ) : null}
@@ -59,10 +62,24 @@ export function LiveScoreCard({ match, className }: LiveScoreCardProps) {
   )
 }
 
+function StatusBadge({ status, label }: { status: Match["status"]; label: string }) {
+  return (
+    <div className={cn(
+      "flex items-center gap-1.5 rounded-full px-2 py-1 text-xs font-semibold",
+      status === "live" && "bg-live/20 text-live",
+      status === "completed" && "bg-primary/15 text-primary",
+      status === "upcoming" && "bg-muted text-muted-foreground"
+    )}>
+      {status === "live" && <span className="h-1.5 w-1.5 rounded-full bg-live animate-live-pulse" />}
+      {label}
+    </div>
+  )
+}
+
 function TeamScoreRow({ teamScore, isLive }: { teamScore: TeamScore; isLive: boolean }) {
   return (
-    <div className="flex items-center justify-between">
-      <div className="flex items-center gap-3">
+    <div className="flex items-center justify-between gap-3 rounded-lg bg-background/35 px-3 py-2">
+      <div className="flex min-w-0 items-center gap-3">
         {teamScore.team.logo ? (
           <img 
             src={teamScore.team.logo} 
@@ -70,22 +87,25 @@ function TeamScoreRow({ teamScore, isLive }: { teamScore: TeamScore; isLive: boo
             className="h-6 w-6 object-contain"
           />
         ) : (
-          <div className="h-6 w-6 rounded-full bg-muted flex items-center justify-center text-xs font-bold">
+          <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-muted text-xs font-bold">
             {teamScore.team.shortName.slice(0, 2)}
           </div>
         )}
-        <span className="font-medium">{teamScore.team.shortName}</span>
+        <div className="min-w-0">
+          <p className="truncate font-semibold">{teamScore.team.name}</p>
+          <p className="text-xs text-muted-foreground">{teamScore.team.shortName}</p>
+        </div>
       </div>
       {teamScore.score && (
-        <div className="text-right">
-          <span className={cn("text-lg font-bold", isLive && "text-primary")}>
-            {teamScore.score}
-          </span>
+        <div className="shrink-0 text-right">
           {teamScore.overs && (
-            <span className="text-sm text-muted-foreground ml-1">
+            <p className="text-xs text-muted-foreground">
               ({teamScore.overs} ov)
-            </span>
+            </p>
           )}
+          <p className={cn("text-xl font-bold leading-tight", isLive && "text-primary")}>
+            {teamScore.score}
+          </p>
         </div>
       )}
     </div>
