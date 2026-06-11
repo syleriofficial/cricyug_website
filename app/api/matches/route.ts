@@ -9,6 +9,7 @@ const MATCH_CACHE_HEADERS = {
   "Cache-Control": "public, s-maxage=30, stale-while-revalidate=120",
   "CDN-Cache-Control": "public, s-maxage=30, stale-while-revalidate=120",
   "Netlify-CDN-Cache-Control": "public, s-maxage=30, stale-while-revalidate=120",
+  "Netlify-Vary": "query=status|format|country|limit",
 }
 
 type MatchApiPayload = {
