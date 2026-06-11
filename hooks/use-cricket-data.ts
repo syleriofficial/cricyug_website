@@ -36,7 +36,7 @@ async function fetcher<T>(url: string): Promise<{ data: T; isConfigured: boolean
 
 // ============= Matches Hooks =============
 
-export function useMatches(params?: { status?: string; format?: string; limit?: number; country?: string }) {
+export function useMatches(params?: { status?: string; format?: string; limit?: number; country?: string; refreshInterval?: number }) {
   const searchParams = new URLSearchParams()
   if (params?.status) searchParams.set("status", params.status)
   if (params?.format) searchParams.set("format", params.format)
@@ -46,7 +46,7 @@ export function useMatches(params?: { status?: string; format?: string; limit?: 
   const { data, error, mutate, isLoading } = useSWR(
     `/api/matches?${searchParams.toString()}`,
     (url) => fetcher<Match[]>(url),
-    { refreshInterval: 30000 }
+    { refreshInterval: params?.refreshInterval ?? 30000 }
   )
 
   return {

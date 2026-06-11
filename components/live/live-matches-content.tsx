@@ -1,10 +1,10 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import type { ReactNode } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import Link from "next/link"
-import { Radio, Calendar, Clock, MapPin } from "lucide-react"
+import { Radio, Calendar, Clock, MapPin, RefreshCw } from "lucide-react"
 import { LiveScoreCard } from "@/components/cricket/live-score-card"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
@@ -30,16 +30,21 @@ const formatFilters: { value: FormatType; label: string }[] = [
   { value: "all", label: "All" },
 ]
 
+const AUTO_REFRESH_SECONDS = 30
+
 export function LiveMatchesContent() {
   const [filter, setFilter] = useState<FilterType>("live")
   const [format, setFormat] = useState<FormatType>("all")
   const [selectedMatchId, setSelectedMatchId] = useState<string | null>(null)
+  const [refreshIn, setRefreshIn] = useState(AUTO_REFRESH_SECONDS)
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null)
   const { region: regionForRequest, selectedCode, setRegionCode, options: regionOptions } = useRegionPreference()
 
   const { data: matches, error, isLoading, mutate, message } = useMatches({
     status: filter === "all" ? undefined : filter,
     format: format === "all" ? undefined : format.toUpperCase() as MatchFormat,
     country: regionForRequest?.code,
+    refreshInterval: 0,
   })
 
   const { matches: localizedMatches, region } = useLocalizedMatches(matches || [])
@@ -49,6 +54,31 @@ export function LiveMatchesContent() {
     : region?.label
   const selectedFormatLabel = formatFilters.find((item) => item.value === format)?.label || "All"
   const selectedStatusLabel = statusFilters.find((item) => item.value === filter)?.label || "All"
+
+  useEffect(() => {
+    setRefreshIn(AUTO_REFRESH_SECONDS)
+    setLastUpdated(new Date())
+  }, [filter, format, selectedCode])
+
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      setRefreshIn((current) => {
+        if (current <= 1) {
+          void mutate().then(() => setLastUpdated(new Date()))
+          return AUTO_REFRESH_SECONDS
+        }
+
+        return current - 1
+      })
+    }, 1000)
+
+    return () => window.clearInterval(timer)
+  }, [mutate])
+
+  function refreshNow() {
+    setRefreshIn(AUTO_REFRESH_SECONDS)
+    void mutate().then(() => setLastUpdated(new Date()))
+  }
 
   return (
     <div className="py-8">
@@ -87,19 +117,36 @@ export function LiveMatchesContent() {
                   {activeRegionLabel ? ` • ${activeRegionLabel} priority` : ""}
                 </p>
               </div>
-              {filter !== "live" || format !== "all" ? (
+              <div className="flex flex-wrap items-center gap-2">
+                <div className="rounded-lg border border-border bg-background px-3 py-2 text-xs text-muted-foreground">
+                  <span className="font-medium text-foreground">{refreshIn}s</span> refresh
+                  {lastUpdated ? (
+                    <span className="hidden sm:inline"> • {lastUpdated.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" })}</span>
+                  ) : null}
+                </div>
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => {
-                    setFilter("live")
-                    setFormat("all")
-                  }}
-                  className="text-muted-foreground hover:text-foreground"
+                  onClick={refreshNow}
+                  className="gap-1.5 text-muted-foreground hover:text-foreground"
                 >
-                  Reset
+                  <RefreshCw className={cn("h-4 w-4", isLoading && "animate-spin")} />
+                  Refresh
                 </Button>
-              ) : null}
+                {filter !== "live" || format !== "all" ? (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      setFilter("live")
+                      setFormat("all")
+                    }}
+                    className="text-muted-foreground hover:text-foreground"
+                  >
+                    Reset
+                  </Button>
+                ) : null}
+              </div>
             </div>
 
             <div className="grid gap-4 lg:grid-cols-[minmax(210px,0.8fr)_minmax(0,1.3fr)_minmax(0,1fr)]">
