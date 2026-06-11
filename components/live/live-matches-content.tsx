@@ -31,7 +31,7 @@ const formatFilters: { value: FormatType; label: string }[] = [
 ]
 
 export function LiveMatchesContent() {
-  const [filter, setFilter] = useState<FilterType>("all")
+  const [filter, setFilter] = useState<FilterType>("live")
   const [format, setFormat] = useState<FormatType>("all")
   const [selectedMatchId, setSelectedMatchId] = useState<string | null>(null)
   const { region: regionForRequest, selectedCode, setRegionCode, options: regionOptions } = useRegionPreference()
@@ -87,12 +87,12 @@ export function LiveMatchesContent() {
                   {activeRegionLabel ? ` • ${activeRegionLabel} priority` : ""}
                 </p>
               </div>
-              {filter !== "all" || format !== "all" ? (
+              {filter !== "live" || format !== "all" ? (
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => {
-                    setFilter("all")
+                    setFilter("live")
                     setFormat("all")
                   }}
                   className="text-muted-foreground hover:text-foreground"
