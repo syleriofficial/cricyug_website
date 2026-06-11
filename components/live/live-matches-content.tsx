@@ -37,7 +37,6 @@ export function LiveMatchesContent() {
   const [format, setFormat] = useState<FormatType>("all")
   const [selectedMatchId, setSelectedMatchId] = useState<string | null>(null)
   const [refreshIn, setRefreshIn] = useState(AUTO_REFRESH_SECONDS)
-  const [lastUpdated, setLastUpdated] = useState<Date | null>(null)
   const { region: regionForRequest, selectedCode, setRegionCode, options: regionOptions } = useRegionPreference()
 
   const { data: matches, error, isLoading, mutate, message } = useMatches({
@@ -57,14 +56,13 @@ export function LiveMatchesContent() {
 
   useEffect(() => {
     setRefreshIn(AUTO_REFRESH_SECONDS)
-    setLastUpdated(new Date())
   }, [filter, format, selectedCode])
 
   useEffect(() => {
     const timer = window.setInterval(() => {
       setRefreshIn((current) => {
         if (current <= 1) {
-          void mutate().then(() => setLastUpdated(new Date()))
+          void mutate()
           return AUTO_REFRESH_SECONDS
         }
 
@@ -77,7 +75,7 @@ export function LiveMatchesContent() {
 
   function refreshNow() {
     setRefreshIn(AUTO_REFRESH_SECONDS)
-    void mutate().then(() => setLastUpdated(new Date()))
+    void mutate()
   }
 
   return (
@@ -120,9 +118,6 @@ export function LiveMatchesContent() {
               <div className="flex flex-wrap items-center gap-2">
                 <div className="rounded-lg border border-border bg-background px-3 py-2 text-xs text-muted-foreground">
                   <span className="font-medium text-foreground">{refreshIn}s</span> refresh
-                  {lastUpdated ? (
-                    <span className="hidden sm:inline"> • {lastUpdated.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" })}</span>
-                  ) : null}
                 </div>
                 <Button
                   variant="ghost"
