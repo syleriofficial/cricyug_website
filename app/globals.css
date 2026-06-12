@@ -13,28 +13,28 @@
   --popover-foreground: #171717;
   --primary: #E3363E;
   --primary-foreground: #FFFFFF;
-  --secondary: #FFF15A;
-  --secondary-foreground: #171717;
-  --muted: #F5F5F4;
-  --muted-foreground: #69645D;
-  --accent: #FFF15A;
-  --accent-foreground: #171717;
-  --destructive: #F0444D;
+  --secondary: #2563EB;
+  --secondary-foreground: #FFFFFF;
+  --muted: #F7F8FA;
+  --muted-foreground: #6B7280;
+  --accent: #F59E0B;
+  --accent-foreground: #111827;
+  --destructive: #DC2626;
   --destructive-foreground: #FFFFFF;
-  --border: #E8E4DC;
-  --input: #E8E4DC;
+  --border: #E5E7EB;
+  --input: #E5E7EB;
   --ring: #E3363E;
   --chart-1: #E3363E;
-  --chart-2: #F6C453;
-  --chart-3: #A7A556;
-  --chart-4: #F59E4A;
-  --chart-5: #F0444D;
+  --chart-2: #2563EB;
+  --chart-3: #15803D;
+  --chart-4: #F59E0B;
+  --chart-5: #DC2626;
   --radius: 0.75rem;
-  --success: #A7A556;
-  --success-foreground: #171717;
-  --warning: #F6C453;
-  --warning-foreground: #171717;
-  --live: #F0444D;
+  --success: #15803D;
+  --success-foreground: #FFFFFF;
+  --warning: #F59E0B;
+  --warning-foreground: #111827;
+  --live: #D71920;
   --live-foreground: #FFFFFF;
   --sidebar: #FFFFFF;
   --sidebar-foreground: #171717;
@@ -111,11 +111,11 @@
 }
 
 ::-webkit-scrollbar-track {
-  background: #F5F5F4;
+  background: #F7F8FA;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #D8D2C8;
+  background: #D1D5DB;
   border-radius: 3px;
 }
 
@@ -139,7 +139,7 @@
 
 /* Gradient text utility */
 .text-gradient-brand {
-  background: linear-gradient(135deg, #171717 0%, #E3363E 54%, #B91C1C 100%);
+  background: linear-gradient(135deg, #111827 0%, #E3363E 58%, #B91C1C 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;

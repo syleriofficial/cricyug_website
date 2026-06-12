@@ -20,7 +20,7 @@ export function LiveScoreCard({ match, className }: LiveScoreCardProps) {
       transition={{ duration: 0.2 }}
       className={cn(
         "relative overflow-hidden rounded-xl bg-card border border-border p-4 cursor-pointer group shadow-sm",
-        match.status === "live" && "border-live/35 bg-[linear-gradient(135deg,rgba(227,54,62,0.1),#ffffff_46%,rgba(255,241,90,0.18))]",
+        match.status === "live" && "border-live/35 bg-[linear-gradient(135deg,rgba(215,25,32,0.1),#ffffff_48%,rgba(37,99,235,0.08))]",
         className
       )}
     >
