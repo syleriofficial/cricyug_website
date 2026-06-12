@@ -2,34 +2,34 @@
 
 import { motion } from "framer-motion"
 import Link from "next/link"
-import { ArrowRight, Brain, Sparkles, BarChart3, Zap } from "lucide-react"
+import { ArrowRight, Cpu, Sparkles, BarChart3, Zap } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 export function AIInsightsSection() {
   return (
-    <section className="py-12 lg:py-16 bg-muted/30">
+    <section className="py-10 lg:py-12 bg-muted/60">
       <div className="mx-auto max-w-7xl px-4">
         {/* Section header */}
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/20">
-              <Brain className="h-5 w-5 text-primary" />
+              <Cpu className="h-5 w-5 text-primary" />
             </div>
             <div>
-              <h2 className="text-2xl font-bold">AI-Powered Analytics</h2>
+              <h2 className="text-2xl font-bold">Syleri Technology Insights</h2>
               <p className="text-sm text-muted-foreground">Predictions, previews and live match intelligence</p>
             </div>
           </div>
           <Link href="/predictions">
             <Button variant="ghost" className="gap-2 text-muted-foreground hover:text-foreground">
-              Open AI
+              Open Syleri
               <ArrowRight className="h-4 w-4" />
             </Button>
           </Link>
         </div>
 
-        {/* AI Features Preview */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {/* Syleri features preview */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -56,7 +56,7 @@ export function AIInsightsSection() {
             </div>
             <h3 className="font-semibold text-lg mb-2">Player Analytics</h3>
             <p className="text-sm text-muted-foreground">
-              AI-ready analysis layer for player impact, form notes and matchup context.
+              Syleri-ready analysis layer for player impact, form notes and matchup context.
             </p>
           </motion.div>
 
@@ -80,12 +80,12 @@ export function AIInsightsSection() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
-          className="mt-8 rounded-xl bg-card border border-border p-6 text-center"
+          className="mt-6 rounded-xl bg-card border border-border p-5 text-center"
         >
-          <Brain className="h-10 w-10 text-primary mx-auto mb-4" />
-          <h3 className="font-semibold text-lg mb-2">AI APIs Are Live</h3>
+          <Cpu className="h-10 w-10 text-primary mx-auto mb-4" />
+          <h3 className="font-semibold text-lg mb-2">Syleri Technology Is Live</h3>
           <p className="text-sm text-muted-foreground max-w-md mx-auto">
-            CricYug now exposes prediction, preview, live insight, news draft and AI search routes behind server-only keys.
+            CricYug now exposes prediction, preview, live insight, news draft and smart search routes behind server-only keys.
           </p>
         </motion.div>
       </div>

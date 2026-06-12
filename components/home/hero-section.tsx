@@ -1,7 +1,7 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { ArrowRight, BarChart3, Brain, Radio, Shield, Sparkles, Trophy, Users, Zap } from "lucide-react"
+import { ArrowRight, BarChart3, Cpu, Radio, Shield, Sparkles, Trophy, Users, Zap } from "lucide-react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { useMatches } from "@/hooks/use-cricket-data"
@@ -12,34 +12,29 @@ export function HeroSection() {
   const featuredMatch = matches.find((match) => match.status === "live") || matches[0]
 
   return (
-    <section className="relative overflow-hidden border-b border-border/70 py-10 lg:py-16">
-      <div className="absolute inset-0 -z-10 bg-[linear-gradient(180deg,#ffffff_0%,#fffdf4_52%,#ffffff_100%)]" />
+    <section className="relative overflow-hidden border-b border-border/70 py-6 lg:py-10">
+      <div className="absolute inset-0 -z-10 bg-[linear-gradient(180deg,#ffffff_0%,#f7f8fa_100%)]" />
       <div className="absolute inset-x-0 bottom-0 -z-10 h-32 bg-gradient-to-t from-background to-transparent" />
 
-      <div className="absolute left-1/2 top-8 -z-10 hidden h-[540px] w-[540px] -translate-x-1/2 rounded-full border border-border bg-secondary/20 lg:block">
-        <div className="absolute left-1/2 top-0 h-full w-0.5 -translate-x-1/2 bg-border" />
-        <div className="absolute left-1/2 top-1/2 h-28 w-28 -translate-x-1/2 -translate-y-1/2 rounded-full border border-border" />
-      </div>
-
       <div className="mx-auto max-w-7xl px-4">
-        <div className="grid items-center gap-10 lg:grid-cols-[1.02fr_0.98fr]">
+        <div className="grid items-center gap-6 lg:grid-cols-[0.82fr_1.18fr]">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
             className="max-w-3xl"
           >
-            <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-primary/25 bg-primary/10 px-4 py-2">
+            <div className="mb-4 inline-flex items-center gap-2 rounded-md border border-primary/20 bg-primary/10 px-3 py-1.5">
               <Sparkles className="h-4 w-4 text-primary" />
-              <span className="text-sm font-medium text-foreground">Live scores, news and cricket intelligence</span>
+              <span className="text-sm font-semibold text-foreground">Live scores by Syleri Technology</span>
             </div>
 
-            <h1 className="mb-5 text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
-              CricYug brings every match pulse to one clean cricket hub.
+            <h1 className="mb-4 text-3xl font-black tracking-tight sm:text-4xl lg:text-5xl">
+              Live cricket scores, results and match center.
             </h1>
 
-            <p className="mb-7 max-w-2xl text-lg leading-8 text-muted-foreground">
-              Follow live scores, upcoming fixtures, team profiles, player form and sharp match analysis without the clutter.
+            <p className="mb-6 max-w-2xl text-base leading-7 text-muted-foreground">
+              Follow live scores, upcoming fixtures, results, scorecards, teams and editorial updates in a clean cricket portal.
             </p>
 
             <div className="mb-8 flex flex-col gap-3 sm:flex-row">
@@ -60,7 +55,7 @@ export function HeroSection() {
             <div className="grid max-w-2xl grid-cols-3 gap-3">
               <Stat label="Live updates" value="30s" />
               <Stat label="Coverage" value="Global" />
-              <Stat label="AI tools" value="Soon" />
+              <Stat label="Syleri tech" value="Active" />
             </div>
           </motion.div>
 
@@ -83,7 +78,7 @@ export function HeroSection() {
           <FeatureCard icon={Radio} label="Live Scores" description="Ball-by-ball pulse" />
           <FeatureCard icon={Users} label="Players" description="Stats & profiles" />
           <FeatureCard icon={Trophy} label="Match Center" description="Schedules & results" />
-          <FeatureCard icon={Brain} label="AI Insights" description="Live predictions" />
+          <FeatureCard icon={Cpu} label="Syleri Insights" description="Match intelligence" />
         </motion.div>
       </div>
     </section>

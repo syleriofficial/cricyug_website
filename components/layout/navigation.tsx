@@ -43,18 +43,19 @@ export function Header() {
 
   return (
     <>
-      <header className="sticky top-0 z-50 glass border-b border-border">
+      <header className="sticky top-0 z-50 border-b border-border bg-card/95 backdrop-blur">
+        <div className="h-1 bg-primary" />
         <div className="mx-auto max-w-7xl px-4">
-          <div className="flex h-16 items-center justify-between">
+          <div className="flex h-14 items-center justify-between">
             {/* Logo */}
             <Link href="/" className="flex items-center gap-2">
-              <div className="relative flex h-10 w-10 items-center justify-center rounded-xl border border-primary/25 bg-primary text-primary-foreground shadow-lg shadow-black/30">
+              <div className="relative flex h-9 w-9 items-center justify-center rounded-lg border border-primary/25 bg-primary text-primary-foreground shadow-sm">
                 <CircleDot className="h-5 w-5" />
                 <span className="absolute -right-1 -top-1 h-3 w-3 rounded-full border-2 border-background bg-live" />
               </div>
               <div className="leading-none">
                 <span className="block text-xl font-black tracking-tight text-gradient-brand">CricYug</span>
-                <span className="hidden text-[10px] font-medium uppercase text-muted-foreground sm:block">Cricket hub</span>
+                <span className="hidden text-[10px] font-medium uppercase text-muted-foreground sm:block">Syleri Technology</span>
               </div>
             </Link>
 
@@ -67,7 +68,7 @@ export function Header() {
                     key={item.href}
                     href={item.href}
                     className={cn(
-                      "relative flex items-center gap-1.5 px-3 py-2 text-sm font-medium rounded-lg transition-colors",
+                      "relative flex items-center gap-1.5 px-3 py-2 text-sm font-semibold rounded-md transition-colors",
                       isActive
                         ? "text-primary"
                         : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
@@ -81,7 +82,7 @@ export function Header() {
                     {isActive && (
                       <motion.div
                         layoutId="nav-indicator"
-                        className="absolute inset-0 rounded-lg bg-primary/10 -z-10"
+                        className="absolute inset-x-1 bottom-0 h-0.5 rounded-full bg-primary"
                         transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                       />
                     )}

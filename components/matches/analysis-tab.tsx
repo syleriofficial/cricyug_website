@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion"
 import useSWR from "swr"
-import { Brain, TrendingUp, Target, Zap, BarChart2 } from "lucide-react"
+import { Cpu, TrendingUp, Target, Zap, BarChart2 } from "lucide-react"
 import type { AILiveInsight, AIPrediction } from "@/lib/ai-cricket"
 
 interface AnalysisTabProps {
@@ -51,10 +51,10 @@ export function AnalysisTab({ matchId }: AnalysisTabProps) {
       >
         <div className="mb-5 flex items-center gap-4">
           <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/20">
-            <Brain className="h-7 w-7 text-primary" />
+            <Cpu className="h-7 w-7 text-primary" />
           </div>
           <div>
-            <p className="text-xs font-semibold uppercase text-primary">AI Match Analysis</p>
+            <p className="text-xs font-semibold uppercase text-primary">Syleri Match Analysis</p>
             <h2 className="text-2xl font-bold">{predictionData?.title || "Match intelligence"}</h2>
           </div>
         </div>
@@ -66,14 +66,14 @@ export function AnalysisTab({ matchId }: AnalysisTabProps) {
             <div className="h-24 animate-pulse rounded-xl bg-muted" />
           </div>
         ) : insightError ? (
-          <p className="text-sm text-muted-foreground">AI analysis is temporarily unavailable. Please try again.</p>
+          <p className="text-sm text-muted-foreground">Syleri analysis is temporarily unavailable. Please try again.</p>
         ) : (
           <>
             {predictionData && (
               <div className="mb-5 grid gap-3 md:grid-cols-3">
                 <MetricCard icon={TrendingUp} label="Favorite" value={predictionData.favorite} />
                 <MetricCard icon={Target} label="Confidence" value={predictionData.confidence} />
-                <MetricCard icon={Zap} label="Provider" value={predictionData.provider === "openai" ? "AI enhanced" : "CricYug rules"} />
+                <MetricCard icon={Zap} label="Provider" value={predictionData.provider === "openai" ? "Syleri enhanced" : "CricYug rules"} />
               </div>
             )}
 

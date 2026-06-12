@@ -13,7 +13,7 @@ export function Footer() {
               <span className="text-xl font-bold text-gradient-brand">CricYug</span>
             </Link>
             <p className="text-sm text-muted-foreground mb-4">
-              AI-powered cricket platform with live scores, predictions, and comprehensive coverage.
+              Syleri-technology cricket platform with live scores, predictions, and comprehensive coverage.
             </p>
             <p className="text-xs text-muted-foreground">Contact: contact@cricyug.com</p>
           </div>
@@ -25,7 +25,7 @@ export function Footer() {
               <FooterLink href="/live">Live Scores</FooterLink>
               <FooterLink href="/matches">Matches</FooterLink>
               <FooterLink href="/news">News</FooterLink>
-              <FooterLink href="/predictions">AI Predictions</FooterLink>
+              <FooterLink href="/predictions">Syleri Predictions</FooterLink>
             </ul>
           </div>
 
@@ -69,7 +69,7 @@ export function Footer() {
             &copy; {new Date().getFullYear()} CricYug. All rights reserved.
           </p>
           <p className="text-sm text-muted-foreground">
-            Made with AI-powered insights for cricket lovers worldwide.
+            Made with Syleri-technology insights for cricket lovers worldwide.
           </p>
         </div>
       </div>

@@ -137,10 +137,10 @@ export function NewsPageContent() {
             <div className="rounded-xl bg-gradient-to-br from-primary/20 to-secondary/20 border border-primary/30 p-6">
               <h3 className="font-bold text-lg mb-2">Publish CricYug News</h3>
               <p className="text-sm text-muted-foreground mb-4">
-                News is manually controlled. Draft articles with AI, then publish approved stories through the manual news file.
+                News is manually controlled. Draft articles with Syleri tools, then publish approved stories through the manual news file.
               </p>
               <Button asChild className="w-full bg-primary text-primary-foreground hover:bg-primary/90">
-                <Link href="/predictions">Open AI Tools</Link>
+                <Link href="/predictions">Open Syleri Tools</Link>
               </Button>
             </div>
 

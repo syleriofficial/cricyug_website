@@ -14,7 +14,7 @@ export async function GET(request: Request) {
         meta: {
           configured: false,
           aiConfigured: Boolean(process.env.OPENAI_API_KEY),
-          message: "CRICKETDATA_API_KEY is required for AI predictions.",
+          message: "CRICKETDATA_API_KEY is required for Syleri predictions.",
         },
       }, { status: 503 })
     }

@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   metadataBase: new URL('https://cricyug.netlify.app'),
   title: 'CricYug - Live Cricket Scores, News and Match Center',
   description: 'Follow live cricket scores, fixtures, team profiles, player form, news and match insights on CricYug.',
-  keywords: ['cricket', 'live scores', 'AI predictions', 'cricket news', 'IPL', 'T20', 'ODI', 'Test cricket'],
+  keywords: ['cricket', 'live scores', 'Syleri predictions', 'cricket news', 'IPL', 'T20', 'ODI', 'Test cricket'],
   generator: 'CricYug',
   openGraph: {
     title: 'CricYug - Live Cricket Scores, News and Match Center',
@@ -40,7 +40,7 @@ export const metadata: Metadata = {
 }
 
 export const viewport: Viewport = {
-  themeColor: '#1B1C17',
+  themeColor: '#E3363E',
   width: 'device-width',
   initialScale: 1,
   maximumScale: 5,

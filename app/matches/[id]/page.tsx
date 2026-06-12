@@ -4,7 +4,7 @@ import { Footer } from "@/components/layout/footer"
 
 export const metadata = {
   title: "Match Center | CricYug",
-  description: "Complete match coverage with scorecard, commentary, and AI analysis.",
+  description: "Complete match coverage with scorecard, commentary, and Syleri analysis.",
 }
 
 export default function MatchCenterPage({ params }: { params: Promise<{ id: string }> }) {

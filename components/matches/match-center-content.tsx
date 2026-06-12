@@ -27,7 +27,7 @@ type Tab = "scorecard" | "commentary" | "analysis" | "stats"
 const tabs = [
   { id: "scorecard" as const, label: "Scorecard", icon: FileText },
   { id: "commentary" as const, label: "Commentary", icon: MessageSquare },
-  { id: "analysis" as const, label: "AI Analysis", icon: Brain },
+  { id: "analysis" as const, label: "Syleri Analysis", icon: Brain },
   { id: "stats" as const, label: "Stats", icon: BarChart3 },
 ]
 

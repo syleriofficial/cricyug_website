@@ -3,7 +3,7 @@
 import { motion } from "framer-motion"
 import useSWR from "swr"
 import Link from "next/link"
-import { Brain, Sparkles, BarChart3, Zap, Target, TrendingUp, AlertCircle } from "lucide-react"
+import { Cpu, Sparkles, BarChart3, Zap, Target, TrendingUp, AlertCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useMatches } from "@/hooks/use-cricket-data"
 import type { AILiveInsight, AIMatchPreview, AIPrediction } from "@/lib/ai-cricket"
@@ -56,10 +56,10 @@ export function PredictionsPageContent() {
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-4">
             <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/20">
-              <Brain className="h-6 w-6 text-primary" />
+              <Cpu className="h-6 w-6 text-primary" />
             </div>
             <div>
-              <h1 className="text-3xl font-bold">AI Predictions</h1>
+              <h1 className="text-3xl font-bold">Syleri Predictions</h1>
               <p className="text-muted-foreground">Live cricket prediction, preview and match intelligence</p>
             </div>
           </div>
@@ -67,7 +67,7 @@ export function PredictionsPageContent() {
             <div className="flex items-start gap-3 rounded-xl border border-primary/20 bg-primary/10 p-4 text-sm">
               <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
               <p className="text-muted-foreground">
-                AI provider key is not configured, so CricYug is using server-side cricket rules on official match data. Add OPENAI_API_KEY to enable language-model enhanced analysis.
+                Syleri provider key is not configured, so CricYug is using server-side cricket rules on official match data. Add OPENAI_API_KEY to enable language-model enhanced analysis.
               </p>
             </div>
           )}
@@ -93,7 +93,7 @@ export function PredictionsPageContent() {
                 <div className="h-28 animate-pulse rounded-xl bg-muted" />
               </div>
             ) : predictionError ? (
-              <p className="text-sm text-muted-foreground">AI prediction is temporarily unavailable. Please try again in a moment.</p>
+              <p className="text-sm text-muted-foreground">Syleri prediction is temporarily unavailable. Please try again in a moment.</p>
             ) : predictionData ? (
               <>
                 <div className="mb-5 grid grid-cols-2 gap-3">
@@ -113,12 +113,12 @@ export function PredictionsPageContent() {
                 <p className="mt-5 text-xs text-muted-foreground">{predictionData.disclaimer}</p>
               </>
             ) : (
-              <p className="text-sm text-muted-foreground">No match is available for AI prediction right now.</p>
+              <p className="text-sm text-muted-foreground">No match is available for Syleri prediction right now.</p>
             )}
           </motion.div>
 
           <div className="space-y-6">
-            <InfoPanel icon={Target} title="AI Match Preview">
+            <InfoPanel icon={Target} title="Syleri Match Preview">
               <p className="text-sm text-muted-foreground">{previewData?.summary || "Preview will appear when match data is available."}</p>
               {previewData && (
                 <div className="mt-4 flex flex-wrap gap-2">
@@ -141,18 +141,18 @@ export function PredictionsPageContent() {
           </div>
         </div>
 
-        <h2 className="mb-4 mt-10 text-xl font-semibold">AI Tools Active</h2>
+        <h2 className="mb-4 mt-10 text-xl font-semibold">Syleri Tools Active</h2>
         <div className="grid gap-4 md:grid-cols-3">
           <ToolCard icon={TrendingUp} title="Prediction API" description="/api/ai/prediction returns win probability and factors." />
           <ToolCard icon={BarChart3} title="Preview API" description="/api/ai/preview creates match previews from official data." />
-          <ToolCard icon={Brain} title="News Draft API" description="/api/ai/news-draft helps you write CricYug articles." />
+          <ToolCard icon={Cpu} title="News Draft API" description="/api/ai/news-draft helps you write CricYug articles." />
         </div>
 
         {selectedMatch && (
           <div className="mt-8">
             <Link href={`/matches/${selectedMatch.id}`}>
               <Button className="gap-2">
-                Open Match AI Analysis
+                Open Match Syleri Analysis
                 <Zap className="h-4 w-4" />
               </Button>
             </Link>

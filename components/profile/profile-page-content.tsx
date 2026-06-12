@@ -16,7 +16,7 @@ export function ProfilePageContent() {
             <p className="text-sm font-semibold uppercase text-primary">CricYug Center</p>
             <h1 className="mt-1 text-3xl font-bold">Your cricket shortcuts</h1>
             <p className="mt-3 max-w-2xl text-muted-foreground">
-              Jump quickly to live scores, AI predictions, teams and editorial tools. CricYug keeps this page lightweight until account login is connected.
+              Jump quickly to live scores, Syleri predictions, teams and editorial tools. CricYug keeps this page lightweight until account login is connected.
             </p>
           </div>
         </div>
@@ -26,7 +26,7 @@ export function ProfilePageContent() {
         <PreviewCard icon={Bell} title="Live Scores" body="Open active matches and scorecards." />
         <PreviewCard icon={Bookmark} title="News Desk" body="Read manually published CricYug stories." />
         <PreviewCard icon={Shield} title="Teams" body="Browse country and team profiles." />
-        <PreviewCard icon={Trophy} title="Predictions" body="Track active AI match insights." />
+        <PreviewCard icon={Trophy} title="Predictions" body="Track active Syleri match insights." />
       </div>
 
       <section>
@@ -35,7 +35,7 @@ export function ProfilePageContent() {
           <QuickLink href="/matches" icon={Trophy} label="Match Center" />
           <QuickLink href="/news" icon={Calendar} label="Manual News Desk" />
           <QuickLink href="/teams" icon={Shield} label="Teams" />
-          <QuickLink href="/predictions" icon={Trophy} label="AI Predictions" />
+          <QuickLink href="/predictions" icon={Trophy} label="Syleri Predictions" />
         </div>
       </section>
     </div>

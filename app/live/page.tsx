@@ -4,7 +4,7 @@ import { Footer } from "@/components/layout/footer"
 
 export const metadata = {
   title: "Live Matches | CricYug",
-  description: "Watch live cricket scores with real-time updates, ball-by-ball commentary, and AI predictions.",
+  description: "Watch live cricket scores with real-time updates, ball-by-ball commentary, and Syleri predictions.",
 }
 
 export default function LiveMatchesPage() {
