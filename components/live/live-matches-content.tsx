@@ -264,6 +264,8 @@ export function LiveMatchesContent() {
 
           {/* Sidebar */}
           <div className="space-y-4">
+            {selectedMatch && <FocusedMatchPanel match={selectedMatch} />}
+
             <div className="rounded-xl bg-card border border-border p-4">
               <div className="flex items-center gap-2 mb-4">
                 <Clock className="h-5 w-5 text-primary" />
@@ -305,6 +307,55 @@ export function LiveMatchesContent() {
             </div>
           </div>
         </div>
+      </div>
+    </div>
+  )
+}
+
+function FocusedMatchPanel({ match }: { match: Match }) {
+  const statusLabel = match.status === "completed" ? "RESULT" : match.status === "live" ? "LIVE" : "UPCOMING"
+
+  return (
+    <div className="overflow-hidden rounded-xl border border-border bg-card">
+      <div className={cn(
+        "flex items-center justify-between px-4 py-3",
+        match.status === "live" ? "bg-live/15" : "bg-muted/50"
+      )}>
+        <div>
+          <p className="text-xs font-semibold uppercase text-muted-foreground">Featured score</p>
+          <p className="mt-0.5 text-sm font-semibold">{match.format} • {match.venue.name || match.series.name}</p>
+        </div>
+        <span className={cn(
+          "rounded-full px-2 py-1 text-xs font-semibold",
+          match.status === "live" ? "bg-live/20 text-live" : "bg-primary/15 text-primary"
+        )}>
+          {statusLabel}
+        </span>
+      </div>
+
+      <div className="space-y-3 p-4">
+        <FocusedTeamRow teamScore={match.team1} isLive={match.status === "live"} />
+        <FocusedTeamRow teamScore={match.team2} isLive={match.status === "live"} />
+        {(match.result || match.startTime) && (
+          <p className="border-t border-border pt-3 text-sm font-semibold text-primary">
+            {match.result || match.startTime}
+          </p>
+        )}
+      </div>
+    </div>
+  )
+}
+
+function FocusedTeamRow({ teamScore, isLive }: { teamScore: Match["team1"]; isLive: boolean }) {
+  return (
+    <div className="flex items-center justify-between gap-3">
+      <div className="min-w-0">
+        <p className="truncate font-semibold">{teamScore.team.name}</p>
+        <p className="text-xs text-muted-foreground">{teamScore.team.shortName}</p>
+      </div>
+      <div className="shrink-0 text-right">
+        {teamScore.overs && <p className="text-xs text-muted-foreground">({teamScore.overs} ov)</p>}
+        <p className={cn("text-xl font-bold", isLive && "text-primary")}>{teamScore.score || "-"}</p>
       </div>
     </div>
   )
