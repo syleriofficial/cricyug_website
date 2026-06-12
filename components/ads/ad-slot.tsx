@@ -15,6 +15,7 @@ export function AdSlot({ id, label, className, minHeight = "min-h-24" }: AdSlotP
       aria-label={label}
       className={cn(
         "flex w-full items-center justify-center rounded-lg border border-dashed border-border bg-muted/45 px-3 py-4 text-center",
+        "overflow-hidden",
         minHeight,
         className
       )}
@@ -22,7 +23,7 @@ export function AdSlot({ id, label, className, minHeight = "min-h-24" }: AdSlotP
     >
       {publisherId ? (
         <ins
-          className="adsbygoogle block w-full"
+          className="adsbygoogle block min-h-[inherit] w-full"
           data-ad-client={publisherId}
           data-ad-slot={id}
           data-ad-format="auto"

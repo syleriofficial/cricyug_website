@@ -18,6 +18,7 @@ import { cn } from "@/lib/utils"
 import { useMatch } from "@/hooks/use-cricket-data"
 import { LoadingState, ErrorState } from "@/components/ui/states"
 import { AdSlot } from "@/components/ads/ad-slot"
+import { FantasyDisclaimer } from "@/components/monetization/fantasy-disclaimer"
 import { JsonLd } from "@/components/seo/json-ld"
 import { breadcrumbSchema, sportsEventSchema } from "@/lib/seo-schema"
 import { ScorecardTab } from "./scorecard-tab"
@@ -167,6 +168,7 @@ export function MatchCenterContent({ params }: { params: Promise<{ id: string }>
             </div>
 
             <AdSlot id="match-page-banner" label="Match page ad" className="mb-6" minHeight="min-h-24" />
+            <FantasyDisclaimer compact className="mb-6" />
 
             {/* Tabs */}
             <div className="mb-6">

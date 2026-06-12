@@ -10,6 +10,7 @@ import { useNews } from "@/hooks/use-cricket-data"
 import { LoadingNewsCard, ErrorState, NoNews, NoResults } from "@/components/ui/states"
 import Link from "next/link"
 import { AdSlot } from "@/components/ads/ad-slot"
+import { FantasyDisclaimer } from "@/components/monetization/fantasy-disclaimer"
 
 const categories = ["All", "India", "IPL", "World Cricket", "Fantasy", "Analysis"]
 
@@ -136,6 +137,7 @@ export function NewsPageContent() {
           {/* Sidebar */}
           <div className="space-y-6">
             <AdSlot id="news-sidebar" label="News sidebar ad" minHeight="min-h-64" />
+            <FantasyDisclaimer compact />
 
             <div className="rounded-xl bg-gradient-to-br from-primary/20 to-secondary/20 border border-primary/30 p-6">
               <h3 className="font-bold text-lg mb-2">Publish CricYug News</h3>

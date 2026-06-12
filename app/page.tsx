@@ -9,6 +9,7 @@ import { TopPlayersSection } from "@/components/home/top-players-section"
 import { TrendingSeriesSection } from "@/components/home/trending-series-section"
 import { Footer } from "@/components/layout/footer"
 import { AdSlot } from "@/components/ads/ad-slot"
+import { FantasyDisclaimer } from "@/components/monetization/fantasy-disclaimer"
 import { JsonLd } from "@/components/seo/json-ld"
 import { websiteSchema } from "@/lib/seo-schema"
 
@@ -22,6 +23,7 @@ export default function HomePage() {
         <HeroSection />
         <div className="mx-auto max-w-7xl px-4 py-4">
           <AdSlot id="home-top-banner" label="Top banner ad" minHeight="min-h-20" />
+          <FantasyDisclaimer compact className="mt-3" />
         </div>
         <TodayMatchesSection />
         <LiveMatchesSection />

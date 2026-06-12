@@ -94,6 +94,8 @@ Ad-safe slots are included for:
 
 Without `NEXT_PUBLIC_ADSENSE_CLIENT`, slots render as stable placeholders and do not break layout.
 
+Fantasy / affiliate disclaimer areas are included on home, news, match and predictions surfaces. Keep affiliate links inside approved ad/editorial areas only, and do not present predictions as financial advice.
+
 ## Google Search Console
 
 Submit this sitemap URL in Google Search Console:

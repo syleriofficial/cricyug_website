@@ -5,6 +5,7 @@ import useSWR from "swr"
 import Link from "next/link"
 import { Cpu, Sparkles, BarChart3, Zap, Target, TrendingUp, AlertCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { FantasyDisclaimer } from "@/components/monetization/fantasy-disclaimer"
 import { useMatches } from "@/hooks/use-cricket-data"
 import type { AILiveInsight, AIMatchPreview, AIPrediction } from "@/lib/ai-cricket"
 import type { Match } from "@/lib/types"
@@ -158,6 +159,8 @@ export function PredictionsPageContent() {
             </Link>
           </div>
         )}
+
+        <FantasyDisclaimer className="mt-8" />
       </div>
     </div>
   )
