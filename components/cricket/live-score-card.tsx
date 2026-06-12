@@ -19,8 +19,8 @@ export function LiveScoreCard({ match, className }: LiveScoreCardProps) {
       whileHover={{ scale: 1.02 }}
       transition={{ duration: 0.2 }}
       className={cn(
-        "relative overflow-hidden rounded-xl bg-card border border-border p-4 cursor-pointer group",
-        match.status === "live" && "border-live/35 bg-[linear-gradient(135deg,rgba(227,54,62,0.22),rgba(43,36,31,0.96)_48%,rgba(43,36,31,0.9))]",
+        "relative overflow-hidden rounded-xl bg-card border border-border p-4 cursor-pointer group shadow-sm",
+        match.status === "live" && "border-live/35 bg-[linear-gradient(135deg,rgba(227,54,62,0.1),#ffffff_46%,rgba(255,241,90,0.18))]",
         className
       )}
     >
@@ -77,7 +77,7 @@ function StatusBadge({ status, label }: { status: Match["status"]; label: string
 
 function TeamScoreRow({ teamScore, isLive }: { teamScore: TeamScore; isLive: boolean }) {
   return (
-    <div className="flex items-center justify-between gap-3 rounded-lg bg-background/35 px-3 py-2">
+    <div className="flex items-center justify-between gap-3 rounded-lg bg-muted/60 px-3 py-2">
       <div className="flex min-w-0 items-center gap-3">
         {teamScore.team.logo ? (
           <img 

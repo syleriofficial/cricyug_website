@@ -13,12 +13,12 @@ export function HeroSection() {
 
   return (
     <section className="relative overflow-hidden border-b border-border/70 py-10 lg:py-16">
-      <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_18%_15%,rgba(255,241,90,0.16),transparent_30%),radial-gradient(circle_at_78%_12%,rgba(227,54,62,0.18),transparent_28%),linear-gradient(180deg,rgba(36,37,31,0),rgba(21,21,15,0.9))]" />
+      <div className="absolute inset-0 -z-10 bg-[linear-gradient(180deg,#ffffff_0%,#fffdf4_52%,#ffffff_100%)]" />
       <div className="absolute inset-x-0 bottom-0 -z-10 h-32 bg-gradient-to-t from-background to-transparent" />
 
-      <div className="absolute left-1/2 top-8 -z-10 hidden h-[540px] w-[540px] -translate-x-1/2 rounded-full border border-white/10 bg-primary/5 lg:block">
-        <div className="absolute left-1/2 top-0 h-full w-0.5 -translate-x-1/2 bg-white/10" />
-        <div className="absolute left-1/2 top-1/2 h-28 w-28 -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/10" />
+      <div className="absolute left-1/2 top-8 -z-10 hidden h-[540px] w-[540px] -translate-x-1/2 rounded-full border border-border bg-secondary/20 lg:block">
+        <div className="absolute left-1/2 top-0 h-full w-0.5 -translate-x-1/2 bg-border" />
+        <div className="absolute left-1/2 top-1/2 h-28 w-28 -translate-x-1/2 -translate-y-1/2 rounded-full border border-border" />
       </div>
 
       <div className="mx-auto max-w-7xl px-4">
@@ -93,7 +93,7 @@ export function HeroSection() {
 function FeaturedMatchPanel({ match }: { match?: Match }) {
   if (!match) {
     return (
-      <div className="rounded-2xl border border-white/10 bg-card/88 p-5 shadow-2xl shadow-black/30 backdrop-blur">
+      <div className="rounded-2xl border border-border bg-card p-5 shadow-xl shadow-black/5">
         <p className="text-xs font-semibold uppercase text-primary">Match center</p>
         <h2 className="mt-2 text-xl font-bold">Cricket coverage is warming up</h2>
         <p className="mt-3 text-sm text-muted-foreground">
@@ -115,7 +115,7 @@ function FeaturedMatchPanel({ match }: { match?: Match }) {
   const totalWickets = (match.team1.wickets || 0) + (match.team2.wickets || 0)
 
   return (
-    <div className="rounded-2xl border border-white/10 bg-card/88 p-5 shadow-2xl shadow-black/30 backdrop-blur">
+    <div className="rounded-2xl border border-border bg-card p-5 shadow-xl shadow-black/5">
       <div className="mb-5 flex items-center justify-between gap-4">
         <div>
           <p className="text-xs font-semibold uppercase text-primary">{label}</p>
