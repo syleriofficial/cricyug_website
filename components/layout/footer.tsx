@@ -37,6 +37,8 @@ export function Footer() {
               <FooterLink href="/teams">Teams</FooterLink>
               <FooterLink href="/series">Series</FooterLink>
               <FooterLink href="/points-table">Points Table</FooterLink>
+              <FooterLink href="/rankings">Rankings</FooterLink>
+              <FooterLink href="/stats">Stats</FooterLink>
             </ul>
           </div>
 
@@ -59,6 +61,7 @@ export function Footer() {
               <FooterLink href="/contact">Contact</FooterLink>
               <FooterLink href="/privacy">Privacy Policy</FooterLink>
               <FooterLink href="/terms">Terms of Service</FooterLink>
+              <FooterLink href="/admin">Admin</FooterLink>
             </ul>
           </div>
         </div>

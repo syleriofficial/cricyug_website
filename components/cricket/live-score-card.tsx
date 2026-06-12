@@ -99,7 +99,7 @@ function TeamScoreRow({ teamScore, isLive }: { teamScore: TeamScore; isLive: boo
         <div className="shrink-0 text-right">
           {teamScore.overs && (
             <p className="text-xs text-muted-foreground">
-              ({teamScore.overs} ov)
+              ({teamScore.overs} ov{teamScore.runRate ? `, RR ${teamScore.runRate}` : ""})
             </p>
           )}
           <p className={cn("text-xl font-bold leading-tight", isLive && "text-primary")}>

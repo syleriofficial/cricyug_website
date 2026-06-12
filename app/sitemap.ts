@@ -11,6 +11,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/live",
     "/series",
     "/points-table",
+    "/rankings",
+    "/stats",
     "/teams",
     "/players",
     "/news",

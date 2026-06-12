@@ -128,6 +128,21 @@ export function ScorecardTab({ matchId }: ScorecardTabProps) {
           </div>
         </div>
       ))}
+
+      <div className="grid gap-4 md:grid-cols-2">
+        <div className="rounded-xl border border-border bg-card p-5">
+          <h3 className="font-semibold">Partnerships</h3>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Official partnership data is temporarily unavailable from the connected provider.
+          </p>
+        </div>
+        <div className="rounded-xl border border-border bg-card p-5">
+          <h3 className="font-semibold">Fall of Wickets</h3>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Official fall-of-wickets data is temporarily unavailable from the connected provider.
+          </p>
+        </div>
+      </div>
     </div>
   )
 }

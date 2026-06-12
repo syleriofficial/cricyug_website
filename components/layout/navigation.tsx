@@ -13,6 +13,7 @@ import {
   Shield,
   Calendar,
   Table,
+  BarChart3,
   User,
   Search,
   Menu,
@@ -34,6 +35,7 @@ const navItems = [
   { href: "/teams", label: "Teams", icon: Shield },
   { href: "/series", label: "Series", icon: Calendar },
   { href: "/points-table", label: "Points", icon: Table },
+  { href: "/rankings", label: "Rankings", icon: BarChart3 },
 ]
 
 export function Header() {

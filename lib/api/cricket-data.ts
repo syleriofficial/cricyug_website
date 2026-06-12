@@ -371,6 +371,7 @@ class CricketDataService {
           score: team1ScoreText,
           overs: score1 ? String(score1.o || "") : undefined,
           wickets: score1 ? Number(score1.w || 0) : undefined,
+          runRate: this.calculateRunRate(score1),
         },
         team2: {
           team: {
@@ -383,6 +384,7 @@ class CricketDataService {
           score: team2ScoreText,
           overs: score2 ? String(score2.o || "") : undefined,
           wickets: score2 ? Number(score2.w || 0) : undefined,
+          runRate: this.calculateRunRate(score2),
         },
         result: this.normalizeMatchResult(String(m.status || ""), {
           status: this.mapMatchStatus(m),
@@ -788,6 +790,13 @@ class CricketDataService {
     if (!endDate || /\d{4}/.test(endDate)) return endDate
     const year = startDate.match(/\d{4}/)?.[0]
     return year ? `${endDate} ${year}` : endDate
+  }
+
+  private calculateRunRate(score?: { r?: number | string; o?: number | string }) {
+    const runs = Number(score?.r || 0)
+    const overs = Number(score?.o || 0)
+    if (!runs || !overs) return undefined
+    return Number((runs / overs).toFixed(2))
   }
 }
 

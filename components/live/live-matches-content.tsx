@@ -326,7 +326,11 @@ function FocusedTeamRow({ teamScore, isLive }: { teamScore: Match["team1"]; isLi
         <p className="text-xs text-muted-foreground">{teamScore.team.shortName}</p>
       </div>
       <div className="shrink-0 text-right">
-        {teamScore.overs && <p className="text-xs text-muted-foreground">({teamScore.overs} ov)</p>}
+        {teamScore.overs && (
+          <p className="text-xs text-muted-foreground">
+            ({teamScore.overs} ov{teamScore.runRate ? `, RR ${teamScore.runRate}` : ""})
+          </p>
+        )}
         <p className={cn("text-xl font-bold", isLive && "text-primary")}>{teamScore.score || "-"}</p>
       </div>
     </div>

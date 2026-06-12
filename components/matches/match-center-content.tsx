@@ -17,6 +17,9 @@ import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { useMatch } from "@/hooks/use-cricket-data"
 import { LoadingState, ErrorState } from "@/components/ui/states"
+import { AdSlot } from "@/components/ads/ad-slot"
+import { JsonLd } from "@/components/seo/json-ld"
+import { breadcrumbSchema, sportsEventSchema } from "@/lib/seo-schema"
 import { ScorecardTab } from "./scorecard-tab"
 import { CommentaryTab } from "./commentary-tab"
 import { AnalysisTab } from "./analysis-tab"
@@ -76,6 +79,16 @@ export function MatchCenterContent({ params }: { params: Promise<{ id: string }>
         {/* Match content */}
         {!isLoading && !error && match && (
           <>
+            <JsonLd
+              data={[
+                sportsEventSchema(match),
+                breadcrumbSchema([
+                  { name: "Home", url: "https://cricyug.netlify.app" },
+                  { name: "Matches", url: "https://cricyug.netlify.app/matches" },
+                  { name: `${match.team1.team.shortName} vs ${match.team2.team.shortName}`, url: `https://cricyug.netlify.app/matches/${match.id}` },
+                ]),
+              ]}
+            />
             {/* Match header */}
             <div className="rounded-2xl bg-card border border-border p-6 mb-6">
               <div className="flex items-center gap-2 mb-4">
@@ -152,6 +165,8 @@ export function MatchCenterContent({ params }: { params: Promise<{ id: string }>
                 </div>
               )}
             </div>
+
+            <AdSlot id="match-page-banner" label="Match page ad" className="mb-6" minHeight="min-h-24" />
 
             {/* Tabs */}
             <div className="mb-6">

@@ -22,9 +22,10 @@ cp .env.example .env.local
 CRICKETDATA_API_KEY=your_cricketdata_api_key_here
 OPENAI_API_KEY=your_openai_api_key_here
 OPENAI_MODEL=gpt-4o-mini
+NEXT_PUBLIC_ADSENSE_CLIENT=ca-pub-your_adsense_id
 ```
 
-`OPENAI_API_KEY` is optional. If it is not set, CricYug still returns server-side cricket-rule predictions from official match data. Never expose either key with a `NEXT_PUBLIC_` prefix.
+`OPENAI_API_KEY` is optional. If it is not set, CricYug still returns server-side cricket-rule predictions from official match data. `NEXT_PUBLIC_ADSENSE_CLIENT` is optional and should only be added after AdSense approval. Never expose private API keys with a `NEXT_PUBLIC_` prefix.
 
 4. Run the development server:
 
@@ -46,10 +47,12 @@ npm run build
 - `/api/series/[id]/standings` returns official points table data when the provider has it.
 - `/api/players` searches CricketData.org players. Use `?search=player-name`.
 - `/api/teams` returns CricketData.org country/team data.
+- `/api/rankings` returns official ranking data when the connected provider supports it.
+- `/api/stats` returns official current scoring snapshots from live/recent match data.
 - `/api/news` is ready for a future server-side editorial/CMS source and returns an empty list until articles are published.
 - `/api/news/[id]` returns one manually written CricYug article.
 - `/api/ai/prediction?matchId=...` returns win probability, favorite, confidence and factors.
-- `/api/ai/preview?matchId=...` returns an AI-ready match preview.
+- `/api/ai/preview?matchId=...` returns a Syleri-ready match preview.
 - `/api/ai/live-insights?matchId=...` returns momentum, pressure and next-phase insights.
 - `/api/ai/news-draft` accepts `POST { "headline": "...", "notes": "...", "category": "..." }` and returns an editorial draft.
 - `/api/ai/search?q=india match` returns an AI-style answer backed by CricYug search results.
@@ -75,6 +78,22 @@ export const manualNews = [
 
 Redeploy after editing this file.
 
+## Admin
+
+Open `/admin` for the CricYug control room. It helps prepare manual news JSON, featured article ordering notes, ad slot IDs, and SEO title/description copy. Production publishing remains file-backed through `content/news.ts` until an authenticated database/CMS is connected.
+
+## Monetization
+
+Ad-safe slots are included for:
+
+- Home top banner
+- News sidebar
+- News in-article
+- Match page
+- Rankings/stats top banner
+
+Without `NEXT_PUBLIC_ADSENSE_CLIENT`, slots render as stable placeholders and do not break layout.
+
 ## Google Search Console
 
 Submit this sitemap URL in Google Search Console:
@@ -97,6 +116,7 @@ Set this variable in Netlify or your hosting provider:
 CRICKETDATA_API_KEY=your_cricketdata_api_key_here
 OPENAI_API_KEY=your_openai_api_key_here
 OPENAI_MODEL=gpt-4o-mini
+NEXT_PUBLIC_ADSENSE_CLIENT=ca-pub-your_adsense_id
 ```
 
-Do not prefix the keys with `NEXT_PUBLIC_`. Client components call only local `/api/*` routes, so CricketData.org and AI provider keys stay server-side.
+Do not prefix private keys with `NEXT_PUBLIC_`. Client components call only local `/api/*` routes, so CricketData.org and AI provider keys stay server-side.
