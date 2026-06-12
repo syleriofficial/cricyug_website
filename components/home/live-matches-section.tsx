@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion"
 import Link from "next/link"
-import { ArrowRight, MapPin, Radio } from "lucide-react"
+import { ArrowRight, Radio } from "lucide-react"
 import { LiveScoreCard } from "@/components/cricket/live-score-card"
 import { Button } from "@/components/ui/button"
 import { useLiveMatches, useUpcomingMatches, useRecentMatches } from "@/hooks/use-cricket-data"
@@ -18,7 +18,7 @@ export function LiveMatchesSection() {
   const isLoading = liveLoading || upcomingLoading || recentLoading
   const error = liveError || upcomingError || recentError
   const liveAndUpcoming = [...(liveMatches || []), ...(upcomingMatches || [])]
-  const { matches: localizedMatches, region } = useLocalizedMatches(liveAndUpcoming.length > 0 ? liveAndUpcoming : (recentMatches || []))
+  const { matches: localizedMatches } = useLocalizedMatches(liveAndUpcoming.length > 0 ? liveAndUpcoming : (recentMatches || []))
   const allMatches = localizedMatches.slice(0, 4)
   const isShowingResults = liveAndUpcoming.length === 0 && allMatches.length > 0
 
@@ -36,12 +36,6 @@ export function LiveMatchesSection() {
               <p className="text-sm text-muted-foreground">
                 {isShowingResults ? "Latest completed matches" : "Real-time match coverage"}
               </p>
-              {region && (
-                <p className="mt-1 flex items-center gap-1 text-xs text-primary">
-                  <MapPin className="h-3.5 w-3.5" />
-                  Showing {region.label} relevant matches first
-                </p>
-              )}
             </div>
           </div>
           <Link href="/live">

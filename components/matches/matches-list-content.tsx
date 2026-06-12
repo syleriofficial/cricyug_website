@@ -3,18 +3,18 @@
 import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import Link from "next/link"
-import { Trophy, Filter, AlertCircle, MapPin } from "lucide-react"
+import { Trophy, Filter, AlertCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { useMatches, useSeries } from "@/hooks/use-cricket-data"
-import { useRegionPreference, useLocalizedMatches } from "@/hooks/use-localized-matches"
+import { useDetectedRegion, useLocalizedMatches } from "@/hooks/use-localized-matches"
 import { LoadingMatchCard, ErrorState, EmptyState } from "@/components/ui/states"
 import type { Match } from "@/lib/types"
 
 export function MatchesListContent({ initialFormat }: { initialFormat?: string }) {
   const [selectedSeriesId, setSelectedSeriesId] = useState<string | null>(null)
   const formatParam = initialFormat && initialFormat !== "ipl" ? initialFormat.toUpperCase() : undefined
-  const { region: regionForRequest, selectedCode, setRegionCode, options: regionOptions } = useRegionPreference()
+  const regionForRequest = useDetectedRegion()
   
   const { data: matches, error, isLoading, mutate, isConfigured, message } = useMatches({
     country: regionForRequest?.code,
@@ -26,7 +26,7 @@ export function MatchesListContent({ initialFormat }: { initialFormat?: string }
   const filteredMatches = selectedSeriesId 
     ? matches?.filter(m => m.series?.id === selectedSeriesId)
     : matches
-  const { matches: localizedMatches, region } = useLocalizedMatches(filteredMatches || [])
+  const { matches: localizedMatches } = useLocalizedMatches(filteredMatches || [])
 
   return (
     <div className="py-8">
@@ -40,12 +40,6 @@ export function MatchesListContent({ initialFormat }: { initialFormat?: string }
             <div>
               <h1 className="text-3xl font-bold">All Matches</h1>
               <p className="text-muted-foreground">Browse cricket matches worldwide</p>
-              {region && (
-                <p className="mt-1 flex items-center gap-1 text-sm text-primary">
-                  <MapPin className="h-4 w-4" />
-                  {region.label} relevant matches are shown first
-                </p>
-              )}
             </div>
           </div>
 
@@ -68,20 +62,6 @@ export function MatchesListContent({ initialFormat }: { initialFormat?: string }
             </div>
           )}
 
-          <label className="mb-6 inline-flex items-center gap-2 rounded-lg bg-muted p-1 pl-3 text-sm text-muted-foreground">
-            <MapPin className="h-4 w-4 text-primary" />
-            <select
-              value={selectedCode}
-              onChange={(event) => setRegionCode(event.target.value)}
-              className="rounded-md bg-background px-3 py-2 text-foreground outline-none"
-              aria-label="Prioritize matches by region"
-            >
-              <option value="">Auto location</option>
-              {regionOptions.map((item) => (
-                <option key={item.code} value={item.code}>{item.label}</option>
-              ))}
-            </select>
-          </label>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">

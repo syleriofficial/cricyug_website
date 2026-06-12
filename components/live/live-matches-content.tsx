@@ -4,12 +4,12 @@ import { useEffect, useState } from "react"
 import type { ReactNode } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import Link from "next/link"
-import { Radio, Calendar, Clock, MapPin, RefreshCw } from "lucide-react"
+import { Radio, Calendar, Clock, RefreshCw } from "lucide-react"
 import { LiveScoreCard } from "@/components/cricket/live-score-card"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { useMatches } from "@/hooks/use-cricket-data"
-import { useRegionPreference, useLocalizedMatches } from "@/hooks/use-localized-matches"
+import { useDetectedRegion, useLocalizedMatches } from "@/hooks/use-localized-matches"
 import { LoadingMatchCard, ErrorState, NoMatches } from "@/components/ui/states"
 import type { Match, MatchStatus, MatchFormat } from "@/lib/types"
 
@@ -37,7 +37,7 @@ export function LiveMatchesContent() {
   const [format, setFormat] = useState<FormatType>("all")
   const [selectedMatchId, setSelectedMatchId] = useState<string | null>(null)
   const [refreshIn, setRefreshIn] = useState(AUTO_REFRESH_SECONDS)
-  const { region: regionForRequest, selectedCode, setRegionCode, options: regionOptions } = useRegionPreference()
+  const regionForRequest = useDetectedRegion()
 
   const { data: matches, error, isLoading, mutate, message } = useMatches({
     status: filter === "all" ? undefined : filter,
@@ -46,17 +46,14 @@ export function LiveMatchesContent() {
     refreshInterval: 0,
   })
 
-  const { matches: localizedMatches, region } = useLocalizedMatches(matches || [])
+  const { matches: localizedMatches } = useLocalizedMatches(matches || [])
   const selectedMatch = localizedMatches.find(m => m.id === selectedMatchId) || localizedMatches[0]
-  const activeRegionLabel = selectedCode
-    ? regionOptions.find((item) => item.code === selectedCode)?.label
-    : region?.label
   const selectedFormatLabel = formatFilters.find((item) => item.value === format)?.label || "All"
   const selectedStatusLabel = statusFilters.find((item) => item.value === filter)?.label || "All"
 
   useEffect(() => {
     setRefreshIn(AUTO_REFRESH_SECONDS)
-  }, [filter, format, selectedCode])
+  }, [filter, format, regionForRequest?.code])
 
   useEffect(() => {
     const timer = window.setInterval(() => {
@@ -90,12 +87,6 @@ export function LiveMatchesContent() {
             <div>
               <h1 className="text-3xl font-bold">Live Matches</h1>
               <p className="text-muted-foreground">Real-time cricket scores and updates</p>
-              {region && (
-                <p className="mt-1 flex items-center gap-1 text-sm text-primary">
-                  <MapPin className="h-4 w-4" />
-                  {region.label} matches are prioritized from your device locale
-                </p>
-              )}
             </div>
           </div>
 
@@ -112,7 +103,6 @@ export function LiveMatchesContent() {
                 <p className="text-xs font-semibold uppercase text-muted-foreground">Match Controls</p>
                 <p className="mt-1 text-sm text-muted-foreground">
                   {localizedMatches.length} matches shown
-                  {activeRegionLabel ? ` • ${activeRegionLabel} priority` : ""}
                 </p>
               </div>
               <div className="flex flex-wrap items-center gap-2">
@@ -141,25 +131,7 @@ export function LiveMatchesContent() {
               </div>
             </div>
 
-            <div className="grid gap-4 lg:grid-cols-[minmax(210px,0.8fr)_minmax(0,1.3fr)_minmax(0,1fr)]">
-              <label className="min-w-0 space-y-2">
-                <span className="flex items-center gap-2 px-1 text-xs font-semibold uppercase text-muted-foreground">
-                  <MapPin className="h-4 w-4 text-primary" />
-                  Location
-                </span>
-                <select
-                  value={selectedCode}
-                  onChange={(event) => setRegionCode(event.target.value)}
-                  className="h-10 w-full rounded-lg border border-border bg-background px-3 text-sm font-medium text-foreground outline-none transition-colors hover:border-primary/40 focus:border-primary"
-                  aria-label="Prioritize matches by region"
-                >
-                  <option value="">Auto location</option>
-                  {regionOptions.map((item) => (
-                    <option key={item.code} value={item.code}>{item.label}</option>
-                  ))}
-                </select>
-              </label>
-
+            <div className="grid gap-4 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)]">
               <FilterGroup label="Status">
                 {statusFilters.map((item) => (
                   <Button
