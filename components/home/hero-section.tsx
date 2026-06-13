@@ -52,8 +52,7 @@ export function HeroSection() {
               </Link>
             </div>
 
-            <div className="grid max-w-2xl grid-cols-3 gap-3">
-              <Stat label="Live updates" value="30s" />
+            <div className="grid max-w-2xl grid-cols-2 gap-3">
               <Stat label="Coverage" value="Global" />
               <Stat label="Syleri tech" value="Active" />
             </div>
@@ -90,9 +89,9 @@ function FeaturedMatchPanel({ match }: { match?: Match }) {
     return (
       <div className="rounded-2xl border border-border bg-card p-5 shadow-xl shadow-black/5">
         <p className="text-xs font-semibold uppercase text-primary">Match center</p>
-        <h2 className="mt-2 text-xl font-bold">Cricket coverage is warming up</h2>
+        <h2 className="mt-2 text-xl font-bold">Data temporarily unavailable</h2>
         <p className="mt-3 text-sm text-muted-foreground">
-          Latest matches, results and editorial updates will appear here as soon as data is available.
+          Official cricket updates will appear here as soon as the data provider responds.
         </p>
         <Link href="/matches">
           <Button className="mt-5 gap-2">
