@@ -11,8 +11,6 @@ import {
   Newspaper,
   Users,
   Shield,
-  Calendar,
-  Table,
   BarChart3,
   User,
   Search,
@@ -33,8 +31,6 @@ const navItems = [
   { href: "/news", label: "News", icon: Newspaper },
   { href: "/players", label: "Players", icon: Users },
   { href: "/teams", label: "Teams", icon: Shield },
-  { href: "/series", label: "Series", icon: Calendar },
-  { href: "/points-table", label: "Points", icon: Table },
   { href: "/rankings", label: "Rankings", icon: BarChart3 },
 ]
 
@@ -64,7 +60,9 @@ export function Header() {
             {/* Desktop Navigation */}
             <nav className="hidden lg:flex items-center gap-1">
               {navItems.map((item) => {
-                const isActive = pathname === item.href
+                const isActive = item.href === "/matches"
+                  ? pathname === item.href || pathname.startsWith("/series") || pathname.startsWith("/points")
+                  : pathname === item.href
                 return (
                   <Link
                     key={item.href}
@@ -174,7 +172,9 @@ export function Header() {
               </div>
               <nav className="p-4 space-y-1">
                 {navItems.map((item) => {
-                  const isActive = pathname === item.href
+                  const isActive = item.href === "/matches"
+                    ? pathname === item.href || pathname.startsWith("/series") || pathname.startsWith("/points")
+                    : pathname === item.href
                   return (
                     <Link
                       key={item.href}

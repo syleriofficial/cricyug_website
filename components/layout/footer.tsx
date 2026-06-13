@@ -35,8 +35,8 @@ export function Footer() {
             <ul className="space-y-2">
               <FooterLink href="/players">Players</FooterLink>
               <FooterLink href="/teams">Teams</FooterLink>
-              <FooterLink href="/series">Series</FooterLink>
-              <FooterLink href="/points-table">Points Table</FooterLink>
+              <FooterLink href="/matches#series">Series in Matches</FooterLink>
+              <FooterLink href="/matches#points">Points in Matches</FooterLink>
               <FooterLink href="/rankings">Rankings</FooterLink>
               <FooterLink href="/stats">Stats</FooterLink>
             </ul>
@@ -49,7 +49,7 @@ export function Footer() {
               <FooterLink href="/matches?format=test">Test Cricket</FooterLink>
               <FooterLink href="/matches?format=odi">ODI</FooterLink>
               <FooterLink href="/matches?format=t20">T20</FooterLink>
-              <FooterLink href="/series">Tournaments</FooterLink>
+              <FooterLink href="/matches#series">Tournaments</FooterLink>
             </ul>
           </div>
 

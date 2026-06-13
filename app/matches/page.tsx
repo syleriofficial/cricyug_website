@@ -3,8 +3,8 @@ import { MatchesListContent } from "@/components/matches/matches-list-content"
 import { Footer } from "@/components/layout/footer"
 
 export const metadata = {
-  title: "All Matches | CricYug",
-  description: "Browse all cricket matches - live, upcoming, and completed.",
+  title: "Matches, Series & Points | CricYug",
+  description: "Browse cricket matches, series filters and points table shortcuts in one match center.",
 }
 
 export default async function MatchesPage({

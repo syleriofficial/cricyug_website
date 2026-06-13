@@ -19,7 +19,7 @@ export function TrendingSeriesSection() {
             <p className="text-sm text-muted-foreground">IPL, ICC, international, domestic and women tournaments</p>
           </div>
           <Button asChild variant="ghost" size="sm" className="gap-2">
-            <Link href="/series">All series <ArrowRight className="h-4 w-4" /></Link>
+            <Link href="/matches#series">Series in matches <ArrowRight className="h-4 w-4" /></Link>
           </Button>
         </div>
 
@@ -45,7 +45,7 @@ export function TrendingSeriesSection() {
                 <p className="mt-2 text-xs text-muted-foreground">{item.totalMatches} matches • {item.format}</p>
               </Link>
             ))}
-            <Link href="/points-table" className="rounded-lg border border-primary/20 bg-primary/10 p-4 hover:border-primary/45 md:col-span-2 lg:col-span-1">
+            <Link href="/matches#points" className="rounded-lg border border-primary/20 bg-primary/10 p-4 hover:border-primary/45 md:col-span-2 lg:col-span-1">
               <Table2 className="mb-3 h-5 w-5 text-primary" />
               <h3 className="font-semibold">Points Table Shortcut</h3>
               <p className="mt-2 text-sm text-muted-foreground">Open standings for active tournaments.</p>

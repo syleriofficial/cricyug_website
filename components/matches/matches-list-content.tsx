@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import Link from "next/link"
-import { Trophy, Filter, AlertCircle } from "lucide-react"
+import { Trophy, Filter, AlertCircle, Table2, CalendarDays } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { useMatches, useSeries } from "@/hooks/use-cricket-data"
@@ -38,8 +38,8 @@ export function MatchesListContent({ initialFormat }: { initialFormat?: string }
               <Trophy className="h-6 w-6 text-primary" />
             </div>
             <div>
-              <h1 className="text-3xl font-bold">All Matches</h1>
-              <p className="text-muted-foreground">Browse cricket matches worldwide</p>
+              <h1 className="text-3xl font-bold">Matches</h1>
+              <p className="text-muted-foreground">Browse matches, series and points table from one hub</p>
             </div>
           </div>
 
@@ -104,6 +104,37 @@ export function MatchesListContent({ initialFormat }: { initialFormat?: string }
                   </Button>
                 ))}
               </div>
+            </div>
+
+            <div id="series" className="rounded-xl bg-card border border-border p-4">
+              <div className="mb-4 flex items-center gap-2">
+                <CalendarDays className="h-5 w-5 text-primary" />
+                <h3 className="font-semibold">Series Hub</h3>
+              </div>
+              <div className="space-y-2">
+                {(series || []).slice(0, 5).map((item) => (
+                  <Link key={item.id} href={`/series/${item.id}`} className="block rounded-lg bg-muted/50 p-3 hover:bg-muted">
+                    <p className="line-clamp-2 text-sm font-medium">{item.name}</p>
+                    <p className="mt-1 text-xs text-muted-foreground">{item.status} • {item.format}</p>
+                  </Link>
+                ))}
+                {(!series || series.length === 0) && (
+                  <p className="text-sm text-muted-foreground">Series data will appear here when available.</p>
+                )}
+              </div>
+            </div>
+
+            <div id="points" className="rounded-xl border border-primary/20 bg-primary/10 p-4">
+              <div className="mb-3 flex items-center gap-2">
+                <Table2 className="h-5 w-5 text-primary" />
+                <h3 className="font-semibold">Points Table</h3>
+              </div>
+              <p className="text-sm text-muted-foreground">
+                Standings are now part of the Matches hub. Open the full points table when a tournament has official standings.
+              </p>
+              <Button asChild size="sm" className="mt-4 w-full">
+                <Link href="/points-table">Open Points Table</Link>
+              </Button>
             </div>
           </div>
 

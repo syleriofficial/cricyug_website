@@ -19,7 +19,7 @@ export default async function SeriesDetailPage({ params }: { params: Promise<{ i
       <Header />
       <main className="flex-1 pb-20 lg:pb-0">
         <section className="mx-auto max-w-4xl px-4 py-10 lg:py-16">
-          <Link href="/series" className="text-sm text-primary hover:underline">Back to Series</Link>
+          <Link href="/matches#series" className="text-sm text-primary hover:underline">Back to Matches</Link>
           <div className="mt-6 rounded-2xl border border-border bg-card p-6">
             {series ? (
               <>
@@ -45,10 +45,10 @@ export default async function SeriesDetailPage({ params }: { params: Promise<{ i
           </div>
           <div className="mt-8 flex flex-wrap gap-3">
             <Button asChild>
-              <Link href="/series">All series</Link>
+              <Link href="/matches#series">All series</Link>
             </Button>
             <Button asChild variant="outline">
-              <Link href="/points-table">Points table</Link>
+              <Link href="/matches#points">Points table</Link>
             </Button>
           </div>
         </section>
