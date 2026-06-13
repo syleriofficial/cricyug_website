@@ -1,5 +1,4 @@
 import { Header, MobileNav } from "@/components/layout/navigation"
-import { HeroSection } from "@/components/home/hero-section"
 import { LiveTopStrip } from "@/components/home/live-top-strip"
 import { TodayMatchesSection } from "@/components/home/today-matches-section"
 import { LiveMatchesSection } from "@/components/home/live-matches-section"
@@ -18,7 +17,6 @@ export default function HomePage() {
       <Header />
       <LiveTopStrip />
       <main className="flex-1 pb-20 lg:pb-0">
-        <HeroSection />
         <TodayMatchesSection />
         <LiveMatchesSection />
         <TrendingSeriesSection />
