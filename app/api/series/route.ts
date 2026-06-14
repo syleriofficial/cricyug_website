@@ -3,6 +3,8 @@
 
 import { NextResponse } from "next/server"
 import { getCricketDataService } from "@/lib/api/cricket-data"
+import { getDbSeries } from "@/lib/db/cricyug-db"
+import { isCricYugDbConfigured } from "@/lib/db/supabase"
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
@@ -13,6 +15,21 @@ export async function GET(request: Request) {
   const limit = parseInt(searchParams.get("limit") || "20")
 
   try {
+    const dbSeries = await getDbSeries({ category: category || undefined, status: status || undefined, type: type || undefined, featured, limit })
+    if (dbSeries.length > 0 || isCricYugDbConfigured()) {
+      return NextResponse.json({
+        data: dbSeries,
+        meta: {
+          total: dbSeries.length,
+          limit,
+          configured: true,
+          source: "cricyug-db",
+          category: category || "all",
+          message: dbSeries.length === 0 ? "No CricYug database series match this filter." : undefined,
+        },
+      })
+    }
+
     const service = getCricketDataService()
     
     if (!service) {
@@ -22,7 +39,7 @@ export async function GET(request: Request) {
           total: 0,
           limit,
           configured: false,
-          message: "CRICKETDATA_API_KEY is required for live series data."
+          message: "Configure Supabase for historical series. CricketData.org is optional live fallback."
         }
       }, { status: 503 })
     }
@@ -67,6 +84,7 @@ export async function GET(request: Request) {
         total: filtered.length, 
         limit,
         configured: true,
+        source: "live-provider",
         category: category || "all",
         message: usedFallback
           ? `${category} series are not available right now, so latest series are shown.`

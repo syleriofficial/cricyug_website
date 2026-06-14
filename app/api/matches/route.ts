@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server"
 import { getCricketDataService } from "@/lib/api/cricket-data"
 import { getRegionByCode, sortMatchesForRegion } from "@/lib/match-location"
+import { getDbMatches } from "@/lib/db/cricyug-db"
+import { isCricYugDbConfigured } from "@/lib/db/supabase"
 
 export const revalidate = 30
 
@@ -65,6 +67,26 @@ export async function GET(request: Request) {
   }
 
   try {
+    const dbMatches = await getDbMatches({ status: status || undefined, format: format || undefined, limit })
+    if (dbMatches.length > 0 || isCricYugDbConfigured()) {
+      const region = getRegionByCode(country)
+      const sorted = sortMatchesForRegion(dbMatches, region)
+      const payload = {
+        data: sorted.slice(0, limit),
+        meta: {
+          total: dbMatches.length,
+          limit,
+          configured: true,
+          source: "cricyug-db",
+          country: region?.code,
+          message: dbMatches.length === 0 ? "No CricYug database matches match this filter. Live API can be used for current matches when configured." : undefined,
+        },
+      }
+
+      matchCache().set(key, { expiresAt: Date.now() + MATCH_CACHE_TTL_MS, payload })
+      return jsonResponse(payload)
+    }
+
     const service = getCricketDataService()
 
     if (!service) {
@@ -74,7 +96,7 @@ export async function GET(request: Request) {
           total: 0,
           limit,
           configured: false,
-          message: "CRICKETDATA_API_KEY is required for live match data.",
+          message: "Configure Supabase for historical matches. CricketData.org is optional live fallback.",
         },
       }, 503)
     }
@@ -111,6 +133,7 @@ export async function GET(request: Request) {
         total: filtered.length,
         limit,
         configured: true,
+        source: "live-provider",
         message,
         country: region?.code,
       },

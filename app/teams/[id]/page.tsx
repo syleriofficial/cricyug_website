@@ -2,7 +2,7 @@ import Link from "next/link"
 import { Header, MobileNav } from "@/components/layout/navigation"
 import { Footer } from "@/components/layout/footer"
 import { Button } from "@/components/ui/button"
-import { getCricketDataService } from "@/lib/api/cricket-data"
+import { getDbTeam } from "@/lib/db/cricyug-db"
 
 export const metadata = {
   title: "Team Profile | CricYug",
@@ -11,9 +11,7 @@ export const metadata = {
 
 export default async function TeamDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
-  const service = getCricketDataService()
-  const teams = service ? await service.getCountries().catch(() => []) : []
-  const team = teams.find((item) => item.id === id || item.countryCode?.toLowerCase() === id.toLowerCase()) || null
+  const team = await getDbTeam(id)
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -34,7 +32,7 @@ export default async function TeamDetailPage({ params }: { params: Promise<{ id:
                   </div>
                   <div>
                     <h1 className="text-4xl font-bold">{team.name}</h1>
-                    <p className="mt-2 text-muted-foreground">CricketData.org team profile</p>
+                    <p className="mt-2 text-muted-foreground">CricYug database team profile</p>
                   </div>
                 </div>
                 <div className="mt-8 grid gap-4 sm:grid-cols-3">
@@ -47,7 +45,7 @@ export default async function TeamDetailPage({ params }: { params: Promise<{ id:
               <div>
                 <h1 className="text-3xl font-bold">Team profile unavailable</h1>
                 <p className="mt-3 text-muted-foreground">
-                  CricketData.org did not return a team profile for this id.
+                  This team has not been published in the CricYug database yet.
                 </p>
               </div>
             )}

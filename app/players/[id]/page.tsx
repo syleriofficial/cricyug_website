@@ -3,6 +3,7 @@ import { Header, MobileNav } from "@/components/layout/navigation"
 import { Footer } from "@/components/layout/footer"
 import { Button } from "@/components/ui/button"
 import { getCricketDataService } from "@/lib/api/cricket-data"
+import { getDbPlayer } from "@/lib/db/cricyug-db"
 
 export const metadata = {
   title: "Player Profile | CricYug",
@@ -12,7 +13,7 @@ export const metadata = {
 export default async function PlayerDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
   const service = getCricketDataService()
-  const player = service ? await service.getPlayerInfo(id).catch(() => null) : null
+  const player = await getDbPlayer(id) || (service ? await service.getPlayerInfo(id).catch(() => null) : null)
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -36,14 +37,14 @@ export default async function PlayerDetailPage({ params }: { params: Promise<{ i
                   <Info label="Batting" value={player.battingStyle || "Not available from provider"} />
                   <Info label="Bowling" value={player.bowlingStyle || "Not available from provider"} />
                   <Info label="Country Code" value={player.countryCode || "N/A"} />
-                  <Info label="Source" value="CricketData.org" />
+                  <Info label="Source" value="CricYug database" />
                 </div>
               </>
             ) : (
               <div>
                 <h1 className="text-3xl font-bold">Player profile unavailable</h1>
                 <p className="mt-3 text-muted-foreground">
-                  CricketData.org did not return a player profile for this id. Search live players from the players page.
+                  This player has not been published in the CricYug database yet.
                 </p>
               </div>
             )}

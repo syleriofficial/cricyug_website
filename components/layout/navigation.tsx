@@ -19,6 +19,7 @@ import {
   Bookmark,
   Bell,
   CircleDot,
+  Brain,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -32,6 +33,7 @@ const navItems = [
   { href: "/players", label: "Players", icon: Users },
   { href: "/teams", label: "Teams", icon: Shield },
   { href: "/rankings", label: "Rankings", icon: BarChart3 },
+  { href: "/assistant", label: "Assistant", icon: Brain },
 ]
 
 export function Header() {

@@ -2,7 +2,7 @@ import Link from "next/link"
 import { Header, MobileNav } from "@/components/layout/navigation"
 import { Footer } from "@/components/layout/footer"
 import { Button } from "@/components/ui/button"
-import { getCricketDataService } from "@/lib/api/cricket-data"
+import { getDbSeriesById } from "@/lib/db/cricyug-db"
 
 export const metadata = {
   title: "Series Detail | CricYug",
@@ -11,8 +11,7 @@ export const metadata = {
 
 export default async function SeriesDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
-  const service = getCricketDataService()
-  const series = service ? await service.getSeriesInfo(id).catch(() => null) : null
+  const series = await getDbSeriesById(id)
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -38,7 +37,7 @@ export default async function SeriesDetailPage({ params }: { params: Promise<{ i
               <div>
                 <h1 className="text-3xl font-bold">Series unavailable</h1>
                 <p className="mt-3 text-muted-foreground">
-                  CricketData.org did not return details for this series id.
+                  This series has not been published in the CricYug database yet.
                 </p>
               </div>
             )}

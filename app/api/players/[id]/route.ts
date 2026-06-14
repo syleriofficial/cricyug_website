@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server"
 import { getCricketDataService } from "@/lib/api/cricket-data"
+import { getDbPlayer } from "@/lib/db/cricyug-db"
+import { isCricYugDbConfigured } from "@/lib/db/supabase"
 
 export async function GET(
   request: Request,
@@ -8,6 +10,28 @@ export async function GET(
   const { id } = await params
 
   try {
+    const dbPlayer = await getDbPlayer(id)
+    if (dbPlayer || isCricYugDbConfigured()) {
+      if (!dbPlayer) {
+        return NextResponse.json({
+          data: null,
+          meta: {
+            configured: true,
+            source: "cricyug-db",
+            message: "Player not found in CricYug database.",
+          },
+        }, { status: 404 })
+      }
+
+      return NextResponse.json({
+        data: dbPlayer,
+        meta: {
+          configured: true,
+          source: "cricyug-db",
+        },
+      })
+    }
+
     const service = getCricketDataService()
 
     if (!service) {
@@ -15,7 +39,7 @@ export async function GET(
         data: null,
         meta: {
           configured: false,
-          message: "CRICKETDATA_API_KEY is required for player profiles.",
+          message: "Configure Supabase for historical player profiles. CricketData.org is optional fallback data.",
         },
       }, { status: 503 })
     }
@@ -36,6 +60,7 @@ export async function GET(
       data: player,
       meta: {
         configured: true,
+        source: "live-provider",
       },
     })
   } catch (error) {

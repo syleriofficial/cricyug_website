@@ -3,6 +3,8 @@
 
 import { NextResponse } from "next/server"
 import { getCricketDataService } from "@/lib/api/cricket-data"
+import { getDbMatch } from "@/lib/db/cricyug-db"
+import { isCricYugDbConfigured } from "@/lib/db/supabase"
 
 export async function GET(
   request: Request,
@@ -14,6 +16,25 @@ export async function GET(
   const includeCommentary = searchParams.get("includeCommentary") === "true"
 
   try {
+    const dbMatch = await getDbMatch(id)
+    if (dbMatch || isCricYugDbConfigured()) {
+      if (!dbMatch) {
+        return NextResponse.json({
+          data: null,
+          meta: {
+            configured: true,
+            source: "cricyug-db",
+            message: "Match not found in CricYug database",
+          },
+        }, { status: 404 })
+      }
+
+      return NextResponse.json({
+        data: dbMatch,
+        meta: { configured: true, source: "cricyug-db" },
+      })
+    }
+
     const service = getCricketDataService()
     
     if (!service) {
@@ -21,7 +42,7 @@ export async function GET(
         data: null,
         meta: { 
           configured: false,
-          message: "CRICKETDATA_API_KEY is required for live match details."
+          message: "Configure Supabase for historical match scorecards. CricketData.org is optional live fallback."
         }
       }, { status: 503 })
     }
@@ -40,7 +61,7 @@ export async function GET(
 
     return NextResponse.json({
       data: match,
-      meta: { configured: true }
+      meta: { configured: true, source: "live-provider" }
     })
   } catch (error) {
     console.error("[CricYug] Match Details API Error:", error)

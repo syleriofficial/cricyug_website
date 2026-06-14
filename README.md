@@ -1,6 +1,6 @@
 # CricYug
 
-CricYug is a Next.js cricket website powered by server-side CricketData.org API routes. The API key is never used in client components and must only be provided through environment variables.
+CricYug is a Next.js cricket knowledge platform backed by Supabase PostgreSQL. Historical players, teams, venues, series, scorecards, rankings and records come from the CricYug database. External cricket APIs are optional and should only be used for live match fallback data.
 
 ## Setup
 
@@ -16,24 +16,40 @@ npm install
 cp .env.example .env.local
 ```
 
-3. Add your CricketData.org key in `.env.local`:
+3. Add your Supabase and optional live/AI keys in `.env.local`:
 
 ```bash
+SUPABASE_URL=your_supabase_project_url
+SUPABASE_SERVICE_ROLE_KEY=your_server_only_service_role_key
+SUPABASE_ANON_KEY=your_optional_anon_key
 CRICKETDATA_API_KEY=your_cricketdata_api_key_here
 OPENAI_API_KEY=your_openai_api_key_here
 OPENAI_MODEL=gpt-4o-mini
 NEXT_PUBLIC_ADSENSE_CLIENT=ca-pub-your_adsense_id
 ```
 
-`OPENAI_API_KEY` is optional. If it is not set, CricYug still returns server-side cricket-rule predictions from official match data. `NEXT_PUBLIC_ADSENSE_CLIENT` is optional and should only be added after AdSense approval. Never expose private API keys with a `NEXT_PUBLIC_` prefix.
+`SUPABASE_SERVICE_ROLE_KEY`, `CRICKETDATA_API_KEY`, and `OPENAI_API_KEY` are server-only keys. Never expose them with a `NEXT_PUBLIC_` prefix. `CRICKETDATA_API_KEY` is optional live-match fallback data only. `OPENAI_API_KEY` is optional; without it CricYug still returns server-side cricket-rule answers. `NEXT_PUBLIC_ADSENSE_CLIENT` is optional and should only be added after AdSense approval.
 
-4. Run the development server:
+4. Create the Supabase PostgreSQL tables:
+
+```bash
+supabase db push
+```
+
+The schema lives in `supabase/migrations/202606140001_cricyug_knowledge_schema.sql` and creates:
+
+```text
+players, teams, venues, series, tournaments, matches, innings,
+batting_scorecards, bowling_scorecards, rankings, records
+```
+
+5. Run the development server:
 
 ```bash
 npm run dev
 ```
 
-5. Build for production:
+6. Build for production:
 
 ```bash
 npm run build
@@ -41,21 +57,38 @@ npm run build
 
 ## API Routes
 
-- `/api/matches` returns live, upcoming and completed matches from CricketData.org.
-- `/api/matches/[id]` returns match details, scorecard when available, and commentary when available.
-- `/api/series` returns CricketData.org series data.
+- `/api/matches` returns CricYug database matches first; CricketData.org is optional live fallback.
+- `/api/matches/[id]` returns CricYug database match details and scorecards first.
+- `/api/series` returns CricYug database series data.
+- `/api/series/[id]` returns one CricYug database series.
 - `/api/series/[id]/standings` returns official points table data when the provider has it.
-- `/api/players` searches CricketData.org players. Use `?search=player-name`.
-- `/api/teams` returns CricketData.org country/team data.
-- `/api/rankings` returns official ranking data when the connected provider supports it.
-- `/api/stats` returns official current scoring snapshots from live/recent match data.
+- `/api/players` searches CricYug database players. Use `?search=player-name`.
+- `/api/players/[id]` returns one CricYug database player profile.
+- `/api/teams` returns CricYug database teams.
+- `/api/teams/[id]` returns one CricYug database team profile.
+- `/api/rankings` returns CricYug database rankings.
+- `/api/records` returns CricYug database historical records.
+- `/api/stats` returns database records through the stats page.
 - `/api/news` is ready for a future server-side editorial/CMS source and returns an empty list until articles are published.
 - `/api/news/[id]` returns one manually written CricYug article.
+- `/api/search?q=india` returns advanced search results from the CricYug database.
+- `/api/assistant?q=india` returns the AI cricket assistant answer backed by CricYug database results.
 - `/api/ai/prediction?matchId=...` returns win probability, favorite, confidence and factors.
 - `/api/ai/preview?matchId=...` returns a Syleri-ready match preview.
 - `/api/ai/live-insights?matchId=...` returns momentum, pressure and next-phase insights.
 - `/api/ai/news-draft` accepts `POST { "headline": "...", "notes": "...", "category": "..." }` and returns an editorial draft.
-- `/api/ai/search?q=india match` returns an AI-style answer backed by CricYug search results.
+- `/api/ai/search?q=india match` returns an AI-style answer backed by CricYug database search results.
+
+## Knowledge Platform Pages
+
+- `/players/[id]` player profile pages
+- `/teams/[id]` team profile pages
+- `/matches/[id]` match scorecard pages
+- `/series/[id]` series pages
+- `/search` advanced database search
+- `/assistant` AI cricket assistant
+- `/rankings` ICC/team/player rankings from CricYug database
+- `/stats` historical records from CricYug database
 
 ## Manual News
 
@@ -115,10 +148,13 @@ https://cricyug.netlify.app/robots.txt
 Set this variable in Netlify or your hosting provider:
 
 ```bash
+SUPABASE_URL=your_supabase_project_url
+SUPABASE_SERVICE_ROLE_KEY=your_server_only_service_role_key
+SUPABASE_ANON_KEY=your_optional_anon_key
 CRICKETDATA_API_KEY=your_cricketdata_api_key_here
 OPENAI_API_KEY=your_openai_api_key_here
 OPENAI_MODEL=gpt-4o-mini
 NEXT_PUBLIC_ADSENSE_CLIENT=ca-pub-your_adsense_id
 ```
 
-Do not prefix private keys with `NEXT_PUBLIC_`. Client components call only local `/api/*` routes, so CricketData.org and AI provider keys stay server-side.
+Do not prefix private keys with `NEXT_PUBLIC_`. Client components call only local `/api/*` routes, so Supabase service role, CricketData.org and AI provider keys stay server-side.

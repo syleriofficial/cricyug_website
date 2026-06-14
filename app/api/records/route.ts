@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server"
-import { getDbRankings } from "@/lib/db/cricyug-db"
+import { getDbRecords } from "@/lib/db/cricyug-db"
 import { isCricYugDbConfigured } from "@/lib/db/supabase"
 
 export const revalidate = 3600
@@ -9,26 +9,26 @@ export async function GET(request: Request) {
   const type = searchParams.get("type") || undefined
   const format = searchParams.get("format") || undefined
   const limit = Number(searchParams.get("limit") || "50")
-  const rankings = await getDbRankings({ type, format, limit })
+  const records = await getDbRecords({ type, format, limit })
 
-  if (rankings.length === 0 && !isCricYugDbConfigured()) {
+  if (records.length === 0 && !isCricYugDbConfigured()) {
     return NextResponse.json({
       data: [],
       meta: {
         total: 0,
         configured: false,
-        message: "Configure Supabase for CricYug rankings.",
+        message: "Configure Supabase for CricYug historical records.",
       },
     }, { status: 503 })
   }
 
   return NextResponse.json({
-    data: rankings,
+    data: records,
     meta: {
-      total: rankings.length,
+      total: records.length,
       configured: true,
       source: "cricyug-db",
-      message: rankings.length === 0 ? "No CricYug rankings match this filter." : undefined,
+      message: records.length === 0 ? "No CricYug records match this filter." : undefined,
     },
   }, {
     headers: {

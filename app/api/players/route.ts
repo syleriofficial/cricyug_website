@@ -3,6 +3,8 @@
 
 import { NextResponse } from "next/server"
 import { getCricketDataService } from "@/lib/api/cricket-data"
+import { getDbPlayers } from "@/lib/db/cricyug-db"
+import { isCricYugDbConfigured } from "@/lib/db/supabase"
 import type { PlayerRole } from "@/lib/types"
 
 export async function GET(request: Request) {
@@ -13,6 +15,20 @@ export async function GET(request: Request) {
   const limit = parseInt(searchParams.get("limit") || "20")
 
   try {
+    const dbPlayers = await getDbPlayers({ search: search || undefined, role: role || undefined, limit })
+    if (dbPlayers.length > 0 || isCricYugDbConfigured()) {
+      return NextResponse.json({
+        data: dbPlayers,
+        meta: {
+          total: dbPlayers.length,
+          limit,
+          configured: true,
+          source: "cricyug-db",
+          message: dbPlayers.length === 0 ? "No CricYug database player profiles match this filter." : undefined,
+        },
+      })
+    }
+
     const service = getCricketDataService()
     
     if (!service) {
@@ -22,7 +38,7 @@ export async function GET(request: Request) {
           total: 0,
           limit,
           configured: false,
-          message: "CRICKETDATA_API_KEY is required for player search."
+          message: "Configure Supabase for historical player profiles. CricketData.org is optional fallback data."
         }
       }, { status: 503 })
     }
@@ -46,6 +62,7 @@ export async function GET(request: Request) {
         total: filtered.length, 
         limit,
         configured: true,
+        source: "live-provider",
         message: format && format !== "All Formats"
           ? `${format} selected. CricketData.org player profiles are format-neutral, so matching profiles are shown.`
           : undefined,
